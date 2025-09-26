@@ -9,5 +9,17 @@
         "name": "Francisco Ferres"
     },
     "items": [
+        {
+            "id": "https://checofran284-alt.github.io/2damasi/quien-soy.html",
+            "url": "https://checofran284-alt.github.io/2damasi/quien-soy.html",
+            "title": "¿Quién soy?",
+            "author": {
+                "name": "Francisco Ferres"
+            },
+            "tags": [
+            ],
+            "date_published": "2025-09-26T10:02:17+02:00",
+            "date_modified": "2025-09-26T10:02:22+02:00"
+        }
     ]
 }
