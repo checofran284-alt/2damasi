@@ -3,12 +3,34 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-09-26T14:25:47+02:00</updated>
+    <updated>2025-09-26T16:03:01+02:00</updated>
     <author>
         <name>Francisco Ferres</name>
     </author>
     <id>https://checofran284-alt.github.io/2damasi</id>
 
+    <entry>
+        <title>&quot;Como lo he hecho&quot;</title>
+        <author>
+            <name>Francisco Ferres</name>
+        </author>
+        <link href="https://checofran284-alt.github.io/2damasi/como-lo-he-hecho/"/>
+        <id>https://checofran284-alt.github.io/2damasi/como-lo-he-hecho/</id>
+
+        <updated>2025-09-26T15:43:04+02:00</updated>
+            <summary>
+                <![CDATA[
+                    Para crear mi sitio web utilicé Publii, un generador de sitios estáticos que me permitió construir una web rápida, segura&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <blockquote>
+<p>Para crear mi sitio web utilicé Publii, un generador de sitios estáticos que me permitió construir una web rápida, segura y sin necesidad de base de datos. El proceso fue el siguiente:<br><br><span style="text-decoration: underline;"><em><strong>1. Elección del tema</strong></em></span><br><br>Seleccioné el tema Editorial 2 desde el Marketplace de Publii, por su diseño limpio, estructura lateral y enfoque editorial. Este tema me permitió destacar tanto mi presentación personal como mis publicaciones.<br><br><strong><span style="text-decoration: underline;">2. Creación de contenido</span></strong><br><br>•     Redacté una página principal que sirve como portada del sitio, donde explico quién soy y qué hago.<br>•     Escribí un post titulado “Quién soy”, que amplía mi historia personal y profesional.<br>•     Configuré la página como homepage desde los ajustes del sitio, para que sea lo primero que vean los visitantes.<br><br><span style="text-decoration: underline;"><em><strong>3. Integración de página y post</strong></em></span><br><br>Como Publii no muestra automáticamente los posts debajo de una página estática, añadí manualmente un enlace al post dentro del contenido de la página. Esto lo hice usando Markdown, enlazando el post directamente con su slug (), para que todo esté accesible desde la misma vista.<br><br><em><span style="text-decoration: underline;"><strong>4. Configuración del menú</strong></span></em><br><br>Personalicé el menú lateral del tema para incluir:<br>•     Enlace a la página principal<br>•     Enlace directo al post<br>•     Espacio para futuras secciones como Portfolio, Contacto o Blog<br><br><strong><em><span style="text-decoration: underline;">5. Publicación del sitio</span></em></strong><br><br>Una vez terminado el contenido y la estructura, utilicé la función “Synchronize Website” para publicar el sitio en mi servidor o plataforma de hosting estático.</p>
+</blockquote>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>¿Quién soy?</title>
         <author>
