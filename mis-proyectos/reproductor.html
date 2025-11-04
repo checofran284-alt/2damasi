@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="es" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DayTune - Calendario de Audio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Tema Claro (Default) */
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-player: rgba(255, 255, 255, 0.7);
+            --bg-accent: #3b82f6;
+            --bg-accent-hover: #2563eb;
+            --bg-accent-soft: #dbeafe;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-accent: #ffffff;
+            --border-primary: #e5e7eb;
+            --border-accent: #3b82f6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --backdrop-blur: 16px;
+            --gradient-start: #76a9ff;
+            --gradient-mid: #3b82f6;
+            --gradient-end: #a855f7;
+            --day-hover: #efefef;
+            --day-selected: #dbeafe;
+            --day-text-selected: #1e40af;
+            --day-other-month: #9ca3af;
+            --icon-color: #6b7280;
+            --switch-bg: #e5e7eb;
+            --switch-knob: #ffffff;
+        }
+
+        html.dark {
+            /* Tema Oscuro */
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-player: rgba(31, 41, 55, 0.7);
+            --bg-accent: #3b82f6;
+            --bg-accent-hover: #60a5fa;
+            --bg-accent-soft: #1e3a8a;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-accent: #ffffff;
+            --border-primary: #374151;
+            --border-accent: #3b82f6;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --gradient-start: #3b82f6;
+            --gradient-mid: #6d28d9;
+            --gradient-end: #ec4899;
+            --day-hover: #374151;
+            --day-selected: #1e3a8a;
+            --day-text-selected: #bfdbfe;
+            --day-other-month: #4b5563;
+            --icon-color: #9ca3af;
+            --switch-bg: #374151;
+            --switch-knob: #111827;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Fondo animado */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+            background-size: 400% 400%;
+            animation: animatedGradient 20s ease infinite;
+        }
+
+        @keyframes animatedGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(var(--backdrop-blur));
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        .player-bar {
+            background: var(--bg-player);
+            backdrop-filter: blur(var(--backdrop-blur));
+            -webkit-backdrop-filter: blur(var(--backdrop-blur));
+            border-top: 1px solid var(--border-primary);
+            box-shadow: 0 -4px 30px var(--shadow-color);
+            transition: background 0.3s ease, border 0.3s ease;
+        }
+
+        /* Estilos del Calendario */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 0.25rem;
+        }
+        .day {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 52px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            font-weight: 500;
+        }
+        .day:hover {
+            background-color: var(--day-hover);
+        }
+        .day.other-month {
+            color: var(--day-other-month);
+            cursor: not-allowed;
+        }
+        .day.selected {
+            background-color: var(--day-selected);
+            color: var(--day-text-selected);
+            font-weight: 700;
+        }
+        .day.today {
+            border: 2px solid var(--border-accent);
+        }
+        .day-icon {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            font-size: 0.8rem;
+            animation: pulse-icon 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .day-halo {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            box-shadow: 0 0 16px 4px var(--bg-accent), 0 0 8px 2px var(--bg-accent);
+            animation: pulse-halo 1.5s infinite ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes pulse-halo {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            background-color: #1f2937;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            margin-bottom: 8px;
+            z-index: 20;
+        }
+        .day:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* Scrollbar */
+        .custom-scroll {
+            overflow-y: auto;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Controles del Reproductor */
+        .progress-bar-wrapper {
+            group: player-progress;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+        .progress-bar-bg {
+            background-color: var(--text-secondary);
+            opacity: 0.3;
+            height: 4px;
+            width: 100%;
+            border-radius: 2px;
+        }
+        .progress-bar {
+            background-color: var(--bg-accent);
+            height: 4px;
+            border-radius: 2px;
+            position: relative;
+        }
+        .progress-bar-knob {
+            width: 12px;
+            height: 12px;
+            background-color: var(--bg-accent);
+            border-radius: 50%;
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%) scale(0);
+            transition: transform 0.2s ease;
+        }
+        .progress-bar-wrapper:hover .progress-bar-knob {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .volume-slider-wrapper {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px;
+            background: var(--bg-player);
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            margin-bottom: 8px;
+            z-index: 10;
+        }
+        .volume-slider-container {
+            width: 8px;
+            height: 100px;
+            background: var(--text-secondary);
+            opacity: 0.3;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .volume-slider {
+            width: 8px;
+            background: var(--bg-accent);
+            border-radius: 4px;
+            position: relative;
+        }
+        .volume-knob {
+            width: 14px;
+            height: 14px;
+            background: var(--bg-accent);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: -7px;
+            transform: translateX(-50%);
+        }
+        #volumeButton:hover + .volume-slider-wrapper,
+        .volume-slider-wrapper:hover {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(-8px);
+        }
+
+        /* Switch de Tema */
+        .theme-switch {
+            width: 50px;
+            height: 26px;
+            background-color: var(--switch-bg);
+            border-radius: 13px;
+            padding: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .theme-switch-knob {
+            width: 20px;
+            height: 20px;
+            background-color: var(--switch-knob);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        html.dark .theme-switch-knob {
+            transform: translateX(24px);
+        }
+
+        /* Pestañas */
+        .tab-button {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            color: var(--text-secondary);
+        }
+        .tab-button.active {
+            background-color: var(--bg-accent-soft);
+            color: var(--bg-accent);
+        }
+        html.dark .tab-button.active {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body class="w-full h-screen overflow-hidden p-4 md:p-8">
+
+    <main class="w-full h-full max-w-7xl mx-auto glass-card rounded-2xl flex flex-col overflow:hidden">
+        
+        <!-- Contenido Principal -->
+        <div class="flex-1 flex flex-col md:flex-row p-4 md:p-6 gap-6 overflow-hidden">
+
+            <!-- Columna Izquierda: Calendario -->
+            <div class="w-full md:w-2/3 h-full flex flex-col custom-scroll">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h2 id="monthYear" class="text-2xl font-bold" style="color: var(--text-primary);"></h2>
+                    <div class="flex items-center gap-2">
+                        <!-- Switch de Tema -->
+                        <div id="themeToggle" class="theme-switch flex items-center">
+                            <div class="theme-switch-knob flex items-center justify-center text-xs">
+                                <!-- Iconos se inyectan con JS -->
+                            </div>
+                        </div>
+                        <button id="prevMonth" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <svg class="w-6 h-6" style="color: var(--icon-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button id="nextMonth" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <svg class="w-6 h-6" style="color: var(--icon-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-2 mb-2 px-2">
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">D</span>
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">L</span>
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">M</span>
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">M</span>
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">J</span>
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">V</span>
+                    <span class="text-center font-semibold" style="color: var(--text-secondary);">S</span>
+                </div>
+
+                <!-- Días del Calendario -->
+                <div id="calendarDays" class="calendar-grid px-2 flex-1">
+                    <!-- Días se inyectan con JS -->
+                </div>
+
+                <!-- Botones de Acción del Calendario -->
+                <div class="flex items-center justify-start gap-4 p-2 mt-4">
+                    <button id="playMonthButton" class="px-4 py-2 rounded-lg font-semibold flex items-center gap-2" style="background-color: var(--bg-accent); color: var(--text-accent); transition: background-color 0.2s ease;">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+                        Reproducir Mes
+                    </button>
+                    <button id="showPlaylistButton" class="px-4 py-2 rounded-lg font-semibold flex items-center gap-2" style="background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary);">
+                        Ver Playlist
+                    </button>
+                    <button id="showStatsButton" class="px-4 py-2 rounded-lg font-semibold flex items-center gap-2" style="background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary);">
+                        Estadísticas
+                    </button>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Vistas -->
+            <div class="w-full md:w-1/3 h-full glass-card rounded-xl p-6 flex flex-col custom-scroll">
+                
+                <!-- Vista: Gestor de Medios -->
+                <div id="managerView">
+                    <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Gestor de Medios</h3>
+                    <p class="text-sm mb-2" style="color: var(--text-secondary);">Día seleccionado:</p>
+                    <p id="selectedDateDisplay" class="text-lg font-semibold mb-6" style="color: var(--bg-accent);"></p>
+
+                    <!-- Pestañas de Carga -->
+                    <div class="flex items-center p-1 rounded-lg mb-6" style="background-color: var(--bg-primary);">
+                        <button id="tabFile" class="tab-button active">Cargar Archivo</button>
+                        <button id="tabUrl" class="tab-button">Usar URL</button>
+                    </div>
+
+                    <!-- Contenido Pestaña Archivo -->
+                    <div id="contentFile">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);" for="fileInput">Archivo (MP3, WAV, OGG, MP4)</label>
+                            <input type="file" id="fileInput" accept="audio/*,video/mp4" class="block w-full text-sm rounded-lg cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold" style="color: var(--text-secondary); background-color: var(--bg-primary); file:background-color: var(--bg-accent); file:color: var(--text-accent);">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);" for="coverInput">Carátula (Opcional)</label>
+                            <input type="file" id="coverInput" accept="image/*" class="block w-full text-sm rounded-lg cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold" style="color: var(--text-secondary); background-color: var(--bg-primary); file:background-color: var(--bg-accent); file:color: var(--text-accent);">
+                        </div>
+                    </div>
+
+                    <!-- Contenido Pestaña URL -->
+                    <div id="contentUrl" class="hidden">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);" for="urlInput">URL del Medio (MP3, MP4...)</label>
+                            <input type="url" id="urlInput" placeholder="https://ejemplo.com/archivo.mp3" class="w-full px-4 py-2 rounded-lg border" style="background-color: var(--bg-primary); border-color: var(--border-primary); color: var(--text-primary);">
+                        </div>
+                    </div>
+
+                    <!-- Campos Comunes -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);" for="categorySelect">Categoría</label>
+                        <select id="categorySelect" class="w-full px-4 py-2 rounded-lg border" style="background-color: var(--bg-primary); border-color: var(--border-primary); color: var(--text-primary);">
+                            <option value="music">🎵 Música</option>
+                            <option value="voice">🎙️ Voz</option>
+                            <option value="reminder">🔔 Recordatorio</option>
+                            <option value="video">🎬 Video</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);" for="noteInput">Nota (Opcional)</label>
+                        <textarea id="noteInput" rows="3" placeholder="Descripción del medio..." class="w-full px-4 py-2 rounded-lg border" style="background-color: var(--bg-primary); border-color: var(--border-primary); color: var(--text-primary);"></textarea>
+                    </div>
+
+                    <button id="assignAudioButton" class="w-full px-4 py-3 rounded-lg font-semibold text-center" style="background-color: var(--bg-accent); color: var(--text-accent); transition: background-color 0.2s ease;">
+                        Asignar a este Día
+                    </button>
+                    <p id="uploadMessage" class="text-sm mt-4 text-center" style="color: var(--bg-accent);"></p>
+                </div>
+
+                <!-- Vista: Detalles del Día -->
+                <div id="miniPlayerView" class="hidden flex flex-col h-full">
+                    <button id="backToManagerButton" class="self-start mb-4 font-medium flex items-center gap-1" style="color: var(--text-secondary); hover:color: var(--text-primary);">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        Volver al Gestor
+                    </button>
+                    <div class="flex-1 flex flex-col items-center">
+                        <img id="miniPlayerCover" src="" alt="Carátula" class="w-48 h-48 rounded-lg shadow-lg mb-6 object-cover">
+                        <!-- Contenedor para el reproductor de video -->
+                        <div id="videoContainer" class="w-full mb-6 hidden">
+                            <video id="videoPlayer" controls class="w-full rounded-lg shadow-lg" style="background-color: #000;"></video>
+                        </div>
+                        <h4 id="miniPlayerTitle" class="text-xl font-bold text-center" style="color: var(--text-primary);"></h4>
+                        <p id="miniPlayerCategory" class="text-sm mb-2" style="color: var(--text-secondary);"></p>
+                        <p id="miniPlayerNote" class="text-sm text-center mb-6" style="color: var(--text-secondary);"></p>
+                    </div>
+                    <div class="flex flex-col gap-3 mt-auto">
+                        <button id="replaceAudioButton" class="w-full px-4 py-3 rounded-lg font-semibold text-center" style="background-color: var(--bg-accent); color: var(--text-accent);">
+                            Reemplazar
+                        </button>
+                        <button id="deleteAudioButton" class="w-full px-4 py-3 rounded-lg font-semibold text-center" style="background-color: var(--bg-secondary); color: #ef4444; border: 1px solid #ef4444;">
+                            Borrar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vista: Playlist del Mes -->
+                <div id="playlistView" class="hidden flex flex-col h-full">
+                    <button id="backToManagerButton2" class="self-start mb-4 font-medium flex items-center gap-1" style="color: var(--text-secondary); hover:color: var(--text-primary);">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        Volver al Gestor
+                    </button>
+                    <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Playlist del Mes</h3>
+                    <div id="playlistContainer" class="flex-1 flex flex-col gap-3">
+                        <!-- Items de Playlist se inyectan con JS -->
+                    </div>
+                </div>
+
+                <!-- Vista: Estadísticas del Mes -->
+                <div id="statsView" class="hidden flex flex-col h-full">
+                    <button id="backToManagerButton3" class="self-start mb-4 font-medium flex items-center gap-1" style="color: var(--text-secondary); hover:color: var(--text-primary);">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        Volver al Gestor
+                    </button>
+                    <h3 class="text-xl font-bold mb-4" style="color: var(--text-primary);">Estadísticas del Mes</h3>
+                    <div class="flex-1 flex flex-col gap-4">
+                        <div class="p-4 rounded-lg" style="background-color: var(--bg-primary);">
+                            <p class="text-sm font-medium" style="color: var(--text-secondary);">Total Reproducciones</p>
+                            <p id="statsTotalPlays" class="text-3xl font-bold" style="color: var(--bg-accent);">0</p>
+                        </div>
+                        <div class="p-4 rounded-lg" style="background-color: var(--bg-primary);">
+                            <p class="text-sm font-medium" style="color: var(--text-secondary);">Días Activos</p>
+                            <p id="statsActiveDays" class="text-3xl font-bold" style="color: var(--bg-accent);">0 / 0</p>
+                        </div>
+                        <div class="p-4 rounded-lg" style="background-color: var(--bg-primary);">
+                            <p class="text-sm font-medium" style="color: var(--text-secondary);">Día Más Escuchado</p>
+                            <p id="statsTopDay" class="text-lg font-bold" style="color: var(--text-primary);">N/A</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Barra de Reproducción Fija -->
+        <footer id="playerBar" class="player-bar w-full h-24 p-4 flex items-center gap-4 transition-transform duration-300 ease-in-out" style="transform: translateY(100%);">
+            <img id="playerCover" src="https://placehold.co/64x64/374151/9ca3af?text=DayTune" alt="Carátula" class="w-16 h-16 rounded-lg shadow-lg object-cover">
+            
+            <div class="flex-1 flex flex-col justify-center min-w-0">
+                <div class="flex items-center gap-4">
+                    <h4 id="playerTitle" class="text-lg font-bold truncate" style="color: var(--text-primary);">Selecciona un día</h4>
+                    <p id="playerNote" class="text-sm truncate" style="color: var(--text-secondary);"></p>
+                </div>
+                
+                <!-- Controles + Barra de Progreso -->
+                <div class="flex items-center gap-4">
+                    <span id="currentTime" class="text-sm font-mono" style="color: var(--text-secondary);">0:00</span>
+                    
+                    <div class="progress-bar-wrapper w-full group">
+                        <div class="progress-bar-bg">
+                            <div id="progressBar" class="progress-bar">
+                                <div class="progress-bar-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span id="totalTime" class="text-sm font-mono" style="color: var(--text-secondary);">0:00</span>
+                </div>
+            </div>
+
+            <!-- Controles Principales -->
+            <div class="flex items-center gap-2">
+                <button id="prevTrackButton" class="p-2 rounded-full hover:bg-gray-500/20 transition-colors">
+                    <svg class="w-6 h-6" style="color: var(--text-primary);" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8.445 14.832A1 1 0 0010 14.032V5.968a1 1 0 00-1.555-.832L4.12 9.032a1 1 0 000 1.664l4.325 4.136zM11 5.968v8.064a1 1 0 001.555.832l4.325-4.032a1 1 0 000-1.664l-4.325-4.136A1 1 0 0011 5.968z"></path></svg>
+                </button>
+                <button id="playPauseButton" class="w-12 h-12 rounded-full flex items-center justify-center transition-transform duration-200 ease-out hover:scale-105" style="background-color: var(--bg-accent);">
+                    <!-- Icono Play/Pause se inyecta con JS -->
+                </button>
+                <button id="nextTrackButton" class="p-2 rounded-full hover:bg-gray-500/20 transition-colors">
+                    <svg class="w-6 h-6" style="color: var(--text-primary);" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11.555 5.168A1 1 0 0010 5.968v8.064a1 1 0 001.555.832l4.325-4.032a1 1 0 000-1.664l-4.325-4.136zM8.445 5.168A1 1 0 007 5.968v8.064a1 1 0 001.555.832l4.325-4.032a1 1 0 000-1.664L8.445 5.168z"></path></svg>
+                </button>
+            </div>
+
+            <!-- Controles de Volumen y Visualizador -->
+            <div class="flex items-center gap-4">
+                <div class="relative flex items-center">
+                    <button id="volumeButton" class="p-2 rounded-full hover:bg-gray-500/20 transition-colors">
+                        <!-- Icono de Volumen se inyecta con JS -->
+                    </button>
+                    <div class="volume-slider-wrapper">
+                        <div class="volume-slider-container" id="volumeSliderContainer">
+                            <div id="volumeSlider" class="volume-slider" style="height: 80%;">
+                                <div class="volume-knob"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <canvas id="visualizer" width="100" height="40"></canvas>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Elemento de Audio Global -->
+    <audio id="mediaPlayer"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Estado de la Aplicación
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            let selectedDate = new Date().toISOString().split('T')[0];
+            let audioMap = new Map();
+            let statsMap = new Map();
+            let currentPlayingDate = null;
+            let currentPlaylist = []; // Para "Reproducir Mes"
+            let isPlaylistActive = false;
+            let currentUploadType = 'file'; // 'file' o 'url'
+
+            // URLs de objetos temporales
+            let currentAudioUrl = null;
+            let currentCoverUrl = null;
+            let currentVideoUrl = null;
+            let currentMiniPlayerCoverUrl = null;
+
+            // Constantes y Elementos del DOM
+            const weekdays = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            const calendarDays = document.getElementById('calendarDays');
+            const monthYear = document.getElementById('monthYear');
+            const prevMonth = document.getElementById('prevMonth');
+            const nextMonth = document.getElementById('nextMonth');
+            const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+            
+            // Vistas
+            const managerView = document.getElementById('managerView');
+            const miniPlayerView = document.getElementById('miniPlayerView');
+            const playlistView = document.getElementById('playlistView');
+            const statsView = document.getElementById('statsView');
+            
+            // Gestor
+            const assignAudioButton = document.getElementById('assignAudioButton');
+            const fileInput = document.getElementById('fileInput');
+            const coverInput = document.getElementById('coverInput');
+            const categorySelect = document.getElementById('categorySelect');
+            const noteInput = document.getElementById('noteInput');
+            const uploadMessage = document.getElementById('uploadMessage');
+            
+            // Pestañas
+            const tabFile = document.getElementById('tabFile');
+            const tabUrl = document.getElementById('tabUrl');
+            const contentFile = document.getElementById('contentFile');
+            const contentUrl = document.getElementById('contentUrl');
+            const urlInput = document.getElementById('urlInput');
+
+            // Mini Reproductor (Detalles)
+            const backToManagerButton = document.getElementById('backToManagerButton');
+            const miniPlayerCover = document.getElementById('miniPlayerCover');
+            const miniPlayerTitle = document.getElementById('miniPlayerTitle');
+            const miniPlayerCategory = document.getElementById('miniPlayerCategory');
+            const miniPlayerNote = document.getElementById('miniPlayerNote');
+            const deleteAudioButton = document.getElementById('deleteAudioButton');
+            const replaceAudioButton = document.getElementById('replaceAudioButton');
+            const videoContainer = document.getElementById('videoContainer');
+            const videoPlayer = document.getElementById('videoPlayer');
+
+            // Playlist
+            const playMonthButton = document.getElementById('playMonthButton');
+            const showPlaylistButton = document.getElementById('showPlaylistButton');
+            const backToManagerButton2 = document.getElementById('backToManagerButton2');
+            const playlistContainer = document.getElementById('playlistContainer');
+
+            // Estadísticas
+            const showStatsButton = document.getElementById('showStatsButton');
+            const backToManagerButton3 = document.getElementById('backToManagerButton3');
+            const statsTotalPlays = document.getElementById('statsTotalPlays');
+            const statsActiveDays = document.getElementById('statsActiveDays');
+            const statsTopDay = document.getElementById('statsTopDay');
+
+            // Reproductor Principal
+            const playerBar = document.getElementById('playerBar');
+            const mediaPlayer = document.getElementById('mediaPlayer');
+            const playerCover = document.getElementById('playerCover');
+            const playerTitle = document.getElementById('playerTitle');
+            const playerNote = document.getElementById('playerNote');
+            const playPauseButton = document.getElementById('playPauseButton');
+            const prevTrackButton = document.getElementById('prevTrackButton');
+            const nextTrackButton = document.getElementById('nextTrackButton');
+            const currentTime = document.getElementById('currentTime');
+            const totalTime = document.getElementById('totalTime');
+            const progressBar = document.getElementById('progressBar');
+            const progressBarWrapper = document.querySelector('.progress-bar-wrapper');
+            const volumeButton = document.getElementById('volumeButton');
+            const volumeSliderContainer = document.getElementById('volumeSliderContainer');
+            const volumeSlider = document.getElementById('volumeSlider');
+            
+            // Iconos
+            const playIcon = `<svg class="w-6 h-6" style="color: var(--text-accent);" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>`;
+            const pauseIcon = `<svg class="w-6 h-6" style="color: var(--text-accent);" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 4.75C5 4.33579 5.33579 4 5.75 4H7.25C7.66421 4 8 4.33579 8 4.75V15.25C8 15.6642 7.66421 16 7.25 16H5.75C5.33579 16 5 15.6642 5 15.25V4.75zm7 0C12 4.33579 12.3358 4 12.75 4h1.5C14.6642 4 15 4.33579 15 4.75V15.25C15 15.6642 14.6642 16 14.25 16h-1.5C12.3358 16 12 15.6642 12 15.25V4.75z" clip-rule="evenodd"></path></svg>`;
+            const volumeHighIcon = `<svg class="w-6 h-6" style="color: var(--icon-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.086v13.828a1 1 0 01-1.707.707L5.586 15z"></path></svg>`;
+            const volumeMidIcon = `<svg class="w-6 h-6" style="color: var(--icon-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.086v13.828a1 1 0 01-1.707.707L5.586 15z"></path></svg>`;
+            const volumeLowIcon = `<svg class="w-6 h-6" style="color: var(--icon-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.086v13.828a1 1 0 01-1.707.707L5.586 15z"></path></svg>`;
+            const volumeMuteIcon = `<svg class="w-6 h-6" style="color: var(--icon-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.086v13.828a1 1 0 01-1.707.707L5.586 15zM17 14l-5-5m0 5l5-5"></path></svg>`;
+            const sunIcon = `<svg class="w-4 h-4" style="color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-15.66l-.707.707M4.04 19.96l-.707.707M21 12h-1M4 12H3m16.96-7.96l-.707-.707M6.34 17.66l-.707-.707M12 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`;
+            const moonIcon = `<svg class="w-4 h-4" style="color: #93c5fd;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
+
+            // Tema (Oscuro/Claro)
+            const themeToggle = document.getElementById('themeToggle');
+            const themeKnob = document.querySelector('.theme-switch-knob');
+            
+            function setInitialTheme() {
+                const savedTheme = localStorage.getItem('dayTuneTheme') || 'light';
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    themeKnob.innerHTML = moonIcon;
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    themeKnob.innerHTML = sunIcon;
+                }
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                if (isDark) {
+                    localStorage.setItem('dayTuneTheme', 'dark');
+                    themeKnob.innerHTML = moonIcon;
+                } else {
+                    localStorage.setItem('dayTuneTheme', 'light');
+                    themeKnob.innerHTML = sunIcon;
+                }
+            });
+
+
+            // Lógica de Persistencia (parcial, solo settings)
+            function saveState() {
+                // NO guardamos audioMap para evitar QuotaExceededError
+                // Solo guardamos settings simples
+                try {
+                    localStorage.setItem('dayTuneVolume', mediaPlayer.volume);
+                    localStorage.setItem('dayTuneMuted', mediaPlayer.muted);
+                } catch (e) {
+                    console.error("Error al guardar settings en localStorage:", e);
+                }
+            }
+
+            function loadState() {
+                // NO cargamos audioMap
+                mediaPlayer.volume = parseFloat(localStorage.getItem('dayTuneVolume')) || 0.8;
+                mediaPlayer.muted = (localStorage.getItem('dayTuneMuted') === 'true');
+                
+                updateVolumeUI();
+                setInitialTheme();
+            }
+
+
+            // Lógica del Calendario
+            function renderCalendar() {
+                calendarDays.innerHTML = '';
+                monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+                
+                const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                
+                // Días del mes anterior (padding)
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('day', 'other-month');
+                    calendarDays.appendChild(dayElement);
+                }
+                
+                // Días del mes actual
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('day');
+                    dayElement.textContent = i;
+                    
+                    const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    dayElement.dataset.date = dateStr;
+                    
+                    if (dateStr === new Date().toISOString().split('T')[0]) {
+                        dayElement.classList.add('today');
+                    }
+                    
+                    if (dateStr === selectedDate) {
+                        dayElement.classList.add('selected');
+                        updateSelectedDateDisplay();
+                    }
+                    
+                    // Añadir icono si hay audio
+                    if (audioMap.has(dateStr)) {
+                        const data = audioMap.get(dateStr);
+                        const icon = document.createElement('span');
+                        icon.classList.add('day-icon');
+                        icon.style.color = getCategoryColor(data.category);
+                        icon.innerHTML = getCategoryIcon(data.category);
+                        dayElement.appendChild(icon);
+
+                        // Añadir tooltip
+                        const tooltip = document.createElement('span');
+                        tooltip.classList.add('tooltip');
+                        tooltip.textContent = data.name;
+                        dayElement.appendChild(tooltip);
+                    }
+
+                    // Añadir halo si se está reproduciendo
+                    if (dateStr === currentPlayingDate) {
+                        const halo = document.createElement('div');
+                        halo.classList.add('day-halo');
+                        halo.style.setProperty('--bg-accent', getCategoryColor(audioMap.get(dateStr)?.category));
+                        dayElement.appendChild(halo);
+                    }
+                    
+                    dayElement.addEventListener('click', () => handleDayClick(dateStr));
+                    calendarDays.appendChild(dayElement);
+                }
+            }
+
+            function handleDayClick(dateStr) {
+                selectedDate = dateStr;
+                renderCalendar(); // Re-renderizar para mostrar la selección
+                
+                const data = audioMap.get(dateStr);
+                if (data) {
+                    if (data.isvideo) {
+                        playVideo(data, dateStr);
+                    } else {
+                        playAudio(data, dateStr);
+                    }
+                    showView('miniPlayer');
+                } else {
+                    // Si no hay audio, solo mostrar el gestor
+                    showView('manager');
+                    // Opcional: pausar si se hace clic en un día vacío
+                    // pauseAudio(); 
+                    // pauseVideo();
+                }
+                updateStats();
+            }
+
+            function updateSelectedDateDisplay() {
+                const date = new Date(selectedDate + 'T00:00:00'); // Asegurar zona horaria local
+                selectedDateDisplay.textContent = date.toLocaleDateString('es-ES', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            prevMonth.addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+            });
+
+            nextMonth.addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+            });
+
+            // Lógica de Vistas (Columna Derecha)
+            function showView(viewName) {
+                // Ocultar todas las vistas
+                managerView.classList.add('hidden');
+                miniPlayerView.classList.add('hidden');
+                playlistView.classList.add('hidden');
+                statsView.classList.add('hidden');
+                
+                // Limpiar URLs de mini-reproductor si salimos de él
+                if (viewName !== 'miniPlayer') {
+                    revokeMiniPlayerURLs();
+                }
+
+                if (viewName === 'manager') {
+                    managerView.classList.remove('hidden');
+                    updateSelectedDateDisplay();
+                } else if (viewName === 'miniPlayer') {
+                    miniPlayerView.classList.remove('hidden');
+                    updateMiniPlayer();
+                } else if (viewName === 'playlist') {
+                    playlistView.classList.remove('hidden');
+                    updatePlaylistView();
+                } else if (viewName === 'stats') {
+                    statsView.classList.remove('hidden');
+                    updateStatsView();
+                }
+            }
+            
+            backToManagerButton.addEventListener('click', () => showView('manager'));
+            backToManagerButton2.addEventListener('click', () => showView('manager'));
+            backToManagerButton3.addEventListener('click', () => showView('manager'));
+
+            // Lógica de Pestañas
+            tabFile.addEventListener('click', () => {
+                currentUploadType = 'file';
+                tabFile.classList.add('active');
+                tabUrl.classList.remove('active');
+                contentFile.classList.remove('hidden');
+                contentUrl.classList.add('hidden');
+                coverInput.disabled = false;
+                coverInput.parentElement.classList.remove('opacity-50');
+            });
+
+            tabUrl.addEventListener('click', () => {
+                currentUploadType = 'url';
+                tabUrl.classList.add('active');
+                tabFile.classList.remove('active');
+                contentUrl.classList.remove('hidden');
+                contentFile.classList.add('hidden');
+            });
+
+            // Lógica del Gestor de Medios
+            function getCategoryIcon(category) {
+                switch (category) {
+                    case 'music': return '🎵';
+                    case 'voice': return '🎙️';
+                    case 'reminder': return '🔔';
+                    case 'video': return '🎬';
+                    default: return '🎵';
+                }
+            }
+
+            function getCategoryColor(category) {
+                const accent = getComputedStyle(document.documentElement).getPropertyValue('--bg-accent');
+                switch (category) {
+                    case 'music': return '#10b981'; // Verde
+                    case 'voice': return '#3b82f6'; // Azul (accent)
+                    case 'reminder': return '#f59e0b'; // Naranja
+                    case 'video': return '#a855f7'; // Morado
+                    default: return accent;
+                }
+            }
+
+            function getCategoryName(category) {
+                switch (category) {
+                    case 'music': return 'Música';
+                    case 'voice': return 'Voz';
+                    case 'reminder': return 'Recordatorio';
+                    case 'video': return 'Video';
+                    default: return 'Música';
+                }
+            }
+
+            function revokeCurrentURLs() {
+                if (currentAudioUrl && currentAudioUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(currentAudioUrl);
+                    currentAudioUrl = null;
+                }
+                if (currentCoverUrl && currentCoverUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(currentCoverUrl);
+                    currentCoverUrl = null;
+                }
+                if (currentVideoUrl && currentVideoUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(currentVideoUrl);
+                    currentVideoUrl = null;
+                }
+            }
+            
+            function revokeMiniPlayerURLs() {
+                if (currentMiniPlayerCoverUrl && currentMiniPlayerCoverUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(currentMiniPlayerCoverUrl);
+                    currentMiniPlayerCoverUrl = null;
+                }
+                // No revocar el videoPlayer.src aquí
+            }
+
+            function getNameFromUrl(url) {
+                try {
+                    const path = new URL(url).pathname;
+                    const fileName = path.split('/').pop();
+                    return fileName.split('.').slice(0, -1).join('.').replace(/[_-]/g, ' ') || 'Audio Remoto';
+                } catch (e) {
+                    return 'Audio Remoto';
+                }
+            }
+            
+            function handleAssignAudio() {
+                const category = categorySelect.value;
+                const note = noteInput.value;
+                let data = {};
+
+                if (currentUploadType === 'file') {
+                    const audioFile = fileInput.files[0];
+                    const coverFile = coverInput.files[0];
+
+                    if (!audioFile) {
+                        uploadMessage.textContent = 'Por favor, selecciona un archivo de audio o video.';
+                        return;
+                    }
+
+                    const isvideo = audioFile.type.startsWith('video/');
+                    
+                    data = {
+                        uploadType: 'file',
+                        name: audioFile.name,
+                        audioFile, // Guardamos el objeto File
+                        coverFile: coverFile || null, // Guardamos el objeto File
+                        category: isvideo ? 'video' : category,
+                        note: note || '',
+                        isvideo: isvideo
+                    };
+
+                } else { // currentUploadType === 'url'
+                    const audioUrl = urlInput.value;
+                    if (!audioUrl) {
+                        uploadMessage.textContent = 'Por favor, introduce una URL.';
+                        return;
+                    }
+
+                    // CORRECCIÓN: Detectar si es video por la extensión
+                    const isvideo = audioUrl.endsWith('.mp4') || audioUrl.endsWith('.webm');
+
+                    data = {
+                        uploadType: 'url',
+                        name: getNameFromUrl(audioUrl),
+                        audioUrl, // Guardamos la URL String
+                        coverUrl: null, // URLs no tienen carátula por defecto
+                        category: isvideo ? 'video' : category,
+                        note: note || '',
+                        isvideo: isvideo
+                    };
+                }
+
+                // Asignar al mapa
+                audioMap.set(selectedDate, data);
+                
+                uploadMessage.textContent = `${data.name} asignado a ${selectedDate}.`;
+                setTimeout(() => uploadMessage.textContent = '', 3000);
+                
+                // Resetear campos
+                fileInput.value = null;
+                coverInput.value = null;
+                urlInput.value = null;
+                noteInput.value = '';
+                
+                renderCalendar();
+                showView('miniPlayer'); // Mostrar detalles del día que acabamos de asignar
+            }
+            assignAudioButton.addEventListener('click', handleAssignAudio);
+
+
+            // Lógica del Mini Reproductor (Detalles)
+            function updateMiniPlayer() {
+                const data = audioMap.get(selectedDate);
+                if (!data) {
+                    showView('manager');
+                    return;
+                }
+
+                revokeMiniPlayerURLs();
+
+                miniPlayerTitle.textContent = data.name;
+                miniPlayerCategory.textContent = getCategoryName(data.category);
+                miniPlayerNote.textContent = data.note || '';
+
+                // Manejar carátula
+                let coverSrc = 'https://placehold.co/192x192/374151/9ca3af?text=DayTune';
+                if (data.uploadType === 'file' && data.coverFile) {
+                    currentMiniPlayerCoverUrl = URL.createObjectURL(data.coverFile);
+                    coverSrc = currentMiniPlayerCoverUrl;
+                } else if (data.uploadType === 'url' && data.coverUrl) {
+                    coverSrc = data.coverUrl;
+                }
+                miniPlayerCover.src = coverSrc;
+
+                // Mostrar/ocultar video
+                if (data.isvideo) {
+                    miniPlayerCover.classList.add('hidden');
+                    videoContainer.classList.remove('hidden');
+                    // El videoPlayer.src se setea en playVideo()
+                } else {
+                    miniPlayerCover.classList.remove('hidden');
+                    videoContainer.classList.add('hidden');
+                }
+            }
+
+            deleteAudioButton.addEventListener('click', () => {
+                if (confirm('¿Estás seguro de que quieres borrar este medio?')) {
+                    const data = audioMap.get(selectedDate);
+                    if (data) {
+                        // Si se está reproduciendo, pararlo
+                        if (currentPlayingDate === selectedDate) {
+                            pauseAudio();
+                            pauseVideo();
+                            playerBar.style.transform = 'translateY(100%)';
+                            currentPlayingDate = null;
+                        }
+                        
+                        audioMap.delete(selectedDate);
+                        renderCalendar();
+                        showView('manager');
+                    }
+                }
+            });
+
+            replaceAudioButton.addEventListener('click', () => {
+                showView('manager');
+            });
+
+            // Lógica de Reproducción
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes}:${String(secs).padStart(2, '0')}`;
+            }
+
+            function pauseAudio() {
+                mediaPlayer.pause();
+                playPauseButton.innerHTML = playIcon;
+            }
+
+            function pauseVideo() {
+                videoPlayer.pause();
+            }
+
+            // CORRECCIÓN: Esta función maneja la reproducción de audio (barra inferior)
+            function playAudio(data, dateStr) {
+                try {
+                    pauseVideo();
+                    videoContainer.classList.add('hidden');
+                    playerBar.style.transform = 'translateY(0%)';
+                    
+                    if (currentPlayingDate === dateStr) {
+                        // Si es el mismo audio, solo hacer play/pause
+                        if (mediaPlayer.paused) {
+                            mediaPlayer.play();
+                            playPauseButton.innerHTML = pauseIcon;
+                        } else {
+                            pauseAudio();
+                        }
+                        return;
+                    }
+
+                    // Es un audio nuevo
+                    const oldAudioUrl = currentAudioUrl; // Guardar URL anterior
+                    
+                    currentPlayingDate = dateStr;
+                    isPlaylistActive = false; // Salir del modo playlist
+                    renderCalendar(); // Para mostrar el halo
+
+                    playerTitle.textContent = data.name;
+                    playerNote.textContent = data.note || '';
+
+                    // Setear carátula del reproductor
+                    if (currentCoverUrl) URL.revokeObjectURL(currentCoverUrl);
+                    let coverSrc = 'https://placehold.co/64x64/374151/9ca3af?text=DayTune';
+                    if (data.uploadType === 'file' && data.coverFile) {
+                        currentCoverUrl = URL.createObjectURL(data.coverFile);
+                        coverSrc = currentCoverUrl;
+                    } else if (data.uploadType === 'url' && data.coverUrl) {
+                        coverSrc = data.coverUrl;
+                    }
+                    playerCover.src = coverSrc;
+
+                    // Setear fuente de audio
+                    if (data.uploadType === 'file') {
+                        currentAudioUrl = URL.createObjectURL(data.audioFile);
+                        mediaPlayer.src = currentAudioUrl;
+                        mediaPlayer.crossOrigin = 'anonymous'; // Necesario para visualizer
+                    } else {
+                        currentAudioUrl = data.audioUrl;
+                        mediaPlayer.src = currentAudioUrl;
+                        mediaPlayer.crossOrigin = null; // No usar visualizer para URLs (CORS)
+                    }
+
+                    // Revocar URL anterior DESPUÉS de setear la nueva
+                    if (oldAudioUrl && oldAudioUrl.startsWith('blob:')) {
+                        URL.revokeObjectURL(oldAudioUrl);
+                    }
+                    
+                    // Cargar y reproducir
+                    mediaPlayer.load(); // Forzar carga
+                    mediaPlayer.play().then(() => {
+                        playPauseButton.innerHTML = pauseIcon;
+                        if (!audioContext) initAudioApi();
+                        updateStats();
+                    }).catch(e => {
+                        if (e.name !== 'AbortError') { // Ignorar error de interrupción
+                            console.error("Error al reproducir audio:", e);
+                        }
+                    });
+
+                } catch (e) {
+                    console.error("Error en playAudio:", e);
+                }
+            }
+            
+            // CORRECCIÓN: Esta función maneja la reproducción de video (en detalles)
+            function playVideo(data, dateStr) {
+                try {
+                    pauseAudio();
+                    playerBar.style.transform = 'translateY(100%)'; // Ocultar barra de audio
+                    
+                    if (currentPlayingDate === dateStr && !videoPlayer.paused) {
+                        return; // Ya se está reproduciendo
+                    }
+
+                    // Es un video nuevo
+                    const oldVideoUrl = currentVideoUrl; // Guardar URL anterior
+
+                    currentPlayingDate = dateStr;
+                    isPlaylistActive = false;
+                    renderCalendar(); // Mostrar halo
+
+                    // Setear fuente de video
+                    if (data.uploadType === 'file') {
+                        currentVideoUrl = URL.createObjectURL(data.audioFile); // Sigue siendo audioFile
+                        videoPlayer.src = currentVideoUrl;
+                    } else {
+                        currentVideoUrl = data.audioUrl;
+                        videoPlayer.src = currentVideoUrl;
+                    }
+                    
+                    // Revocar URL anterior DESPUÉS de setear la nueva
+                    if (oldVideoUrl && oldVideoUrl.startsWith('blob:')) {
+                        URL.revokeObjectURL(oldVideoUrl);
+                    }
+                    
+                    // Cargar y reproducir
+                    videoPlayer.load(); // Forzar carga
+                    videoPlayer.play().catch(e => {
+                        if (e.name !== 'AbortError') { // Ignorar error de interrupción
+                            console.error("Error al reproducir video:", e);
+                        }
+                    });
+                    updateStats();
+
+                } catch (e) {
+                    console.error("Error en playVideo:", e);
+                }
+            }
+
+
+            // Eventos del Reproductor
+            mediaPlayer.addEventListener('timeupdate', () => {
+                const percent = (mediaPlayer.currentTime / mediaPlayer.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+                currentTime.textContent = formatTime(mediaPlayer.currentTime);
+            });
+
+            mediaPlayer.addEventListener('loadedmetadata', () => {
+                totalTime.textContent = formatTime(mediaPlayer.duration);
+            });
+
+            mediaPlayer.addEventListener('pause', () => {
+                playPauseButton.innerHTML = playIcon;
+            });
+
+            mediaPlayer.addEventListener('play', () => {
+                playPauseButton.innerHTML = pauseIcon;
+            });
+
+            mediaPlayer.addEventListener('ended', () => {
+                playPauseButton.innerHTML = playIcon;
+                findAndPlayTrack(1); // Reproducir siguiente
+            });
+
+            playPauseButton.addEventListener('click', () => {
+                if (!currentPlayingDate) return;
+                if (mediaPlayer.paused) {
+                    mediaPlayer.play();
+                } else {
+                    pauseAudio();
+                }
+            });
+
+            // Lógica de barra de progreso
+            progressBarWrapper.addEventListener('click', (e) => {
+                if (!mediaPlayer.duration) return;
+                const rect = progressBarWrapper.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percent = (clickX / rect.width);
+                mediaPlayer.currentTime = percent * mediaPlayer.duration;
+            });
+
+            // Lógica de Volumen
+            function updateVolumeUI() {
+                volumeSlider.style.height = `${mediaPlayer.volume * 100}%`;
+                if (mediaPlayer.muted || mediaPlayer.volume === 0) {
+                    volumeButton.innerHTML = volumeMuteIcon;
+                } else if (mediaPlayer.volume < 0.3) {
+                    volumeButton.innerHTML = volumeLowIcon;
+                } else if (mediaPlayer.volume < 0.7) {
+                    volumeButton.innerHTML = volumeMidIcon;
+                } else {
+                    volumeButton.innerHTML = volumeHighIcon;
+                }
+            }
+
+            volumeButton.addEventListener('click', () => {
+                mediaPlayer.muted = !mediaPlayer.muted;
+                updateVolumeUI();
+                saveState();
+            });
+
+            volumeSliderContainer.addEventListener('click', (e) => {
+                const rect = volumeSliderContainer.getBoundingClientRect();
+                const clickY = e.clientY - rect.top;
+                let percent = 1 - (clickY / rect.height);
+                if (percent < 0) percent = 0;
+                if (percent > 1) percent = 1;
+                
+                mediaPlayer.volume = percent;
+                mediaPlayer.muted = false;
+                updateVolumeUI();
+                saveState();
+            });
+
+            // Lógica de Siguiente/Anterior
+            function findAndPlayTrack(direction) { // 1 = siguiente, -1 = anterior
+                let datesWithAudio = Array.from(audioMap.keys()).sort();
+                
+                if (isPlaylistActive) {
+                    // Usar la playlist del mes
+                    datesWithAudio = currentPlaylist;
+                }
+                
+                if (datesWithAudio.length === 0) return;
+
+                let currentIndex = datesWithAudio.indexOf(currentPlayingDate);
+                
+                if (currentIndex === -1) {
+                    // No está en la lista (p.ej. se borró), empezar por el primero
+                    currentIndex = 0;
+                } else {
+                    currentIndex += direction;
+                }
+
+                // Loop
+                if (currentIndex < 0) {
+                    currentIndex = datesWithAudio.length - 1;
+                } else if (currentIndex >= datesWithAudio.length) {
+                    currentIndex = 0;
+                }
+
+                const nextDate = datesWithAudio[currentIndex];
+                playTrackFromDateString(nextDate);
+            }
+
+            function playTrackFromDateString(dateStr) {
+                const data = audioMap.get(dateStr);
+                if (data) {
+                    selectedDate = dateStr;
+                    if (data.isvideo) {
+                        playVideo(data, dateStr);
+                        showView('miniPlayer');
+                    } else {
+                        playAudio(data, dateStr);
+                    }
+                }
+            }
+
+            prevTrackButton.addEventListener('click', () => findAndPlayTrack(-1));
+            nextTrackButton.addEventListener('click', () => findAndPlayTrack(1));
+
+
+            // Lógica de Playlist del Mes
+            function updatePlaylistView() {
+                playlistContainer.innerHTML = '';
+                const entries = getMonthEntries();
+                if (entries.length === 0) {
+                    playlistContainer.innerHTML = `<p style="color: var(--text-secondary);">No hay medios asignados este mes.</p>`;
+                    return;
+                }
+
+                entries.forEach(([date, data]) => {
+                    const day = new Date(date + 'T00:00:00').getDate();
+                    const item = document.createElement('div');
+                    item.classList.add('p-3', 'rounded-lg', 'flex', 'items-center', 'gap-3', 'cursor-pointer');
+                    item.style.backgroundColor = 'var(--bg-primary)';
+                    item.innerHTML = `
+                        <span class="text-xl">${getCategoryIcon(data.category)}</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold truncate" style="color: var(--text-primary);">Día ${day}: ${data.name}</p>
+                            <p class="text-sm truncate" style="color: var(--text-secondary);">${data.note || 'Sin nota'}</p>
+                        </div>
+                        <svg class="w-5 h-5" style="color: var(--text-secondary);" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+                    `;
+                    item.addEventListener('click', () => {
+                        isPlaylistActive = true; // Entrar en modo playlist
+                        currentPlaylist = entries.map(e => e[0]); // Guardar orden
+                        playTrackFromDateString(date);
+                        showView('miniPlayer');
+                    });
+                    playlistContainer.appendChild(item);
+                });
+            }
+
+            function getMonthEntries() {
+                const monthStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+                return Array.from(audioMap.entries())
+                    .filter(([date, data]) => date.startsWith(monthStr))
+                    .sort((a, b) => a[0].localeCompare(b[0])); // Ordenar por fecha
+            }
+
+            showPlaylistButton.addEventListener('click', () => showView('playlist'));
+            
+            playMonthButton.addEventListener('click', () => {
+                const entries = getMonthEntries();
+                if (entries.length > 0) {
+                    isPlaylistActive = true;
+                    currentPlaylist = entries.map(e => e[0]);
+                    playTrackFromDateString(currentPlaylist[0]);
+                } else {
+                    alert('No hay medios asignados este mes para reproducir.');
+                }
+            });
+
+
+            // Lógica de Estadísticas
+            function updateStats() {
+                if (!currentPlayingDate) return;
+                const count = statsMap.get(currentPlayingDate) || 0;
+                statsMap.set(currentPlayingDate, count + 1);
+            }
+
+            function updateStatsView() {
+                const monthStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                
+                let totalPlays = 0;
+                let activeDays = 0;
+                let topDayCount = 0;
+                let topDayDate = null;
+
+                for (const [date, count] of statsMap.entries()) {
+                    if (date.startsWith(monthStr)) {
+                        totalPlays += count;
+                        activeDays++;
+                        if (count > topDayCount) {
+                            topDayCount = count;
+                            topDayDate = date;
+                        }
+                    }
+                }
+
+                statsTotalPlays.textContent = totalPlays;
+                statsActiveDays.textContent = `${activeDays} / ${daysInMonth}`;
+                if (topDayDate) {
+                    const day = new Date(topDayDate + 'T00:00:00').toLocaleDateString('es-ES', { month: 'long', day: 'numeric' });
+                    statsTopDay.textContent = `${day} (${topDayCount} reprod.)`;
+                } else {
+                    statsTopDay.textContent = 'N/A';
+                }
+            }
+
+            showStatsButton.addEventListener('click', () => showView('stats'));
+
+
+            // Lógica del Visualizador de Audio
+            let audioContext, analyser, source, dataArray, bufferLength;
+            const visualizerCanvas = document.getElementById('visualizer');
+            const visualizerCtx = visualizerCanvas.getContext('2d');
+
+            function initAudioApi() {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    source = audioContext.createMediaElementSource(mediaPlayer);
+                    
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                    
+                    analyser.fftSize = 64; // Menos barras, más simple
+                    bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+                    
+                    drawVisualizer();
+                } catch (e) {
+                    console.error("Error al inicializar Web Audio API", e);
+                }
+            }
+
+            function drawVisualizer() {
+                if (!analyser) return;
+                
+                requestAnimationFrame(drawVisualizer); // CORREGIDO: drawVisualVzer -> drawVisualizer
+                analyser.getByteFrequencyData(dataArray);
+                
+                visualizerCtx.clearRect(0, 0, visualizerCanvas.width, visualizerCanvas.height);
+                
+                const barWidth = (visualizerCanvas.width / bufferLength) * 1.5;
+                let barHeight;
+                let x = 0;
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-accent');
+                visualizerCtx.fillStyle = accentColor;
+
+                for(let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] / 3; // Reducir altura
+                    
+                    visualizerCtx.fillRect(x, visualizerCanvas.height - barHeight, barWidth, barHeight);
+                    
+                    x += barWidth + 2; // Espacio entre barras
+                }
+            }
+
+
+            // Inicialización
+            loadState();
+            renderCalendar();
+            playPauseButton.innerHTML = playIcon;
+            
+        });
+    </script>
+</body>
+</html>
+
