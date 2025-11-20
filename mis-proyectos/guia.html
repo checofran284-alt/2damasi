@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bitácora Aérea - Versión Completa</title>
+  <style>
+    /* =========================================
+       ESTILOS GENERALES
+       ========================================= */
+    :root{
+      --bg: #0f172a;         
+      --panel: #111827;      
+      --text: #e5e7eb;       
+      --muted: #9ca3af;      
+      --brand: #38bdf8;      
+      --brand-2: #22c55e;    
+      --card: #0b1020;       
+      --border: #243149;      
+      --focus: #f59e0b;      
+      --shadow: 0 10px 30px rgba(0,0,0,.35);      
+      --radius: 14px;      
+      --radius-sm: 10px;      
+      --space: clamp(12px, 1.8vw, 20px);      
+      --space-xl: clamp(20px, 3vw, 36px);      
+      --transition: 260ms cubic-bezier(.2,.8,.2,1);    
+    }
+    *{ box-sizing: border-box }    
+    html, body { height: 100% }    
+    body{      
+      margin: 0;      
+      font-family: 'Montserrat', sans-serif;      
+      font-size: medium;      
+      background: radial-gradient(1200px 800px at 15% -10%, #1c2b53 0%, #0a0f1f 60%, #05070c 100%);      
+      color: var(--text);      
+      line-height: 1.5;    
+    }
+
+    /* Layout principal */    
+    .layout{      
+      display: flex;      
+      min-height: 100vh;    
+    }
+
+    /* Contenido principal */    
+    main{      
+      padding: var(--space-xl);      
+      display: grid;      
+      gap: var(--space-xl);      
+      align-content: start;      
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }    
+    
+    header#site-title h1{      
+      margin: 0;      
+      font-size: clamp(26px, 2.8vw, 38px);      
+      letter-spacing: .2px;    
+    }
+
+    /* Slide banner (hero) */    
+    .hero{      
+      position: relative;      
+      border-radius: var(--radius);      
+      overflow: hidden;      
+      border: 1px solid var(--border);      
+      box-shadow: var(--shadow);      
+      isolation: isolate;   
+      background: #000; 
+    }    
+    .hero-track{      
+      display: grid;      
+      grid-auto-flow: column;      
+      grid-auto-columns: 100%;      
+      transition: transform 600ms cubic-bezier(.2,.8,.2,1);    
+    }    
+    .hero-slide{      
+      display: block;        
+      width: 100%;      
+      height: auto;          
+      position: relative;          
+      overflow: hidden;    
+    }   
+    /* Ajuste imagen banner */ 
+    .imgbanner {      
+      display: block;        
+      width: 100%;           
+      height: 400px; /* Altura fija para evitar saltos */          
+      object-fit: cover;
+      filter: brightness(85%) saturate(1.1);       
+    }    
+    .hero-content{      
+      position: absolute; bottom: 0; left: 0; width: 100%;      
+      z-index: 10; padding: clamp(20px, 4vw, 40px);      
+      background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);    
+    }    
+    .hero h2{ margin: 0 0 6px; font-size: clamp(18px, 2.1vw, 26px); color: white; }    
+    .hero p{ margin: 0; color: #e5e7eb; opacity: .9 }    
+    .hero-controls{      
+      position: absolute; bottom: 10px; right: 10px;      
+      display: flex; gap: 8px;      
+      background: rgba(0,0,0,.35); padding: 6px 8px; 
+      border-radius: 999px; backdrop-filter: blur(6px); z-index: 20;   
+    }    
+    .dot{      
+      width: 10px; height: 10px; border-radius: 999px;      
+      background: #9ca3af; border: 1px solid rgba(255,255,255,.4);      
+      cursor: pointer; transition: transform var(--transition), background var(--transition);    
+    }    
+    .dot.active{ background: var(--brand); transform: scale(1.2) }
+
+    /* Box: texto izquierda, imagen derecha */    
+    .split-box{      
+      display: grid;      
+      grid-template-columns: 1.1fr .9fr;      
+      gap: var(--space-xl);      
+      align-items: stretch;    
+    }    
+    .card-panel{      
+      background: rgba(12, 18, 36, .6);      
+      border: 1px solid var(--border);      
+      border-radius: var(--radius);      
+      box-shadow: var(--shadow);      
+      overflow: hidden;      
+      padding: 20px;
+    }        
+    .media-cover{ padding: 0; min-height: 260px; }
+    .media-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* Barra de filtros */    
+    .filters{      
+      position: sticky; top: 10px; z-index: 50;      
+      background: linear-gradient(180deg, rgba(10,15,31,.95) 60%, rgba(10,15,31,.8));      
+      backdrop-filter: blur(8px);      
+      border: 1px solid var(--border);      
+      border-radius: var(--radius);      
+      box-shadow: var(--shadow);      
+      padding: 10px 14px;      
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;    
+    }    
+    .filters label{ font-size: .85rem; color: var(--muted); margin-right: 6px; }    
+    .filters .group{      
+      display: flex; align-items: center; gap: 6px;      
+      background: rgba(16, 24, 48, .55);      
+      border: 1px solid var(--border);      
+      padding: 6px 10px; border-radius: 8px;    
+    }    
+    .filters select{      
+      background: transparent; border: none; color: var(--text);      
+      font-size: .9rem; outline: none;    
+    } 
+    /* Botones de acción en filtros */   
+    .filters button{      
+      background: #1f2937; border: 1px solid var(--border);      
+      color: var(--text); padding: 8px 12px;      
+      border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+      transition: background 0.2s; margin-left: 5px;   
+    }    
+    .filters button:hover{ background: #374151; }
+    .filters button#exportJson, .filters button#importJsonBtn {
+        background: var(--brand); color: #000; font-weight: 600; border: none;
+    }
+    .filters button#contrastToggle {
+        margin-left: auto;
+    }
+
+    /* Carrusel */    
+    .carousel{      
+      background: rgba(12, 18, 36, .55);      
+      border: 1px solid var(--border);      
+      border-radius: var(--radius);      
+      box-shadow: var(--shadow);      
+      padding: var(--space);      
+      position: relative;      
+      overflow: hidden;    
+    }    
+    .carousel-viewport{ overflow: hidden; }    
+    .carousel-track{      
+      display: flex; gap: 20px;      
+      transition: transform 600ms cubic-bezier(.2,.8,.2,1);      
+      will-change: transform;    
+    }    
+    .ccard{      
+      background: var(--card);      
+      border: 1px solid var(--border);      
+      border-radius: var(--radius-sm);      
+      min-width: 300px; max-width: 300px;      
+      overflow: hidden;      
+      cursor: pointer;      
+      box-shadow: 0 15px 35px rgba(0,0,0,.35);      
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      display: flex; flex-direction: column;    
+    }    
+    .ccard:hover{      
+      transform: translateY(-5px);      
+      box-shadow: 0 18px 40px rgba(0,0,0,.5);      
+      border-color: var(--brand);    
+    }    
+    .ccard .img-wrap{ height: 180px; overflow: hidden; background: #000; }    
+    .ccard img{      
+      width: 100%; height: 100%; object-fit: cover;      
+      display: block; filter: saturate(1.05); transition: transform 0.5s;   
+    }
+    .ccard:hover img { transform: scale(1.05); }    
+    .ccard .body{ padding: 14px; flex: 1; display: flex; flex-direction: column; }    
+    .ccard h4 { margin: 0 0 8px; font-size: 1.1rem; color: #fff; }
+    .ccard p { font-size: 0.9rem; color: #d1d5db; flex: 1; margin-bottom: 10px; }
+    .ccard .meta{      
+      font-size: .75rem; color: var(--muted);      
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto;    
+      border-top: 1px solid #1f2937; padding-top: 10px;
+    }
+    .ccard .meta span { background: #1f2937; padding: 3px 8px; border-radius: 4px; }
+
+    .carousel-nav{      
+      position: absolute; inset: 50% 10px auto auto;      
+      display: flex; gap: 8px; transform: translateY(-50%); z-index: 10;   
+    }    
+    .icon-btn{      
+      width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);      
+      background: rgba(0, 0, 0, .6);      
+      color: white; cursor: pointer; font-size: 18px;      
+      display: grid; place-items: center;      
+    }    
+    .icon-btn:hover{ background: var(--brand); color: black; }
+
+    /* Modal (popup) */    
+    .modal{      
+      position: fixed; inset: 0; display: none; z-index: 100; place-items: center;    
+    }    
+    .modal[data-open="true"]{ display: grid; }    
+    .backdrop{      
+      position: absolute; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px);    
+    }    
+    .dialog{      
+      position: relative;      
+      width: min(600px, 90vw);      
+      background: #0b1020;      
+      border: 1px solid var(--border);      
+      border-radius: var(--radius);      
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);      
+      overflow: hidden;      
+      animation: pop .3s ease-out forwards;    
+    }    
+    @keyframes pop{ from{ transform: scale(.95); opacity: 0 } to{ transform: scale(1); opacity: 1 } }    
+    .dialog-header{      
+      display: flex; justify-content: space-between; align-items: center;      
+      padding: 15px; border-bottom: 1px solid var(--border); background: #111827;   
+    }    
+    .dialog-body{ padding: 20px; max-height: 80vh; overflow-y: auto; }    
+    .dialog .close{      
+      background: transparent; border: none; color: var(--text); cursor: pointer; font-size: 24px; line-height: 1;    
+    }
+
+    /* Footer */    
+    footer{      
+      display: grid;      
+      grid-template-columns: 1fr 1fr;      
+      gap: var(--space);      
+      background: #0f172a;      
+      border: 1px solid var(--border);      
+      border-radius: var(--radius);      
+      padding: 30px;    
+    }    
+    .footer-form form{ display: grid; gap: 10px; }    
+    .field input, .field textarea{      
+      background: #1f2937; border: 1px solid var(--border);      
+      color: var(--text); border-radius: 8px; width: 100%;     
+      padding: 10px; outline: none;    
+    }    
+    .footer-form button{      
+      justify-self: start;      
+      background: var(--brand-2);      
+      border: none; color: white; padding: 10px 20px;      
+      border-radius: 8px; cursor: pointer; font-weight: bold;    
+    }
+
+    /* Responsivo */    
+    @media (max-width: 768px){      
+      .split-box, footer{ grid-template-columns: 1fr }  
+      .filters { flex-direction: column; align-items: stretch; }    
+      .filters button { margin-left: 0; margin-top: 5px; }
+      .filters .group { width: 100%; }
+      .filters select { width: 100%; }
+    }
+
+    /* =========================================
+       MODO ALTO CONTRASTE (CRÍTICO PARA ACCESIBILIDAD)
+       ========================================= */
+    body.high-contrast{
+      --bg: #000000;
+      --panel: #000000;
+      --text: #ffffff;
+      --muted: #ffff00;      /* Amarillo puro */
+      --brand: #00ff00;      /* Verde puro */
+      --brand-2: #ff00ff;    /* Magenta */
+      --card: #000000;
+      --border: #ffffff;     /* Bordes blancos sólidos */
+      background: #000000;
+    }
+    
+    body.high-contrast .ccard,
+    body.high-contrast .hero,
+    body.high-contrast .filters,
+    body.high-contrast footer,
+    body.high-contrast .card-panel,
+    body.high-contrast .dialog {
+        border: 2px solid #ffffff;
+        background: #000000;
+    }
+    
+    body.high-contrast button {
+        border: 2px solid var(--brand);
+        background: #000;
+        color: var(--brand);
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+    body.high-contrast button:hover {
+        background: var(--brand);
+        color: black;
+    }
+    body.high-contrast .meta span {
+        border: 1px solid white;
+        color: white;
+    }
+    body.high-contrast img {
+        filter: grayscale(100%) contrast(1.5);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <main>
+
+      <header id="site-title">        
+        <h1>La Evolución de los Aviones</h1>      
+      </header>
+
+      <section class="hero">        
+        <div class="hero-track" id="heroTrack">          
+          <article class="hero-slide">            
+            <img class="imgbanner" src="IMAGENES/slide 2.JPG" onerror="this.src='https://via.placeholder.com/1200x500/0f172a/ffffff?text=Globalmaster+C-17'" alt="C-17">            
+            <div class="hero-content">              
+              <h2>Gigantes del Aire</h2>              
+              <p>Del Boeing 747 al Airbus A380, símbolos de capacidad masiva.</p>            
+            </div>          
+          </article>
+          <article class="hero-slide">            
+            <img class="imgbanner" src="IMAGENES/slide 3.JPG" onerror="this.src='https://via.placeholder.com/1200x500/0f172a/ffffff?text=C-5+Galaxy'" alt="C-5 Galaxy">            
+            <div class="hero-content">              
+              <h2>Fuerza y Precisión</h2>              
+              <p>Aeronaves para misiones especiales como el C-130 y Antonov.</p>            
+            </div>          
+          </article>
+          <article class="hero-slide">            
+            <img class="imgbanner" src="IMAGENES/slide 1.JPG" onerror="this.src='https://via.placeholder.com/1200x500/0f172a/ffffff?text=F-35+Lightning'" alt="F-35">            
+            <div class="hero-content">              
+              <h2>Pioneros de la Velocidad</h2>              
+              <p>Modelos que rompieron la barrera del sonido.</p>            
+            </div>          
+          </article>        
+        </div>        
+        <div class="hero-controls">          
+          <button class="dot" data-hero-to="0"></button>          
+          <button class="dot" data-hero-to="1"></button>          
+          <button class="dot" data-hero-to="2"></button>        
+        </div>      
+      </section>
+
+      <section class="filters" id="filtros">        
+        <div class="group">          
+          <label for="fYear">Año</label>          
+          <select id="fYear">            
+            <option value="">Todos</option>            
+            <option>1900</option>            
+            <option>1930</option>
+            <option>1940</option>
+            <option>1950</option>
+            <option>1960</option>
+            <option>1970</option>
+            <option>1980</option>
+            <option>2000 - Actualidad</option>          
+          </select>        
+        </div>        
+        <div class="group">          
+          <label for="fModel">Categoría</label>          
+          <select id="fModel">            
+            <option value="">Todos</option>            
+            <option>Experimentales e Históricos</option>            
+            <option>Comerciales / Pasajeros</option>            
+            <option>Transporte / Carga / Especializados</option>            
+            <option>Caza / Bombarderos</option>          
+          </select>        
+        </div>        
+        <div class="group">          
+          <label for="fStory">País</label>          
+          <select id="fStory">            
+            <option value="">Todas</option>            
+            <option>EE.UU</option>            
+            <option>UK</option>            
+            <option>URSS/Rusia</option>            
+            <option>Ucrania</option>            
+            <option>Europa</option>
+            <option>Alemania</option>          
+          </select>        
+        </div>
+        
+        <button type="button" id="resetFilters">Limpiar</button>        
+        <button type="button" id="exportJson">Descargar JSON</button>        
+        <button type="button" id="importJsonBtn">Subir JSON</button>        
+        <input type="file" id="importJsonInput" accept="application/json" style="display:none">        
+        
+        <button type="button" id="contrastToggle">Contraste Alto</button>      
+      </section>
+
+      <div id="flightCount" style="color:var(--brand); font-weight:bold; margin-left:10px;"></div>
+
+      <section class="carousel">        
+        <div class="carousel-viewport" id="carouselViewport">          
+          <div class="carousel-track" id="carouselTrack">            
+            
+            <article class="ccard" tabindex="0" data-year="1940" data-model="Caza / Bombarderos" data-history="EE.UU">              
+              <div class="img-wrap"><img src="IMAGENES/2.png" onerror="this.src='https://via.placeholder.com/300?text=P-51+Mustang'" alt="P-51"></div>              
+              <div class="body">                
+                <h4>North American P-51 Mustang</h4>                
+                <p>Caza escolta con gran autonomía. Clave en la Segunda Guerra Mundial.</p>                
+                <div class="meta"><span>1940</span><span>Caza</span><span>EE.UU</span></div>              
+              </div>            
+            </article>  
+
+            <article class="ccard" tabindex="0" data-year="1930" data-model="Caza / Bombarderos" data-history="Alemania">              
+                <div class="img-wrap"><img src="IMAGENES/3.png" onerror="this.src='https://via.placeholder.com/300?text=Bf+109'" alt="Bf 109"></div>              
+                <div class="body">                
+                  <h4>Messerschmitt Bf 109</h4>                
+                  <p>El principal caza de la Luftwaffe, tecnológicamente avanzado para su época.</p>                
+                  <div class="meta"><span>1935</span><span>Caza</span><span>Alemania</span></div>              
+                </div>            
+              </article> 
+
+            <article class="ccard" tabindex="0" data-year="1970" data-model="Comerciales / Pasajeros" data-history="EE.UU">              
+              <div class="img-wrap"><img src="IMAGENES/11.png" onerror="this.src='https://via.placeholder.com/300?text=Boeing+747'" alt="B747"></div>              
+              <div class="body">                
+                <h4>Boeing 747 "Jumbo"</h4>                
+                <p>Revolucionó los vuelos de larga distancia. El avión más famoso del mundo.</p>                
+                <div class="meta"><span>1970</span><span>Pasajeros</span><span>EE.UU</span></div>              
+              </div>            
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1900" data-model="Experimentales e Históricos" data-history="EE.UU">              
+              <div class="img-wrap"><img src="IMAGENES/19.png" onerror="this.src='https://via.placeholder.com/300?text=Wright+Flyer'" alt="Wright Flyer"></div>              
+              <div class="body">                
+                <h4>Wright Flyer</h4>                
+                <p>El primer vuelo controlado con motor de la historia.</p>                
+                <div class="meta"><span>1903</span><span>Histórico</span><span>EE.UU</span></div>              
+              </div>            
+            </article>
+            
+            <article class="ccard" tabindex="0" data-year="2000 - Actualidad" data-model="Caza / Bombarderos" data-history="Europa">              
+                <div class="img-wrap"><img src="IMAGENES/9.png" onerror="this.src='https://via.placeholder.com/300?text=Eurofighter'" alt="Eurofighter"></div>              
+                <div class="body">                
+                  <h4>Eurofighter Typhoon</h4>                
+                  <p>Caza de combate europeo de alta maniobrabilidad.</p>                
+                  <div class="meta"><span>2003</span><span>Caza</span><span>Europa</span></div>              
+                </div>            
+            </article>
+			
+			<article class="ccard" tabindex="0" data-year="1930" data-model="Comerciales / Pasajeros" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/14.png" onerror="this.src='https://via.placeholder.com/300?text=Douglas+DC-3'" alt="Douglas DC-3">
+              </div>
+              <div class="body">
+                <h4>Douglas DC-3</h4>
+                <p>Uno de los aviones más importantes de todos los tiempos. Popularizó la aviación comercial.</p>
+                <div class="meta"><span>1936</span><span>Pasajeros</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1940" data-model="Experimentales e Históricos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/20.png" onerror="this.src='https://via.placeholder.com/300?text=Bell+X-1'" alt="Bell X-1">
+              </div>
+              <div class="body">
+                <h4>Bell X-1</h4>
+                <p>Primer avión en romper la barrera del sonido con Chuck Yeager a los mandos.</p>
+                <div class="meta"><span>1947</span><span>Histórico</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1930" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/4.png" onerror="this.src='https://via.placeholder.com/300?text=B-17+Flying+Fortress'" alt="B-17">
+              </div>
+              <div class="body">
+                <h4>Boeing B-17 Flying Fortress</h4>
+                <p>Bombardero pesado famoso por su resistencia y por sostener fuertes bombardeos estratégicos.</p>
+                <div class="meta"><span>1938</span><span>Bombardero</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1950" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/18.1.png" onerror="this.src='https://via.placeholder.com/300?text=Lockheed+U-2'" alt="U-2">
+              </div>
+              <div class="body">
+                <h4>Lockheed U-2</h4>
+                <p>Avión espía de gran altitud usado en la Guerra Fría. Todavía operativo.</p>
+                <div class="meta"><span>1955</span><span>Espionaje</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1950" data-model="Transporte / Carga / Especializados" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/16.png" onerror="this.src='https://via.placeholder.com/300?text=C-130+Hercules'" alt="C-130">
+              </div>
+              <div class="body">
+                <h4>C-130 Hércules</h4>
+                <p>Avión de transporte militar multipropósito, robusto, capaz de operar en casi cualquier pista.</p>
+                <div class="meta"><span>1956</span><span>Carga</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1980" data-model="Transporte / Carga / Especializados" data-history="Ucrania">
+              <div class="img-wrap">
+                <img src="IMAGENES/17.png" onerror="this.src='https://via.placeholder.com/300?text=Antonov+An-225'" alt="Antonov An-225">
+              </div>
+              <div class="body">
+                <h4>Antonov An-225 Mriya</h4>
+                <p>El avión más grande de la historia. Diseñado para cargas gigantes, destruido en 2022.</p>
+                <div class="meta"><span>1988</span><span>Carga</span><span>Ucrania</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1940" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/5.png" onerror="this.src='https://via.placeholder.com/300?text=B-29+Superfortress'" alt="B-29">
+              </div>
+              <div class="body">
+                <h4>Boeing B-29 Superfortress</h4>
+                <p>Bombardero estratégico avanzado, famoso por lanzar las bombas atómicas.</p>
+                <div class="meta"><span>1944</span><span>Bombardero</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1960" data-model="Comerciales / Pasajeros" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/15.png" onerror="this.src='https://via.placeholder.com/300?text=Boeing+737'" alt="B737">
+              </div>
+              <div class="body">
+                <h4>Boeing 737</h4>
+                <p>El avión comercial más vendido de la historia. Eficiente y versátil.</p>
+                <div class="meta"><span>1967</span><span>Pasajeros</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1970" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/6.png" onerror="this.src='https://via.placeholder.com/300?text=F-14+Tomcat'" alt="F-14">
+              </div>
+              <div class="body">
+                <h4>Grumman F-14 Tomcat</h4>
+                <p>Caza naval icónico de Top Gun. Alas de geometría variable y radar de largo alcance.</p>
+                <div class="meta"><span>1974</span><span>Caza</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1980" data-model="Caza / Bombarderos" data-history="URSS/Rusia">
+              <div class="img-wrap">
+                <img src="IMAGENES/8.png" onerror="this.src='https://via.placeholder.com/300?text=MiG-29+Fulcrum'" alt="MiG-29">
+              </div>
+              <div class="body">
+                <h4>MiG-29 Fulcrum</h4>
+                <p>Caza soviético muy ágil, diseñado para combate cercano y superioridad aérea.</p>
+                <div class="meta"><span>1982</span><span>Caza</span><span>URSS/Rusia</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1970" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/7.png" onerror="this.src='https://via.placeholder.com/300?text=F-16+Falcon'" alt="F-16">
+              </div>
+              <div class="body">
+                <h4>F-16 Fighting Falcon</h4>
+                <p>Uno de los cazas más usados del mundo. Ligero, maniobrable y polivalente.</p>
+                <div class="meta"><span>1978</span><span>Caza</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="2000 - Actualidad" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/21.png" onerror="this.src='https://via.placeholder.com/300?text=F-22+Raptor'" alt="F-22">
+              </div>
+              <div class="body">
+                <h4>Lockheed Martin F-22 Raptor</h4>
+                <p>Caza furtivo de quinta generación. Combina sigilo, supercrucero y agilidad extrema.</p>
+                <div class="meta"><span>2005</span><span>Caza</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="2000 - Actualidad" data-model="Comerciales / Pasajeros" data-history="Europa">
+              <div class="img-wrap">
+                <img src="IMAGENES/12.png" onerror="this.src='https://via.placeholder.com/300?text=Airbus+A380'" alt="A380">
+              </div>
+              <div class="body">
+                <h4>Airbus A380</h4>
+                <p>El avión de pasajeros más grande del mundo. Doble piso completo, un crucero aéreo.</p>
+                <div class="meta"><span>2005</span><span>Pasajeros</span><span>Europa</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1970" data-model="Comerciales / Pasajeros" data-history="UK">
+              <div class="img-wrap">
+                <img src="IMAGENES/13.png" onerror="this.src='https://via.placeholder.com/300?text=Concorde'" alt="Concorde">
+              </div>
+              <div class="body">
+                <h4>Concorde</h4>
+                <p>Avión supersónico comercial. Cruzaba el Atlántico en menos de 3 horas.</p>
+                <div class="meta"><span>1976</span><span>Pasajeros</span><span>UK</span></div>
+              </div>
+            </article>
+
+            <article class="ccard" tabindex="0" data-year="1980" data-model="Caza / Bombarderos" data-history="EE.UU">
+              <div class="img-wrap">
+                <img src="IMAGENES/10.png" onerror="this.src='https://via.placeholder.com/300?text=F-117+Nighthawk'" alt="F-117">
+              </div>
+              <div class="body">
+                <h4>Lockheed F-117 Nighthawk</h4>
+                <p>Primer avión de ataque furtivo (stealth) operativo. Diseño angular invisible al radar.</p>
+                <div class="meta"><span>1983</span><span>Furtivo</span><span>EE.UU</span></div>
+              </div>
+            </article>
+
+          </div>        
+        </div>        
+        <div class="carousel-nav">          
+          <button class="icon-btn" id="prevC">‹</button>          
+          <button class="icon-btn" id="nextC">›</button>        
+        </div>      
+      </section>
+
+      <section class="split-box">        
+        <div class="card-panel">            
+          <h2>Historia y Tecnología</h2>            
+          <p>La aviación es una historia de constante superación. Desde telas y madera hasta fibra de carbono y motores a reacción.</p>            
+        </div>        
+        <div class="card-panel media-cover">          
+          <img src="IMAGENES/foto texto.JPG" onerror="this.src='https://via.placeholder.com/600x400/101a33/ffffff?text=Ingenieria+Aerea'">        
+        </div>
+      </section>
+
+      <footer>        
+        <div class="footer-info">          
+          <h4>Contacto</h4>          
+          <p>Museo del Aire Virtual</p>          
+          <p>info@aviacion.com</p>        
+        </div>        
+        <div class="footer-form">          
+          <form onsubmit="event.preventDefault(); alert('Gracias por tu mensaje');">            
+            <div class="field"><input placeholder="Nombre" required /></div>            
+            <div class="field"><input placeholder="Email" required /></div>            
+            <div class="field"><textarea rows="3" placeholder="Mensaje"></textarea></div>            
+            <button type="submit">Enviar</button>          
+          </form>        
+        </div>      
+      </footer>    
+    </main>  
+  </div>
+
+  <div class="modal" id="modal">    
+    <div class="backdrop" id="closeModal"></div>    
+    <div class="dialog">      
+      <div class="dialog-header">        
+        <strong id="modalTitle" style="color:white">Detalle</strong>        
+        <button class="close" id="closeModalBtn">✕</button>      
+      </div>      
+      <div class="dialog-body" id="modalBody"></div>    
+    </div>  
+  </div>
+
+<script>
+    // =======================================================
+    // 1. SELECTORES Y UTILIDADES
+    // =======================================================
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    const carouselTrack = $('#carouselTrack');
+    const carouselViewport = $('#carouselViewport');
+    
+    // Importante: usamos 'let' para poder actualizar la lista de tarjetas al importar
+    let cardsAll = $$('.ccard', carouselTrack); 
+
+    // =======================================================
+    // 2. HERO SLIDER (BANNER)
+    // =======================================================
+    const heroTrack = $('#heroTrack');
+    const heroSlides = $$('.hero-slide', heroTrack);
+    const heroDots = $$('.dot');
+    let heroIndex = 0;
+    let heroTimer;
+
+    function heroGo(i){
+      if(!heroSlides.length) return;
+      heroIndex = (i + heroSlides.length) % heroSlides.length;
+      heroTrack.style.transform = `translateX(-${heroIndex * 100}%)`;
+      heroDots.forEach((d,idx)=> d.classList.toggle('active', idx===heroIndex));
+    }
+    
+    // Iniciar slider
+    if(heroTrack) {
+        heroGo(0); 
+        heroTimer = setInterval(()=> heroGo(heroIndex+1), 5000);
+        heroDots.forEach(d=> d.addEventListener('click', ()=>{ 
+           heroGo(+d.dataset.heroTo); 
+           clearInterval(heroTimer);
+           heroTimer = setInterval(()=> heroGo(heroIndex+1), 5000);
+        }));
+    }
+
+    // =======================================================
+    // 3. FILTROS Y LÓGICA DEL CARRUSEL
+    // =======================================================
+    const fYear = $('#fYear');
+    const fModel = $('#fModel');
+    const fStory = $('#fStory');
+    const resetBtn = $('#resetFilters');
+    const prevBtn = $('#prevC');
+    const nextBtn = $('#nextC');
+    const countBox = $('#flightCount');
+
+    let visibleCards = [...cardsAll];
+    let cIndex = 0;
+    let cAutoTimer;
+    let cCardWidth = 320; // Ancho aproximado + gap
+
+    function measureCardWidth(){
+      if (visibleCards.length > 0 && visibleCards[0].offsetParent !== null){
+        // Calcular ancho real + gap de 20px
+        cCardWidth = visibleCards[0].getBoundingClientRect().width + 20;
+      }
+    }
+
+    function updateFlightCount(){
+        if(countBox) countBox.textContent = `Aviones encontrados: ${visibleCards.length}`;
+    }
+
+    function applyFilters(){
+      const y = fYear.value;
+      const m = fModel.value;
+      const h = fStory.value;
+
+      // Recargar la lista completa (por si se importaron nuevos)
+      cardsAll = $$('.ccard', carouselTrack);
+
+      visibleCards = [];
+      cardsAll.forEach(card=>{
+        const ok =
+          (y === '' || card.dataset.year === y) &&
+          (m === '' || card.dataset.model === m) &&
+          (h === '' || card.dataset.history === h);
+        
+        // Usamos display flex para mantener el diseño de la tarjeta
+        card.style.display = ok ? 'flex' : 'none';
+        if (ok) visibleCards.push(card);
+      });
+
+      cIndex = 0;
+      measureCardWidth();
+      updateCarousel();
+      updateFlightCount();
+      
+      // Guardar estado
+      localStorage.setItem("flt_year", y);
+      localStorage.setItem("flt_model", m);
+      localStorage.setItem("flt_story", h);
+    }
+
+    function updateCarousel(){
+      if (!cCardWidth) measureCardWidth();
+      if (!visibleCards.length){
+        carouselTrack.style.transform = 'translateX(0)';
+        return;
+      }
+      // Lógica circular
+      if (cIndex >= visibleCards.length) cIndex = 0;
+      if (cIndex < 0) cIndex = visibleCards.length - 1;
+
+      const currentTranslate = -(cIndex * cCardWidth);
+      carouselTrack.style.transform = `translateX(${currentTranslate}px)`;
+    }
+
+    function next(){ 
+        if(!visibleCards.length) return;
+        cIndex++; updateCarousel(); 
+    }
+    function prev(){ 
+        if(!visibleCards.length) return;
+        cIndex--; updateCarousel(); 
+    }
+
+    function autoPlayStart(){
+      clearInterval(cAutoTimer);
+      cAutoTimer = setInterval(next, 4000);
+    }
+    function autoPlayStop(){ clearInterval(cAutoTimer); }
+
+    // Listeners de filtros
+    if(fYear) {
+        [fYear, fModel, fStory].forEach(el => el.addEventListener('change', applyFilters));
+        resetBtn.addEventListener('click', ()=>{
+          fYear.value = ''; fModel.value = ''; fStory.value = '';
+          applyFilters();
+        });
+    }
+
+    // Listeners de carrusel
+    if(carouselTrack) {
+        nextBtn.addEventListener('click', ()=>{ next(); autoPlayStart(); });
+        prevBtn.addEventListener('click', ()=>{ prev(); autoPlayStart(); });
+        carouselViewport.addEventListener('mouseenter', autoPlayStop);
+        carouselViewport.addEventListener('mouseleave', autoPlayStart);
+        window.addEventListener('resize', ()=>{ measureCardWidth(); updateCarousel(); });
+    }
+
+    // Cargar filtros previos
+    if(localStorage.getItem("flt_year")) fYear.value = localStorage.getItem("flt_year");
+    if(localStorage.getItem("flt_model")) fModel.value = localStorage.getItem("flt_model");
+    if(localStorage.getItem("flt_story")) fStory.value = localStorage.getItem("flt_story");
+
+
+    // =======================================================
+    // 4. MODAL (DETALLE)
+    // =======================================================
+    const modal = $('#modal');
+    const modalBody = $('#modalBody');
+    const closeModalBtn = $('#closeModalBtn');
+    const backdrop = $('#closeModal');
+
+    function openCardModal(card){
+      const title = $('h4', card)?.textContent.trim();
+      const imgUrl = $('img', card)?.src; 
+      const desc = $('p', card)?.textContent;
+      const metaHTML = $('.meta', card) ? $('.meta', card).innerHTML : '';
+
+      const imageHTML = imgUrl ? `<img src="${imgUrl}" style="width:100%; border-radius:8px; margin-bottom:15px; max-height:300px; object-fit:cover;">` : '';
+
+      modalBody.innerHTML = `
+        ${imageHTML}
+        <h2 style="margin-top:0; color:var(--brand)">${title}</h2>
+        <p style="line-height:1.6; font-size:1.05rem;">${desc}</p>
+        <div style="margin-top:20px; padding-top:15px; border-top:1px solid #374151;">
+            <strong>Datos técnicos:</strong>
+            <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">${metaHTML}</div>
+        </div>
+      `;
+      
+      if($('#modalTitle')) $('#modalTitle').textContent = title;
+      modal.setAttribute('data-open','true');
+      autoPlayStop();
+    }
+
+    function closeCardModal(){
+      modal.setAttribute('data-open','false');
+      autoPlayStart();
+    }
+
+    // IMPORTANTE: Función para asignar clicks a CUALQUIER tarjeta (existente o importada)
+    function attachCardListeners(){
+        const currentCards = $$('.ccard', carouselTrack);
+        currentCards.forEach(card => {
+            card.onclick = () => openCardModal(card);
+            card.onkeydown = (e) => {
+                if(e.key==='Enter' || e.key===' ') { e.preventDefault(); openCardModal(card); }
+            };
+        });
+    }
+
+    [closeModalBtn, backdrop].forEach(el => el?.addEventListener('click', closeCardModal));
+
+
+    // =======================================================
+    // 5. EXPORTAR E IMPORTAR JSON (Lógica Corregida)
+    // =======================================================
+    
+    // --- EXPORTAR ---
+    const exportBtn = document.getElementById("exportJson");
+    if(exportBtn){
+      exportBtn.addEventListener("click", ()=>{
+        const cards = $$(".ccard", carouselTrack);
+        
+        // Convertimos cada tarjeta HTML a un objeto JSON
+        const data = cards.map(card => {
+            return {
+                titulo: $("h4", card)?.innerText.trim(),
+                descripcion: $("p", card)?.innerText.trim(),
+                imagen: $("img", card)?.getAttribute("src"),
+                // Guardamos los textos de los spans
+                meta: $$(".meta span", card).map(s => s.innerText.trim()),
+                year: card.dataset.year,
+                model: card.dataset.model,
+                history: card.dataset.history
+            };
+        });
+
+        // Crear blob y descargar
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "flota_aerea.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // --- IMPORTAR ---
+    const importBtn = document.getElementById("importJsonBtn");
+    const importInput = document.getElementById("importJsonInput");
+
+    if(importBtn && importInput){
+      // El botón simula click en el input file oculto
+      importBtn.addEventListener("click", ()=> importInput.click());
+      
+      importInput.addEventListener("change", (e)=>{
+        const file = e.target.files[0];
+        if(!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (ev)=>{
+          try{
+            const importedData = JSON.parse(ev.target.result);
+            if(!Array.isArray(importedData)) throw new Error("Formato incorrecto");
+
+            let count = 0;
+            // Crear tarjetas nuevas desde el JSON
+            importedData.forEach(item => {
+                const newCard = document.createElement('article');
+                newCard.className = 'ccard';
+                newCard.tabIndex = 0;
+                newCard.dataset.year = item.year || "";
+                newCard.dataset.model = item.model || "";
+                newCard.dataset.history = item.history || "";
+
+                const metaHTML = item.meta ? item.meta.map(m => `<span>${m}</span>`).join('') : '';
+                
+                newCard.innerHTML = `
+                  <div class="img-wrap">
+                    <img src="${item.imagen}" alt="${item.titulo}" onerror="this.src='https://via.placeholder.com/300?text=Sin+Foto'">
+                  </div>
+                  <div class="body">
+                    <h4>${item.titulo}</h4>
+                    <p>${item.descripcion}</p>
+                    <div class="meta">${metaHTML}</div>
+                  </div>
+                `;
+                
+                carouselTrack.appendChild(newCard);
+                count++;
+            });
+            
+            alert(`Importación exitosa: Se añadieron ${count} aviones.`);
+            
+            // Reiniciar la app para reconocer las nuevas tarjetas
+            importInput.value = ''; 
+            attachCardListeners();
+            applyFilters();
+            
+          } catch(err){
+            console.error(err);
+            alert("Error: El archivo no es un JSON válido.");
+          }
+        };
+        reader.readAsText(file, "utf-8");
+      });
+    }
+
+
+    // =======================================================
+    // 6. CONTRASTE ALTO (Lógica Corregida)
+    // =======================================================
+    const contrastBtn = document.getElementById("contrastToggle");
+
+    function toggleContrast(){
+        const body = document.body;
+        body.classList.toggle("high-contrast"); // CSS se encarga del resto
+        
+        const isHigh = body.classList.contains("high-contrast");
+        if(contrastBtn) contrastBtn.textContent = isHigh ? "Modo Normal" : "Contraste Alto";
+        
+        localStorage.setItem("contrast_mode", isHigh ? "high" : "normal");
+    }
+
+    // Cargar preferencia al inicio
+    if(localStorage.getItem("contrast_mode") === "high"){
+        document.body.classList.add("high-contrast");
+        if(contrastBtn) contrastBtn.textContent = "Modo Normal";
+    }
+
+    if(contrastBtn) contrastBtn.addEventListener("click", toggleContrast);
+
+    // =======================================================
+    // 7. INICIALIZACIÓN
+    // =======================================================
+    attachCardListeners();
+    applyFilters(); // Esto filtra y arranca el carrusel
+    autoPlayStart();
+
+</script>
+</body>
+</html>
