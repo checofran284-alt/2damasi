@@ -3,12 +3,112 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-09-26T16:03:01+02:00</updated>
+    <updated>2025-11-25T12:43:34+01:00</updated>
     <author>
         <name>Francisco Ferres</name>
     </author>
     <id>https://checofran284-alt.github.io/2damasi</id>
 
+    <entry>
+        <title>&quot;Configuración inicial de la Raspi y el Coolmod PC&quot;</title>
+        <author>
+            <name>Francisco Ferres</name>
+        </author>
+        <link href="https://checofran284-alt.github.io/2damasi/configuracion-inicial-de-la-raspi-y-el-coolmod-pc/"/>
+        <id>https://checofran284-alt.github.io/2damasi/configuracion-inicial-de-la-raspi-y-el-coolmod-pc/</id>
+
+        <updated>2025-11-25T01:23:29+01:00</updated>
+            <summary>
+                <![CDATA[
+                    ____________________________________________________________________________________________________________ INDICE: ____________________________________________________________________________________________________________ Para la semana del 20/11/2025 se nos fue asignado realizar una actividad de montaje de dispositivos en&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <figure class="post__image post__image--center"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/A-realistic-digital.png" alt="" width="1536" height="1024" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/A-realistic-digital-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/A-realistic-digital-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/A-realistic-digital-md.png 768w"></figure>
+<p>____________________________________________________________________________________________________________</p>
+<p>INDICE:</p>
+<ol>
+<li>Introducción</li>
+<li>Configuración de la Raspberry  </li>
+<li>Configuración del PC COOLMOD </li>
+<li>Conclusión</li>
+</ol>
+<p>____________________________________________________________________________________________________________</p>
+<h5><span style="text-decoration: underline;">1. INTRODUCCIÓN</span></h5>
+<p>Para la semana del 20/11/2025 se nos fue asignado realizar una actividad de montaje de dispositivos en una nueva aula habilitada en mi centro de estudios de Desarrollo de Aplicaciones Multiplataforma, el aula en cuestión se denomina Aula Ateca, la cual estará destinada para el estudio de la IA, como el aula era nueva nos tocó llevar los ordenadores , monitores,  ratones, teclados, etc... lo cual requirió una preparación de todas las máquinas para su futuro uso. Por ello empezamos con esta introducción a modo de guía de preparación de las maquinas.</p>
+<p>____________________________________________________________________________________________________________</p>
+<h5><span style="text-decoration: underline;">2. CONFIGURACIÓN DE LA RASPBERRY</span></h5>
+<figure class="post__image" ><figure class="post__image"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Captura-de-pantalla-2025-11-25-004446.png" alt="" width="963" height="598" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Captura-de-pantalla-2025-11-25-004446-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Captura-de-pantalla-2025-11-25-004446-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Captura-de-pantalla-2025-11-25-004446-md.png 768w"></figure>
+<figcaption ><span style="text-decoration: underline;">FOTO DE REFERENCIA DE LO QUE ESTAMOS CONFIGURANDO</span></figcaption>
+</figure>
+<p class="align-center">Para empezar la configuración deberemos seguir una serie de pasos para dejar operativa la raspberry, esto será mediante imágenes las cuales nos servirán de guía, a continuación: </p>
+<p class="align-center">&lt; Lo primero será conectar todos sus cables para dejar operativa la maquina, entre esos tenemos: el cable de alimentación de corriente, el HDMI ligado al conector del monitor, el monitor con su respectiva conexión a la corriente para su funcionamiento. Una vez hecho todo esto procedemos a prenderla para luego empezar a configurar lo ajustes de arranque, todo esto estará guiado mediante imágenes las cuales tendremos que seguir para replicar por nuestra cuenta este proceso &gt; </p>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.24_ab0df342-3.jpg" alt="" width="800" height="1000" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.24_ab0df342-3-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.24_ab0df342-3-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.24_ab0df342-3-md.jpg 768w"></figure>
+<figcaption >PASO 1 - EMPEZAMOS A CONFIGURARLA</figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_540f9e90.jpg" alt="" width="800" height="1000" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_540f9e90-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_540f9e90-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_540f9e90-md.jpg 768w"></figure>
+<figcaption >PASO 2 - SEGUIMOS ACEPTANDO EL PROCESO</figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_733b7af3-2.jpg" alt="" width="800" height="1000" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_733b7af3-2-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_733b7af3-2-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_733b7af3-2-md.jpg 768w"></figure>
+<figcaption >PASO 3 - DESCARGAMOS IDIOMAS </figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_ad66ae59.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_ad66ae59-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_ad66ae59-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_ad66ae59-md.jpg 768w"></figure>
+<figcaption >PASO 4 - UNA VEZ ESTABLECIDO EL IDIOMA REINICIAMOS</figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_bf3f4204.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_bf3f4204-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_bf3f4204-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.25_bf3f4204-md.jpg 768w"></figure>
+<figcaption >PASO 5 - CHEKEAMOS LAS UPDATES</figcaption>
+</figure>
+<div class="gallery-wrapper gallery-wrapper--wide"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="3">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/18/gallery/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.26_0efeeece.jpg" data-size="902x1600"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/18/gallery/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.26_0efeeece-thumbnail.jpg" alt="ESTABLECEMOS WIFI" width="720" height="1277"></a>
+<figcaption>PASO 6</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/18/gallery/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.26_164f35d0.jpg" data-size="902x1600"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/18/gallery/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.26_164f35d0-thumbnail.jpg" alt="ESTABLECEMOS CONTRASEÑA" width="720" height="1277"></a>
+<figcaption>PASO 7</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/18/gallery/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.26_879a7cc7.jpg" data-size="902x1600"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/18/gallery/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.26_879a7cc7-thumbnail.jpg" alt="ESTABLECEMOS EL NAVEGADOR A USAR" width="720" height="1277"></a>
+<figcaption>PASO 8</figcaption>
+</figure>
+</div></div>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_9e76eb41.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_9e76eb41-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_9e76eb41-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_9e76eb41-md.jpg 768w"></figure>
+<figcaption >PASO 8 - CREAMOS NUESTRO USUARIO PRINCIPAL </figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_445a3ccb.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_445a3ccb-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_445a3ccb-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_445a3ccb-md.jpg 768w"></figure>
+<figcaption >PASO 9 - ESTABLECEMOS LA UBICACIÓN</figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_abbf89d5.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_abbf89d5-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_abbf89d5-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/Imagen-de-WhatsApp-2025-11-21-a-las-17.42.27_abbf89d5-md.jpg 768w"></figure>
+<figcaption >PASO 10 - ACEPTAMOS E INICIAMOS</figcaption>
+</figure>
+<figure class="post__image" ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/A.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/A-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/A-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/A-md.jpg 768w"></figure>
+<figcaption >PASO FINAL - FUNCIONAMIENTO CORRECTO Y ACTUALIZAMOS DRIVERS</figcaption>
+</figure>
+<p>____________________________________________________________________________________________________________</p>
+<h5><span style="text-decoration: underline;">3. CONFIGURACIÓN DEL PC COOLMOD</span>  </h5>
+<figure class="post__image" ></figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/3-2.jpg" alt="" width="1153" height="2048" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/3-2-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/3-2-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/3-2-md.jpg 768w"></figure>
+<figcaption >FOTO DEL EQUIPO CON EL QUE TRABAJAREMOS</figcaption>
+</figure>
+<p class="align-center">&lt; Para empezar la configuración de esta maquina ya viene predefinida por lo que no hace falta instalar nada, cuenta con un Windows 11, el cual solo tendremos que iniciarlo y preparar la configuración, la cual es la de siempre estableciendo usuario, contraseña, ubicación, lenguaje, disposición del teclado, etc... Todo esto para el resultado final el cual será su uso. &gt;</p>
+<p class="align-center">A continuación, visualizar las siguientes imágenes:</p>
+<figure class="post__image" ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/1.jpg" alt="" width="899" height="1599" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/1-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/1-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/1-md.jpg 768w"></figure>
+<figcaption >PASO 1 - PC CONECTADO AL MONITOR Y FUENTE DE ALIMENTACIÓN A CORRIENTE</figcaption>
+</figure>
+<figure class="post__image post__image--wide" ><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/18/2.jpg" alt="" width="1153" height="2048" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/2-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/2-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/2-md.jpg 768w">
+<figcaption >PASO 2 - CONECTAMOS EL TP-LINK PARA LA CONEXIÓN A INTERNET</figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/4.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/4-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/4-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/4-md.jpg 768w"></figure>
+<figcaption >PASO 3 - PONEMOS A PUNTO LA MÁQUINA PARA SU FUNCIONAMIENTO</figcaption>
+</figure>
+<figure ><figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/18/5.jpg" alt="" width="902" height="1600" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/5-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/5-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/18/responsive/5-md.jpg 768w"></figure>
+<figcaption >PASO FINAL - COMPROBAMOS SU FUNCIONAMIENTO Y ACTUALIZAMOS DRIVERS</figcaption>
+</figure>
+<p>____________________________________________________________________________________________________________<br><br><span style="text-decoration: underline;"><strong>4. CONCLUSIÓN</strong></span></p>
+<p class="align-center">Esta práctica ha servido para comprender mejor la diferencia de usos entre un PC potente, equipado con la RTX 5060 Ti, y una Raspberry Pi ligera y versátil. El PC se destinará al estudio y desarrollo de aplicaciones exigentes, mientras que la Raspberry Pi se empleará para el manejo y control de procesos más simples. Gracias al apoyo de la inteligencia artificial, la configuración y documentación resultaron más claras y rápidas, reforzando la autonomía y el aprendizaje práctico en entornos reales de hardware y software.</p>
+<p>                                                                                                              - Gracias por leer -</p>
+<figure class="post__image" ></figure>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>&quot;Como lo he hecho&quot;</title>
         <author>
