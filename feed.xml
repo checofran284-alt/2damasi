@@ -3,12 +3,132 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-11-25T12:43:34+01:00</updated>
+    <updated>2025-11-29T19:15:32+01:00</updated>
     <author>
         <name>Francisco Ferres</name>
     </author>
     <id>https://checofran284-alt.github.io/2damasi</id>
 
+    <entry>
+        <title>&quot;Configuración inicial de la Jetson Nano&quot;</title>
+        <author>
+            <name>Francisco Ferres</name>
+        </author>
+        <link href="https://checofran284-alt.github.io/2damasi/configuracion-inicial-de-la-jetson-nano/"/>
+        <id>https://checofran284-alt.github.io/2damasi/configuracion-inicial-de-la-jetson-nano/</id>
+
+        <updated>2025-11-26T12:07:55+01:00</updated>
+            <summary>
+                <![CDATA[
+                    "DISPOSITIVO REFERENTE QUE CONFIGURAREMOS" ____________________________________________________________________________________________________________ INDICE: ____________________________________________________________________________________________________________ Para la misma semana del 20/11/2025, concretamente el 21 se nos fue asignado&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <figure class="post__image post__image--wide" ><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_f5dbe000.jpg" alt="" width="902" height="581" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_f5dbe000-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_f5dbe000-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_f5dbe000-md.jpg 768w">
+<figcaption ><span style="text-decoration: underline;">"DISPOSITIVO REFERENTE QUE CONFIGURAREMOS"</span></figcaption>
+</figure>
+<p class="align-left">____________________________________________________________________________________________________________</p>
+<p class="align-left">INDICE:</p>
+<ol class="align-center">
+<li class="align-left">Introducción</li>
+<li class="align-left">Configuración de la Jetson Nano</li>
+<li class="align-left">Conclusión</li>
+</ol>
+<p class="align-left">____________________________________________________________________________________________________________</p>
+<h5 class="align-left"><span style="text-decoration: underline;">1. INTRODUCCIÓN</span></h5>
+<p class="align-left">Para la misma semana del 20/11/2025, concretamente el 21 se nos fue asignado otra  actividad basada en el montaje de un dispositivo más un tanto peculiar, ya que no es tan reconocido como los anteriores el cual se empleara su capacidad para el estudio de la IA al 100%. ¿Porque?, porque la diferencia con las anteriores máquinas es que están diseñadas para la IA pero a su vez para compartirlas con los compañeros del otro ciclo técnico. Por ello esta máquina deberemos dejarla mejor configurada para su uso en un futuro próximo. Ahora a continuación empezamos con esta introducción a modo de guía de preparación de la máquina que usaremos en cuestión llamada: "NVIDIA JETSON ORIN NANO SUPER DEVELOPER KIT - 8GB DDR5".</p>
+<p class="align-left">____________________________________________________________________________________________________________</p>
+<h5 class="align-left"><span style="text-decoration: underline;">2. CONFIGURACIÓN DE LA JETSON NANO</span></h5>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/1.jpg" alt="" width="768" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/1-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/1-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/1-md.jpg 768w"></figure>
+<p class="align-center">Para empezar la configuración de adecuar la máquina deberemos seguir una serie de pasos que nos mostraran a modo de recetario/guía como dejar operativa nuestra <strong><span style="text-decoration: underline;">Jetson Nano</span></strong> la denominaremos así durante documento para abreviar el nombre largo, el proceso de explicación será mediante imágenes las cuales nos servirán de guía/recetario para hacerlo por tu cuenta en casa si decides adquirir un Jetson nano, a continuación: </p>
+<p class="align-center"><strong>&lt; Lo primero será sacar el dispositivo de la caja en la que viene conectar todos sus cables para dejarlo operativo , entre esos tenemos: el cable de alimentación de corriente, el DisplayPort (no cuenta con HDMI) conectado al conector del monitor, el monitor con su respectiva conexión a la corriente para su funcionamiento. Una conectado el cable de corriente a la Jetson empezará ha arrancar de golpe, ya que no tiene sistema de arranque accionado (botón), luego empezaremos a configurar los ajustes de personalización siguiendo la lista de pasos guiados mediante imágenes las cuales tendremos que seguir para replicar esta configuración por nuestra cuenta &gt;</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/4.jpg" alt="" width="764" height="1080" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/4-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/4-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/4-md.jpg 768w"></figure>
+<p class="align-center"><strong>PASO 1 - SACAMOS EL DISPOSITIVO PARA VERLO</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/3.jpg" alt="" width="764" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/3-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/3-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/3-md.jpg 768w"></figure>
+<p class="align-center"><strong>PASO 2 - UNA VEZ FUERA DE LA CAJA OBSERVAMOS A SIMPLE VISTA QUE ES COMO UN MINI PC PERO MUCHO MÁS PEQUEÑO, LO CUAL NOS A ENTENDER EL PROPOSITO PRINCIPAL QUE TIENE (ESTUDIO DE LA IA), CUENTA TAMBIÉN CON UNA NVME SSD, QUE SERVIRÁ PARA EL ALMACENAMIENTO DE LO QUE HAGAMOS DURANTE EL CURSO</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_58934dc7.jpg" alt="" width="764" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_58934dc7-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_58934dc7-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.35_58934dc7-md.jpg 768w"></figure>
+<p class="align-center"><strong>PASO 3 - PARA TENER UN MEJOR ALMACENAMIENTO PARA LOS FUTUROS PROYECTOS DEBERES DE INSTALAR OTROS 128GB DE SSD</strong></p>
+<div class="gallery-wrapper gallery-wrapper--full"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="3">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.34_5b3c1863.jpg" data-size="749x1080"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.34_5b3c1863-thumbnail.jpg" alt="" width="720" height="1038"></a>
+<figcaption>PASO 4</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.34_9b712406.jpg" data-size="761x1086"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.34_9b712406-thumbnail.jpg" alt="" width="720" height="1027"></a>
+<figcaption>PASO 5</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_d394c26d.jpg" data-size="902x1600"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_d394c26d-thumbnail.jpg" alt="" width="720" height="1277"></a>
+<figcaption>PASO 6</figcaption>
+</figure>
+</div></div>
+<p class="align-center"><strong>SEGUIMOS ESTA LINEA DE PORCESOS PARA INSTALAR LA SSD DEBAJO DEL DISPADOR DE CALOR PEGADO A LA PLACA</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_f5efbaf5.jpg" alt="" width="764" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_f5efbaf5-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_f5efbaf5-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_f5efbaf5-md.jpg 768w"></figure>
+<p><strong>PASO 7</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_3ba5b796.jpg" alt="" width="762" height="1084" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_3ba5b796-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_3ba5b796-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.33_3ba5b796-md.jpg 768w"></figure>
+<p><strong>PASO 8</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.32_a65ae999.jpg" alt="" width="762" height="1084" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.32_a65ae999-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.32_a65ae999-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.32_a65ae999-md.jpg 768w"></figure>
+<p><strong>PASO 9</strong></p>
+<div class="gallery-wrapper gallery-wrapper--full"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="3">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.32_13cfa514.jpg" data-size="762x1080"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.32_13cfa514-thumbnail.jpg" alt="" width="720" height="1020"></a>
+<figcaption>PASO 10</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.31_d43fb8fa.jpg" data-size="764x1080"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.31_d43fb8fa-thumbnail.jpg" alt="" width="720" height="1018"></a>
+<figcaption>PASO 11</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.31_13d7e453.jpg" data-size="767x1081"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.31_13d7e453-thumbnail.jpg" alt="" width="720" height="1015"></a>
+<figcaption>PASO 12</figcaption>
+</figure>
+</div></div>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_f4127928.jpg" alt="" width="1600" height="902" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_f4127928-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_f4127928-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_f4127928-md.jpg 768w"></figure>
+<p><strong>PASO 13</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed.jpg" alt="" width="771" height="1080" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-md.jpg 768w"></figure>
+<p><strong>PASO 14</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-2.jpg" alt="" width="771" height="1080" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-2-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-2-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_b59426ed-2-md.jpg 768w"></figure>
+<p><strong>PASO 15</strong></p>
+<div class="gallery-wrapper gallery-wrapper--full"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="3">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_6beee451.jpg" data-size="767x1082"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_6beee451-thumbnail.jpg" alt="" width="720" height="1016"></a>
+<figcaption>PASO 16</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_3a50b653.jpg" data-size="766x1080"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.30_3a50b653-thumbnail.jpg" alt="" width="720" height="1015"></a>
+<figcaption>PASO 17</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_bf5dad64.jpg" data-size="764x1080"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_bf5dad64-thumbnail.jpg" alt="" width="720" height="1018"></a>
+<figcaption>PASO 18</figcaption>
+</figure>
+</div></div>
+<p>RFRR</p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_b73dc343.jpg" alt="" width="768" height="1081" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_b73dc343-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_b73dc343-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_b73dc343-md.jpg 768w"></figure>
+<p><strong>PASO 19</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_6253bbf6.jpg" alt="" width="766" height="1080" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_6253bbf6-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_6253bbf6-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_6253bbf6-md.jpg 768w"></figure>
+<p><strong>PASO 20 </strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_9c4a5fdf.jpg" alt="" width="763" height="1081" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_9c4a5fdf-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_9c4a5fdf-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.29_9c4a5fdf-md.jpg 768w"></figure>
+<p><strong>PASO 21</strong></p>
+<div class="gallery-wrapper gallery-wrapper--full"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="3">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.28_606def22.jpg" data-size="762x1082"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.28_606def22-thumbnail.jpg" alt="" width="720" height="1022"></a>
+<figcaption>PASO 22</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.28_72ec0e09.jpg" data-size="768x1082"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.28_72ec0e09-thumbnail.jpg" alt="" width="720" height="1014"></a>
+<figcaption>PASO 23</figcaption>
+</figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.28_3a35a96c.jpg" data-size="763x1081"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.28_3a35a96c-thumbnail.jpg" alt="" width="720" height="1020"></a>
+<figcaption>PASO 24</figcaption>
+</figure>
+</div></div>
+<p>DDDFFFKFFKF</p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_c0a4ebbc.jpg" alt="" width="764" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_c0a4ebbc-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_c0a4ebbc-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_c0a4ebbc-md.jpg 768w"></figure>
+<p><strong>PASO 25</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_8023cb34.jpg" alt="" width="762" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_8023cb34-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_8023cb34-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_8023cb34-md.jpg 768w"></figure>
+<p><strong>PASO 26</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_7b58c098.jpg" alt="" width="766" height="1082" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_7b58c098-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_7b58c098-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_7b58c098-md.jpg 768w"></figure>
+<p><strong>PASO 27</strong></p>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/19/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_e97ab8c5-2.jpg" alt="" width="766" height="1083" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_e97ab8c5-2-xs.jpg 300w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_e97ab8c5-2-sm.jpg 480w ,https://checofran284-alt.github.io/2damasi/media/posts/19/responsive/Imagen-de-WhatsApp-2025-11-24-a-las-19.21.27_e97ab8c5-2-md.jpg 768w"></figure>
+<p><strong>PASO FINAL</strong></p>
+<p>____________________________________________________________________________________________________________</p>
+<h5 class="align-left"><span style="text-decoration: underline;">3. CONCLUSIÓN</span></h5>
+<p> </p>
+<p>hhhhh</p>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>&quot;Configuración inicial de la Raspi y el Coolmod PC&quot;</title>
         <author>
