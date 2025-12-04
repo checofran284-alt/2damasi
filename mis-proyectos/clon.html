@@ -1,0 +1,757 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Heart, Star, Flame, Bird, Volume2, X, Check, ChevronRight, 
+  Gem, Home, Trophy, User, Settings, Store, Map as MapIcon, 
+  Target, Zap, Shield, Menu, RefreshCw, Shirt, Clock, Crown, Gift, GraduationCap, Globe, Languages, ShoppingBag, BookOpen, Dumbbell, Star as StarIcon
+} from 'lucide-react';
+
+// --- TRADUCCIONES DE LA INTERFAZ ---
+const UI_TRANSLATIONS = {
+  es: {
+    learn: 'Aprender', leaderboard: 'Ranking', quests: 'Misiones', shop: 'Tienda', profile: 'Perfil', courses: 'Cursos',
+    unit: 'Unidad', start: 'EMPEZAR', unit_desc: 'Primeros pasos, Saludos', unit_2_desc: 'Comida, Animales y Plurales',
+    league: 'Liga Diamante', unlock_league: 'Desbloquea Ligas', unlock_desc: 'Completa más lecciones para competir.',
+    daily_quests: 'Misiones del día', claim: 'RECLAMAR', 
+    quest_xp: 'Gana 50 XP', quest_lesson: 'Completa 3 lecciones', quest_speak: 'Habla 5 minutos', quest_perfect: '1 Lección Perfecta',
+    quest_gems: 'Gana 20 Gemas', quest_streak: 'Extiende tu racha', quest_buy: 'Compra en la tienda',
+    refill_lives: 'Recuperar Vidas', refill_desc: 'Restaura tus 5 corazones.',
+    streak_guard: 'Protector de Racha', streak_desc: 'Protege tu racha si olvidas un día.',
+    suit: 'Traje Elegante', suit_desc: 'Viste a tu búho con estilo.',
+    super_lingo: 'Super Lingo', super_desc: 'Vidas ilimitadas, sin anuncios y más.', see_plans: 'VER PLANES',
+    ready: 'LISTO', buy: 'COMPRAR',
+    profile_title: 'Mi Perfil', logout: 'Cerrar Sesión', reset: 'Resetear Nivel',
+    check: 'COMPROBAR', continue: 'CONTINUAR', correct: '¡Bien hecho!', wrong: 'Solución correcta:',
+    out_of_lives: '¡Te quedaste sin vidas!', refill_btn: 'Rellenar', unlimited: 'Vidas Ilimitadas', no_thanks: 'No gracias, salir', wait_text: 'Espera 20 min para +1 vida',
+    plan_title: 'Elige tu Plan', plan_desc: 'Desbloquea todo el potencial', plan_free: 'Normal', plan_premium: 'Premium', plan_student: 'Estudiante', select: 'SELECCIONAR', current: 'ACTUAL',
+    app_language: 'Idioma de la App', confirm_reset: '¿Seguro que quieres reiniciar el progreso de ESTE curso?',
+    perfect_lesson: '¡LECCIÓN PERFECTA!', xp_gained: 'XP GANADA', gems_gained: 'GEMAS',
+    quest_complete_toast: '¡Misión completada!', chest_open: '¡Cofre Abierto!', chest_reward: 'Has encontrado 50 gemas',
+    locked_level: 'Nivel bloqueado',
+    streak_title: '¡RACHA EN LLAMAS!', streak_days: 'días de racha', streak_keep: '¡Sigue así mañana!'
+  },
+  en: {
+    learn: 'Learn', leaderboard: 'Leaderboard', quests: 'Quests', shop: 'Shop', profile: 'Profile', courses: 'Courses',
+    unit: 'Unit', start: 'START', unit_desc: 'Basics, Greetings', unit_2_desc: 'Food, Animals & Plurals',
+    league: 'Diamond League', unlock_league: 'Unlock Leagues', unlock_desc: 'Complete more lessons to compete.',
+    daily_quests: 'Daily Quests', claim: 'CLAIM', 
+    quest_xp: 'Earn 50 XP', quest_lesson: 'Complete 3 lessons', quest_speak: 'Speak 5 minutes', quest_perfect: '1 Perfect Lesson',
+    quest_gems: 'Earn 20 Gems', quest_streak: 'Extend your streak', quest_buy: 'Buy in shop',
+    refill_lives: 'Refill Hearts', refill_desc: 'Restore full 5 hearts.',
+    streak_guard: 'Streak Freeze', streak_desc: 'Protects your streak if you miss a day.',
+    suit: 'Fancy Suit', suit_desc: 'Dress your owl in style.',
+    super_lingo: 'Super Lingo', super_desc: 'Unlimited hearts, no ads, and more.', see_plans: 'SEE PLANS',
+    ready: 'OWNED', buy: 'BUY',
+    profile_title: 'My Profile', logout: 'Log Out', reset: 'Reset Level',
+    check: 'CHECK', continue: 'CONTINUE', correct: 'Great job!', wrong: 'Correct solution:',
+    out_of_lives: 'Out of lives!', refill_btn: 'Refill', unlimited: 'Unlimited Hearts', no_thanks: 'No thanks, quit', wait_text: 'Wait 20 min for +1 heart',
+    plan_title: 'Choose your Plan', plan_desc: 'Unlock full potential', plan_free: 'Normal', plan_premium: 'Premium', plan_student: 'Student', select: 'SELECT', current: 'CURRENT',
+    app_language: 'App Language', confirm_reset: 'Are you sure you want to reset progress for THIS course?',
+    perfect_lesson: 'PERFECT LESSON!', xp_gained: 'XP GAINED', gems_gained: 'GEMS',
+    quest_complete_toast: 'Quest completed!', chest_open: 'Chest Opened!', chest_reward: 'You found 50 gems',
+    locked_level: 'Level locked',
+    streak_title: 'STREAK ON FIRE!', streak_days: 'day streak', streak_keep: 'Keep it up tomorrow!'
+  },
+};
+
+// --- CONFIGURACIÓN Y DATOS ---
+
+const COURSES = [
+  { id: 'en', name: 'Inglés', flag: '🇺🇸' },
+  { id: 'fr', name: 'Francés', flag: '🇫🇷' },
+  { id: 'it', name: 'Italiano', flag: '🇮🇹' },
+  { id: 'de', name: 'Alemán', flag: '🇩🇪' },
+  { id: 'pt', name: 'Portugués', flag: '🇧🇷' },
+  { id: 'ru', name: 'Ruso', flag: '🇷🇺' },
+];
+
+const INITIAL_QUESTS = [
+  { id: 1, titleKey: 'quest_xp', current: 0, total: 50, rewardGems: 10, rewardXp: 20, type: 'xp' },
+  { id: 2, titleKey: 'quest_lesson', current: 0, total: 3, rewardGems: 20, rewardXp: 30, type: 'lesson' },
+  { id: 3, titleKey: 'quest_perfect', current: 0, total: 1, rewardGems: 50, rewardXp: 50, type: 'perfect' },
+  { id: 4, titleKey: 'quest_gems', current: 0, total: 20, rewardGems: 30, rewardXp: 10, type: 'gems' },
+];
+
+const SHOP_ITEMS = [
+  { id: 1, nameKey: 'refill_lives', descKey: 'refill_desc', icon: '❤️', cost: 350, type: 'consumable' },
+  { id: 2, nameKey: 'streak_guard', descKey: 'streak_desc', icon: '🔥', cost: 200, type: 'consumable' },
+  { id: 3, nameKey: 'suit', descKey: 'suit_desc', icon: '👔', cost: 1000, type: 'one-time' },
+];
+
+const USER_AVATAR = '🦉'; // Avatar por defecto del usuario
+
+// Datos simulados de ranking por curso
+const LEADERBOARD_DATA = {
+  en: [
+    { id: 'u1', name: 'Pierre D.', xp: 850, avatar: '👨🏼', country: '🇫🇷' },
+    { id: 'u2', name: 'Maria S.', xp: 720, avatar: '👩🏻', country: '🇪🇸' },
+    { id: 'u3', name: 'Hans M.', xp: 640, avatar: '👱🏻‍♂️', country: '🇩🇪' },
+    { id: 'u4', name: 'Yuki T.', xp: 580, avatar: '👩🏻', country: '🇯🇵' },
+    { id: 'u5', name: 'Ali K.', xp: 490, avatar: '🧔🏽', country: '🇹🇷' },
+    { id: 'u6', name: 'Sofia R.', xp: 420, avatar: '👩🏼', country: '🇮🇹' },
+    { id: 'u7', name: 'Chen L.', xp: 300, avatar: '👨🏻', country: '🇨🇳' },
+    { id: 'u8', name: 'Alex B.', xp: 210, avatar: '🧑🏾', country: '🇺🇸' },
+    { id: 'u9', name: 'Ana P.', xp: 150, avatar: '👩🏽', country: '🇧🇷' },
+  ],
+  fr: [
+    { id: 'f1', name: 'John S.', xp: 900, avatar: '🧔', country: '🇺🇸' },
+    { id: 'f2', name: 'Emma W.', xp: 750, avatar: '👩🏼', country: '🇬🇧' },
+    { id: 'f3', name: 'Lars J.', xp: 600, avatar: '👱🏻‍♂️', country: '🇳🇴' },
+    { id: 'f4', name: 'Ana B.', xp: 550, avatar: '👩🏽', country: '🇧🇷' },
+    { id: 'f5', name: 'Ivan P.', xp: 480, avatar: '🧔🏼', country: '🇷🇺' },
+    { id: 'f6', name: 'Wei Z.', xp: 400, avatar: '👩🏻', country: '🇨🇳' },
+    { id: 'f7', name: 'Carlos M.', xp: 320, avatar: '👨🏽', country: '🇲🇽' },
+    { id: 'f8', name: 'Sarah L.', xp: 250, avatar: '👩🏻', country: '🇨🇦' },
+  ],
+  it: [
+    { id: 'i1', name: 'Sophie L.', xp: 800, avatar: '👩🏼', country: '🇫🇷' },
+    { id: 'i2', name: 'Markus T.', xp: 650, avatar: '👱🏻‍♂️', country: '🇩🇪' },
+    { id: 'i3', name: 'Elena G.', xp: 500, avatar: '👩🏻', country: '🇪🇸' },
+    { id: 'i4', name: 'Hiro K.', xp: 450, avatar: '👨🏻', country: '🇯🇵' },
+    { id: 'i5', name: 'Fatima A.', xp: 300, avatar: '🧕🏽', country: '🇦🇪' },
+  ],
+  de: [
+    { id: 'd1', name: 'Jan K.', xp: 950, avatar: '👱🏻‍♂️', country: '🇵🇱' },
+    { id: 'd2', name: 'Lucas V.', xp: 820, avatar: '🧔🏽', country: '🇦🇷' },
+    { id: 'd3', name: 'Chloe M.', xp: 700, avatar: '👩🏼', country: '🇫🇷' },
+    { id: 'd4', name: 'Oleg S.', xp: 550, avatar: '👨🏼', country: '🇺🇦' },
+    { id: 'd5', name: 'Bill T.', xp: 400, avatar: '🧔', country: '🇺🇸' },
+  ],
+  pt: [
+    { id: 'p1', name: 'Santiago R.', xp: 880, avatar: '🧔🏽', country: '🇨🇴' },
+    { id: 'p2', name: 'Mia J.', xp: 710, avatar: '👩🏿', country: '🇺🇸' },
+    { id: 'p3', name: 'Diego F.', xp: 620, avatar: '👨🏻', country: '🇪🇸' },
+    { id: 'p4', name: 'Liam N.', xp: 480, avatar: '👱🏻‍♂️', country: '🇮🇪' },
+  ],
+  ru: [
+    { id: 'r1', name: 'Zhang W.', xp: 920, avatar: '👨🏻', country: '🇨🇳' },
+    { id: 'r2', name: 'Helga M.', xp: 800, avatar: '👩🏼', country: '🇩🇪' },
+    { id: 'r3', name: 'Ali H.', xp: 600, avatar: '🧔🏽', country: '🇮🇷' },
+    { id: 'r4', name: 'Tom C.', xp: 450, avatar: '👨🏼', country: '🇺🇸' },
+  ],
+  default: [
+    { id: 'u1', name: 'Pierre D.', xp: 850, avatar: '👨🏼', country: '🇫🇷' },
+    { id: 'u2', name: 'Maria S.', xp: 720, avatar: '👩🏻', country: '🇪🇸' },
+    { id: 'u3', name: 'Hans M.', xp: 640, avatar: '👱🏻‍♂️', country: '🇩🇪' },
+  ]
+};
+
+// Generador de niveles iniciales para asegurar copias independientes
+const getInitialLevels = () => [
+  { id: 1, status: 'current', icon: 'star', pos: 0 },
+  { id: 2, status: 'locked', icon: 'book', pos: 1 },
+  { id: 3, status: 'locked', icon: 'star', pos: 0 },
+  { id: 4, status: 'locked', icon: 'chest', pos: -1 },
+  { id: 5, status: 'locked', icon: 'trophy', pos: 0 },
+  { id: 6, status: 'locked', icon: 'star', pos: 1 },
+  { id: 7, status: 'locked', icon: 'dumbbell', pos: 0 },
+  { id: 8, status: 'locked', icon: 'book', pos: -1 },
+  { id: 9, status: 'locked', icon: 'chest', pos: 0 },
+  { id: 10, status: 'locked', icon: 'trophy', pos: 1 },
+];
+
+const ALL_COURSE_DATA = {
+  en: { 
+    1: [
+      { id: 'en-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Cat', image: '🐱', correct: true }, { id: 'b', text: 'Dog', image: '🐶', correct: false }, { id: 'c', text: 'Bird', image: '🐦', correct: false }, { id: 'd', text: 'Fish', image: '🐟', correct: false }] },
+      { id: 'en-1-2', type: 'listen', question: 'Escucha y selecciona', audioText: 'Hello', options: [{ id: 'a', text: 'Hola', correct: true }, { id: 'b', text: 'Adiós', correct: false }, { id: 'c', text: 'Gracias', correct: false }] },
+      { id: 'en-1-3', type: 'arrange', question: 'Traduce', target: 'Hola gato', words: ['Hello', 'cat', 'dog', 'bye'], correctOrder: ['Hello', 'cat'] },
+    ],
+    2: [
+      { id: 'en-2-1', type: 'arrange', question: 'Traduce', target: 'El niño come una manzana', words: ['The', 'boy', 'eats', 'an', 'apple', 'runs'], correctOrder: ['The', 'boy', 'eats', 'an', 'apple'] },
+      { id: 'en-2-2', type: 'arrange', question: 'Traduce', target: 'Yo soy un hombre', words: ['I', 'am', 'a', 'man', 'woman'], correctOrder: ['I', 'am', 'a', 'man'] }
+    ],
+    3: [
+        { id: 'en-3-1', type: 'select', question: '¿Qué es "Water"?', options: [{id: 'a', text: 'Agua', image: '💧', correct: true}, {id: 'b', text: 'Pan', image: '🍞', correct: false}] },
+        { id: 'en-3-2', type: 'select', question: '¿Qué es "Bread"?', options: [{id: 'a', text: 'Pan', image: '🍞', correct: true}, {id: 'b', text: 'Manzana', image: '🍎', correct: false}] },
+        { id: 'en-3-3', type: 'listen', question: 'Escucha', audioText: 'Coffee', options: [{id: 'a', text: 'Café', correct: true}, {id: 'b', text: 'Té', correct: false}] }
+    ],
+    5: [
+        { id: 'en-5-1', type: 'arrange', question: 'Traduce (Difícil)', target: 'Ella bebe agua y come pan', words: ['She', 'drinks', 'water', 'and', 'eats', 'bread', 'apple'], correctOrder: ['She', 'drinks', 'water', 'and', 'eats', 'bread'] },
+        { id: 'en-5-2', type: 'listen', question: 'Escucha', audioText: 'Good morning', options: [{id: 'a', text: 'Buenos días', correct: true}, {id: 'b', text: 'Buenas noches', correct: false}] }
+    ],
+    6: [
+        { id: 'en-6-1', type: 'select', question: '¿Cómo se dice "Caballo"?', options: [{id: 'a', text: 'Horse', image: '🐴', correct: true}, {id: 'b', text: 'Cow', image: '🐮', correct: false}] },
+        { id: 'en-6-2', type: 'select', question: '¿Cómo se dice "Cerdo"?', options: [{id: 'a', text: 'Pig', image: '🐷', correct: true}, {id: 'b', text: 'Dog', image: '🐶', correct: false}] }
+    ],
+    7: [
+        { id: 'en-7-1', type: 'arrange', question: 'Traduce', target: 'Los gatos comen', words: ['The', 'cats', 'eat', 'dog', 's'], correctOrder: ['The', 'cats', 'eat'] },
+        { id: 'en-7-2', type: 'select', question: 'Selecciona "Niñas"', options: [{id:'a', text:'Girls', correct:true}, {id:'b', text:'Boys', correct:false}] }
+    ],
+    8: [
+        { id: 'en-8-1', type: 'select', question: '¿Qué es "Red"?', options: [{id:'a', text:'Rojo', image:'🔴', correct:true}, {id:'b', text:'Azul', image:'🔵', correct:false}] },
+        { id: 'en-8-2', type: 'arrange', question: 'Traduce', target: 'Una manzana roja', words: ['A', 'red', 'apple', 'blue'], correctOrder: ['A', 'red', 'apple'] }
+    ],
+    10: [
+        { id: 'en-10-1', type: 'arrange', question: 'Traduce', target: 'El niño pequeño come una manzana grande', words: ['The', 'small', 'boy', 'eats', 'a', 'big', 'apple'], correctOrder: ['The', 'small', 'boy', 'eats', 'a', 'big', 'apple'] },
+        { id: 'en-10-2', type: 'listen', question: 'Escucha', audioText: 'Goodbye my friend', options: [{id:'a', text:'Adiós mi amigo', correct:true}, {id:'b', text:'Hola mi amigo', correct:false}] }
+    ]
+  },
+  default: {
+    1: [
+      { id: 'def-1', type: 'select', question: 'Básico 1', options: [{ id: 'a', text: 'A', correct: true }, { id: 'b', text: 'B', correct: false }] }
+    ],
+    2: [
+      { id: 'def-2', type: 'arrange', question: 'Frase 2', target: 'Test', words: ['Test'], correctOrder: ['Test'] }
+    ],
+    3: [{ id: 'def-3', type: 'select', question: 'Actividad 3', options: [{id:'a', text:'OK', correct:true}] }],
+    5: [{ id: 'def-5', type: 'arrange', question: 'Desafío', target: 'Win', words: ['Win'], correctOrder: ['Win'] }],
+    6: [{ id: 'def-6', type: 'select', question: 'Nivel 6', options: [{id:'a', text:'OK', correct:true}] }],
+    7: [{ id: 'def-7', type: 'select', question: 'Nivel 7', options: [{id:'a', text:'OK', correct:true}] }],
+    8: [{ id: 'def-8', type: 'select', question: 'Nivel 8', options: [{id:'a', text:'OK', correct:true}] }],
+    10: [{ id: 'def-10', type: 'select', question: 'Final', options: [{id:'a', text:'OK', correct:true}] }],
+  }
+};
+
+// --- UTILIDADES ---
+
+const usePersistedState = (key, defaultValue, userId) => {
+  const specificKey = `lingo_${userId}_${key}`;
+  const [state, setState] = useState(() => {
+    try { return JSON.parse(window.localStorage.getItem(specificKey)) || defaultValue; } catch { return defaultValue; }
+  });
+  useEffect(() => { window.localStorage.setItem(specificKey, JSON.stringify(state)); }, [specificKey, state]);
+  return [state, setState];
+};
+
+const playSound = (type) => {
+  const sounds = { correct: 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3', wrong: 'https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3', complete: 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3', click: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3', buy: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3', chest: 'https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3', streak: 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3' };
+  if (sounds[type]) { const audio = new Audio(sounds[type]); audio.volume = 0.5; audio.play().catch(() => {}); }
+  if ((type === 'wrong' || type === 'buy') && navigator.vibrate) navigator.vibrate(type === 'wrong' ? 200 : 100);
+};
+
+// --- TTS UTILITY ---
+const sayWord = (text, langId) => {
+  if (!('speechSynthesis' in window)) return;
+  const langMap = {
+    'en': 'en-US', 'es': 'es-ES', 'fr': 'fr-FR', 
+    'de': 'de-DE', 'it': 'it-IT', 'pt': 'pt-BR', 
+    'ru': 'ru-RU'
+  };
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = langMap[langId] || 'en-US';
+  utterance.rate = 0.9;
+  window.speechSynthesis.speak(utterance);
+};
+
+// --- COMPONENTES UI ---
+
+const Button3D = ({ children, onClick, color = 'green', disabled = false, fullWidth = false, className = '', size = 'normal', ...props }) => {
+  const colors = { green: 'bg-green-500 border-green-600 hover:bg-green-400 text-white', red: 'bg-red-500 border-red-600 hover:bg-red-400 text-white', blue: 'bg-blue-500 border-blue-600 hover:bg-blue-400 text-white', gray: 'bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed', white: 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50', outline: 'bg-transparent border-2 border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-slate-300', purple: 'bg-purple-500 border-purple-600 hover:bg-purple-400 text-white', orange: 'bg-orange-500 border-orange-600 hover:bg-orange-400 text-white' };
+  const sizes = { small: 'py-2 px-4 text-sm border-b-2', normal: 'py-3 px-6 text-lg border-b-4' };
+  return ( <button onClick={() => !disabled && onClick && onClick()} disabled={disabled} className={`relative rounded-2xl font-bold tracking-wide uppercase ${colors[disabled ? 'gray' : color]} ${sizes[size]} ${!disabled ? 'active:border-b-0 active:translate-y-[2px] cursor-pointer transition-all' : ''} ${fullWidth ? 'w-full' : ''} ${className}`} {...props}>{children}</button> );
+};
+
+const ProgressBar = ({ current, total, color = 'bg-green-500' }) => ( <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden"><div className={`h-full ${color} transition-all duration-500 ease-out rounded-full`} style={{ width: `${Math.min(100, (current / total) * 100)}%` }} /></div> );
+
+const Mascot = ({ emotion, hasSuit }) => {
+  const getAnimation = () => emotion === 'happy' ? 'animate-bounce text-green-500' : emotion === 'sad' ? 'animate-pulse text-red-500' : 'text-green-500';
+  const getMouth = () => emotion === 'happy' ? <path d="M8 15 Q12 18 16 15" stroke="currentColor" strokeWidth="2" fill="none" /> : emotion === 'sad' ? <path d="M8 17 Q12 14 16 17" stroke="currentColor" strokeWidth="2" fill="none" /> : <path d="M10 16 H14" stroke="currentColor" strokeWidth="2" />;
+  const getEyes = () => emotion === 'sad' ? <><path d="M7 9 L10 11 M10 9 L7 11" stroke="currentColor" strokeWidth="2" /><path d="M14 9 L17 11 M17 9 L14 11" stroke="currentColor" strokeWidth="2" /></> : <><circle cx="9" cy="10" r="2" fill="currentColor" /><circle cx="15" cy="10" r="2" fill="currentColor" /></>;
+  return ( <div className={`transition-all duration-300 ${getAnimation()}`}><svg width="80" height="80" viewBox="0 0 24 24" fill="none" className="drop-shadow-lg"><path d="M12 2C7 2 3 7 3 14C3 19 6 22 12 22C18 22 21 19 21 14C21 7 17 2 12 2Z" fill={emotion === 'sad' ? '#FECACA' : '#86EFAC'} stroke={emotion === 'sad' ? '#EF4444' : '#22C55E'} strokeWidth="2"/><path d="M3 14 C1 14 1 18 3 18" stroke={emotion === 'sad' ? '#EF4444' : '#22C55E'} strokeWidth="2" fill="white"/><path d="M21 14 C23 14 23 18 21 18" stroke={emotion === 'sad' ? '#EF4444' : '#22C55E'} strokeWidth="2" fill="white"/>{hasSuit && <g><path d="M8 22L12 14L16 22H8Z" fill="#3B82F6" /><path d="M12 14L10 22H14L12 14Z" fill="#1D4ED8" /><circle cx="12" cy="14" r="1.5" fill="#EF4444" /></g>}<g className="text-slate-700">{getEyes()}{getMouth()}</g></svg></div> );
+};
+
+// --- MODALES ---
+
+const PlansModal = ({ onClose, onSelectPlan, currentPlan, t }) => (
+  <div className="fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4 animate-in fade-in">
+    <div className="bg-white w-full max-w-4xl rounded-3xl p-6 overflow-hidden flex flex-col h-[85vh] md:h-auto shadow-2xl relative animate-in zoom-in-95">
+       <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 z-10"><X size={32} /></button>
+       <div className="text-center mb-8 mt-2"><h2 className="text-3xl font-black text-slate-700 mb-2">{t('plan_title')}</h2><p className="text-slate-500">{t('plan_desc')}</p></div>
+       <div className="grid md:grid-cols-3 gap-4 overflow-y-auto pb-4 px-2">
+          {['free', 'premium', 'student'].map(planType => (
+             <div key={planType} className={`border-2 rounded-2xl p-6 flex flex-col gap-4 relative transition-all hover:shadow-lg ${currentPlan === planType ? `border-${planType === 'free' ? 'green' : planType === 'premium' ? 'purple' : 'orange'}-500 bg-${planType === 'free' ? 'green' : planType === 'premium' ? 'purple' : 'orange'}-50 ring-2` : 'border-slate-200'}`}>
+                <h3 className={`text-xl font-black text-${planType === 'free' ? 'slate-700' : planType === 'premium' ? 'purple-600' : 'orange-500'}`}>{t(`plan_${planType}`)}</h3>
+                <ul className="text-sm space-y-3 flex-1 text-slate-600">
+                   <li className="flex gap-2"><Heart className="text-red-500 shrink-0" size={18}/> {planType === 'free' ? '5 Vidas' : '∞ Vidas'}</li>
+                   <li className="flex gap-2">📺 {planType === 'free' ? 'Ads' : 'No Ads'}</li>
+                </ul>
+                <Button3D color={currentPlan === planType ? 'gray' : planType === 'free' ? 'outline' : planType === 'premium' ? 'purple' : 'orange'} onClick={() => onSelectPlan(planType)} disabled={currentPlan === planType}>{currentPlan === planType ? t('current') : planType === 'free' ? t('select') : '$' + (planType === 'premium' ? '9.99' : '4.99')}</Button3D>
+             </div>
+          ))}
+       </div>
+    </div>
+  </div>
+);
+
+const HeartsModal = ({ onRefill, onExit, userGems, onOpenPlans, t }) => (
+  <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 animate-in fade-in">
+    <div className="bg-white w-full max-w-sm rounded-3xl p-6 flex flex-col items-center text-center shadow-2xl animate-in zoom-in-95">
+      <div className="mb-4 relative"><Heart size={80} className="text-gray-200 fill-gray-100" /><Heart size={40} className="text-red-500 fill-current absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" /></div>
+      <h2 className="text-2xl font-black text-slate-700 mb-2">{t('out_of_lives')}</h2>
+      <div className="w-full space-y-3 mt-4">
+        <Button3D fullWidth color="green" onClick={onRefill} disabled={userGems < 300}><div className="flex items-center justify-center gap-2"><span>{t('refill_btn')}</span><div className="flex items-center text-white/90 text-sm bg-black/10 px-2 py-0.5 rounded-lg"><Gem size={14} className="mr-1" /> 300</div></div></Button3D>
+        <Button3D fullWidth color="purple" onClick={onOpenPlans}><div className="flex items-center justify-center gap-2"><Crown size={20} fill="currentColor" /><span>{t('unlimited')}</span></div></Button3D>
+        <div className="pt-2"><button onClick={onExit} className="text-slate-400 font-bold uppercase tracking-widest text-sm hover:text-slate-600">{t('no_thanks')}</button><div className="mt-2 flex items-center justify-center gap-2 text-slate-400 text-sm font-medium"><Clock size={16} /><span>{t('wait_text')}</span></div></div>
+      </div>
+    </div>
+  </div>
+);
+
+const CourseModal = ({ onClose, onSelectCourse, currentCourseId, t }) => (
+  <div className="fixed inset-0 bg-black/60 z-[120] flex items-center justify-center p-4 animate-in fade-in">
+    <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95">
+       <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 z-10"><X size={32} /></button>
+       <h2 className="text-2xl font-black text-slate-700 mb-6 text-center">{t('courses')}</h2>
+       <div className="grid gap-3 max-h-[60vh] overflow-y-auto">
+          {COURSES.map(course => (
+             <div key={course.id} onClick={() => onSelectCourse(course)} className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all hover:bg-slate-50 active:scale-95 ${currentCourseId === course.id ? 'border-green-500 bg-green-50 ring-2 ring-green-100' : 'border-slate-200'}`}>
+                <span className="text-4xl shadow-sm rounded-md border border-slate-100">{course.flag}</span><span className="font-bold text-slate-700 text-lg flex-1">{course.name}</span>{currentCourseId === course.id && <Check className="text-green-500" size={24} strokeWidth={3} />}
+             </div>
+          ))}
+       </div>
+    </div>
+  </div>
+);
+
+// --- PANTALLAS DE LOGIN/LANDING ---
+
+const AuthScreen = ({ mode, onAuth, onBack }) => {
+  const [username, setUsername] = useState('');
+  return (
+    <div className="h-full flex flex-col items-center justify-center bg-white p-6 animate-in slide-in-from-right">
+      <header className="absolute top-6 left-6"><button onClick={onBack} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><ChevronRight className="rotate-180 text-slate-400" size={32} /></button></header>
+      <div className="w-full max-w-sm text-center">
+        <h2 className="text-2xl font-black text-slate-700 mb-8">{mode === 'register' ? 'Crea tu perfil' : 'Bienvenido de nuevo'}</h2>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Nombre" className="w-full p-4 mb-4 border-2 border-slate-200 rounded-2xl font-bold bg-slate-50" />
+        <Button3D fullWidth color={mode === 'register' ? 'green' : 'blue'} onClick={() => username.trim() && onAuth(username.trim())}>{mode === 'register' ? 'CREAR' : 'ENTRAR'}</Button3D>
+      </div>
+    </div>
+  );
+};
+
+const LandingScreen = ({ onStart, onLogin }) => (
+  <div className="h-full flex flex-col items-center justify-center bg-white p-6 text-center animate-in zoom-in">
+    <div className="mb-12 flex gap-4 text-6xl"><span className="animate-bounce">🦉</span><span className="animate-bounce delay-100">🌍</span></div>
+    <h1 className="text-3xl font-extrabold text-slate-700 mb-4">LingoQuest</h1>
+    <div className="w-full space-y-4"><Button3D fullWidth color="green" onClick={onStart}>EMPEZAR</Button3D><Button3D fullWidth color="outline" onClick={onLogin}>YA TENGO CUENTA</Button3D></div>
+  </div>
+);
+
+const OnboardingScreen = ({ onSelectCourse, onBack }) => (
+  <div className="h-full flex flex-col bg-white max-w-2xl mx-auto p-6 animate-in slide-in-from-right">
+    <header className="flex items-center mb-8"><button onClick={onBack} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><ChevronRight className="rotate-180 text-slate-400" size={32} /></button></header>
+    <h2 className="text-2xl font-bold text-slate-700 mb-8">Course?</h2>
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+      {COURSES.map(course => (
+        <div key={course.id} onClick={() => onSelectCourse(course)} className="border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-4 hover:bg-slate-50 cursor-pointer transition-all active:scale-95">
+          <span className="text-4xl shadow-sm">{course.flag}</span><span className="font-bold text-slate-700 text-lg">{course.name}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// --- COMPONENTES PRINCIPALES ---
+
+const LearnTab = ({ startLesson, levels, openChest, t }) => (
+  <div className="flex flex-col items-center pb-32 animate-in fade-in">
+    {/* UNIT 1 */}
+    <div className="w-full bg-green-500 p-6 rounded-2xl text-white mb-10 flex justify-between items-center border-b-4 border-green-600 shadow-sm mx-4">
+      <div><h2 className="font-bold text-2xl">{t('unit')} 1</h2><p className="opacity-90 text-lg">{t('unit_desc')}</p></div><div className="bg-white/20 p-2 rounded-xl"><Bird size={32} className="text-white" /></div>
+    </div>
+    <div className="space-y-6 w-full max-w-[300px] mb-10">
+      {levels.slice(0, 5).map(level => (
+        <div key={level.id} className="relative flex flex-col items-center z-10" style={{ transform: `translateX(${level.pos * 50}px)` }}>
+          <div className="relative group">
+            <button 
+              onClick={() => {
+                 if (level.icon === 'chest') {
+                    if (level.status !== 'completed') openChest(level.id);
+                 } else {
+                    startLesson(level.id);
+                 }
+              }} 
+              className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-b-8 transition-transform active:border-b-0 active:translate-y-2 ${level.status === 'current' ? 'bg-green-500 border-green-600 cursor-pointer animate-pulse-slow' : level.status === 'completed' ? 'bg-yellow-400 border-yellow-500 cursor-pointer' : 'bg-gray-200 border-gray-300 cursor-pointer hover:bg-gray-300'}`}
+            >
+              {level.icon === 'chest' ? <Gift size={40} className={level.status === 'completed' ? "text-yellow-700" : "text-white"} /> :
+               level.status === 'current' ? <Star size={40} fill="white" className="text-white" /> : 
+               level.status === 'completed' ? <Check size={40} className="text-yellow-700" /> : 
+               level.icon === 'book' ? <BookOpen size={40} className="text-gray-400" /> :
+               level.icon === 'dumbbell' ? <Dumbbell size={40} className="text-gray-400" /> :
+               level.icon === 'trophy' ? <Trophy size={40} className="text-gray-400" /> :
+               <div className="opacity-40"><Star size={40} className="text-gray-400" /></div>}
+            </button>
+            {level.status === 'current' && <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-xl shadow-lg border-2 border-slate-200 whitespace-nowrap animate-bounce font-bold text-slate-700 z-20">{t('start')}<div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-r-2 border-b-2 border-slate-200"></div></div>}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* UNIT 2 */}
+    <div className="w-full bg-blue-500 p-6 rounded-2xl text-white mb-10 flex justify-between items-center border-b-4 border-blue-600 shadow-sm mx-4">
+      <div><h2 className="font-bold text-2xl">{t('unit')} 2</h2><p className="opacity-90 text-lg">{t('unit_2_desc')}</p></div><div className="bg-white/20 p-2 rounded-xl"><Bird size={32} className="text-white" /></div>
+    </div>
+    <div className="space-y-6 w-full max-w-[300px]">
+      {levels.slice(5).map(level => (
+        <div key={level.id} className="relative flex flex-col items-center z-10" style={{ transform: `translateX(${level.pos * 50}px)` }}>
+          <div className="relative group">
+            <button 
+              onClick={() => {
+                 if (level.icon === 'chest') {
+                    if (level.status !== 'completed') openChest(level.id);
+                 } else {
+                    startLesson(level.id);
+                 }
+              }} 
+              className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-b-8 transition-transform active:border-b-0 active:translate-y-2 ${level.status === 'current' ? 'bg-blue-500 border-blue-600 cursor-pointer animate-pulse-slow' : level.status === 'completed' ? 'bg-yellow-400 border-yellow-500 cursor-pointer' : 'bg-gray-200 border-gray-300 cursor-pointer hover:bg-gray-300'}`}
+            >
+              {level.icon === 'chest' ? <Gift size={40} className={level.status === 'completed' ? "text-yellow-700" : "text-white"} /> :
+               level.status === 'current' ? <Star size={40} fill="white" className="text-white" /> : 
+               level.status === 'completed' ? <Check size={40} className="text-yellow-700" /> : 
+               level.icon === 'book' ? <BookOpen size={40} className="text-gray-400" /> :
+               level.icon === 'dumbbell' ? <Dumbbell size={40} className="text-gray-400" /> :
+               level.icon === 'trophy' ? <Trophy size={40} className="text-gray-400" /> :
+               <div className="opacity-40"><Star size={40} className="text-gray-400" /></div>}
+            </button>
+          </div>
+        </div>
+      ))}
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" className="w-24 opacity-20 mt-10 mx-auto" alt="castle"/>
+    </div>
+  </div>
+);
+
+const LeaderboardTab = ({ courseId, userXp, userName, t }) => {
+  // Obtener la lista correcta basada en el curso seleccionado o fallback a 'default'
+  const baseList = LEADERBOARD_DATA[courseId] || LEADERBOARD_DATA['default'];
+  
+  // Crear objeto del usuario actual
+  const currentUser = { id: 'me', name: userName + ' (Tú)', xp: userXp, avatar: USER_AVATAR, country: '🌍', isUser: true };
+  
+  // Combinar y ordenar
+  const sortedList = [...baseList, currentUser].sort((a, b) => b.xp - a.xp);
+
+  return (
+    <div className="max-w-md mx-auto w-full pt-6 animate-in slide-in-from-right">
+      <h2 className="text-2xl font-bold text-slate-700 mb-6 text-center">{t('league')} 💎</h2>
+      <div className="border-2 border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+        {sortedList.map((user, idx) => (
+          <div key={user.id} className={`flex items-center p-4 border-b border-slate-100 ${user.isUser ? 'bg-blue-50' : 'bg-white'}`}>
+            <span className={`font-bold w-8 ${idx < 3 ? 'text-yellow-500' : 'text-slate-400'}`}>{idx + 1}</span>
+            <div className="relative">
+              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-xl mr-4 border border-slate-200">
+                {user.avatar}
+              </div>
+              <div className="absolute -bottom-1 right-2 text-sm drop-shadow-sm" title="País de origen">
+                {user.country}
+              </div>
+            </div>
+            <span className={`flex-1 font-bold ${user.isUser ? 'text-blue-600' : 'text-slate-700'}`}>{user.name}</span>
+            <span className="font-bold text-slate-500">{user.xp} XP</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const QuestsTab = ({ quests, onClaim, t }) => (
+  <div className="max-w-md mx-auto w-full pt-6 space-y-4 animate-in slide-in-from-right">
+    <h2 className="text-2xl font-bold text-slate-700 mb-6">{t('daily_quests')}</h2>
+    {quests.map(quest => {
+      const isComplete = quest.current >= quest.total;
+      return (
+        <div key={quest.id} className={`border-2 rounded-2xl p-4 flex gap-4 items-center shadow-sm transition-all ${isComplete ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white'} ${quest.claimed ? 'opacity-60' : ''}`}>
+          <div className="text-4xl">{quest.type === 'xp' ? '⚡' : quest.type === 'lesson' ? '📚' : '🗣️'}</div>
+          <div className="flex-1">
+            <div className="flex justify-between mb-2"><h3 className="font-bold text-slate-700">{t(quest.titleKey)}</h3>{quest.claimed ? <span className="font-bold text-green-600 flex items-center gap-1"><Check size={16} /></span> : <span className="font-bold text-yellow-500">+{quest.reward}</span>}</div>
+            {!quest.claimed && isComplete ? <Button3D size="small" color="blue" fullWidth onClick={() => onClaim(quest)} className="animate-pulse"><div className="flex items-center justify-center gap-2"><Gift size={18} /> {t('claim')}</div></Button3D> : <ProgressBar current={quest.current} total={quest.total} color={isComplete ? 'bg-green-500' : 'bg-yellow-400'} />}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+);
+
+const ShopTab = ({ userGems, onBuy, purchasedItems, onOpenPlans, t }) => (
+  <div className="max-w-md mx-auto w-full pt-6 animate-in slide-in-from-right">
+    <div className="flex justify-between items-end mb-6"><h2 className="text-2xl font-bold text-slate-700">{t('shop')}</h2><div className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 border-2 border-blue-100 shadow-sm"><Gem fill="currentColor" size={20} /><span className="text-xl">{userGems}</span></div></div>
+    <div className="mb-8 cursor-pointer" onClick={onOpenPlans}><div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group"><div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 group-hover:scale-110 transition-transform"></div><div className="relative z-10"><div className="flex items-center gap-2 mb-2"><Crown className="text-yellow-300" fill="currentColor" /><h3 className="text-xl font-black">{t('super_lingo')}</h3></div><p className="opacity-90 mb-4 text-sm font-medium">{t('super_desc')}</p><button className="bg-white text-purple-600 px-4 py-2 rounded-xl font-bold text-sm shadow-md hover:bg-slate-50 transition-colors">{t('see_plans')}</button></div></div></div>
+    <div className="grid gap-4">
+      {SHOP_ITEMS.map(item => {
+        const isBought = purchasedItems[item.id];
+        const canAfford = userGems >= item.cost;
+        return (
+          <div key={item.id} className="border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors bg-white shadow-sm">
+            <div className="text-4xl">{item.icon}</div>
+            <div className="flex-1"><h3 className="font-bold text-slate-700">{t(item.nameKey)}</h3><p className="text-slate-400 text-sm mb-2">{t(item.descKey)}</p></div>
+            <Button3D size="small" color={isBought ? 'gray' : canAfford ? 'white' : 'gray'} className="min-w-[100px]" onClick={() => onBuy(item)} disabled={isBought}>{isBought ? <span className="text-green-600 flex items-center gap-1"><Check size={16} /> {t('ready')}</span> : <span className={`flex items-center gap-1 ${canAfford ? 'text-blue-500' : 'text-slate-400'}`}><Gem size={16} /> {item.cost}</span>}</Button3D>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
+const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, hasSuit, gems, setGems, plan, onOpenPlans, t }) => {
+  const [queue, setQueue] = useState(() => { const courseContent = ALL_COURSE_DATA[courseId] || ALL_COURSE_DATA['en']; const questions = courseContent[levelId] || (ALL_COURSE_DATA['default'][1]); return [...questions]; });
+  const [initialCount] = useState(() => queue.length);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [sentenceOrder, setSentenceOrder] = useState([]);
+  const [status, setStatus] = useState('idle');
+  const [mascotEmotion, setMascotEmotion] = useState('happy');
+  const [showHeartsModal, setShowHeartsModal] = useState(false);
+  const [mistakes, setMistakes] = useState(0); 
+  const question = queue[0];
+
+  useEffect(() => { if (!question && status === 'idle' && !showHeartsModal) onComplete({ perfect: mistakes === 0 }); }, [queue, status, onComplete, question, showHeartsModal, mistakes]);
+  const handleRefillLives = () => { if (gems >= 300) { setGems(p => p - 300); setLives(5); setShowHeartsModal(false); playSound('buy'); } else { playSound('wrong'); } };
+  
+  if (!question && !showHeartsModal) return null;
+  if (showHeartsModal) return <HeartsModal onExit={onExit} onRefill={handleRefillLives} userGems={gems} onOpenPlans={() => { setShowHeartsModal(false); onOpenPlans(); }} t={t} />;
+
+  const handleCheck = () => {
+    let isCorrect = false;
+    if (question.type === 'select' || question.type === 'listen') { const selected = question.options.find(opt => opt.id === selectedOption); isCorrect = selected?.correct; } else if (question.type === 'arrange') isCorrect = JSON.stringify(sentenceOrder) === JSON.stringify(question.correctOrder);
+    if (isCorrect) { setStatus('correct'); setMascotEmotion('happy'); playSound('correct'); } else { setStatus('wrong'); setMascotEmotion('sad'); setMistakes(m => m + 1); if (plan === 'free') setLives(l => Math.max(0, l - 1)); playSound('wrong'); }
+  };
+  const handleContinue = () => {
+    if (lives === 0 && plan === 'free') { setShowHeartsModal(true); return; }
+    if (status === 'correct') { setCompletedCount(p => p + 1); setQueue(p => p.slice(1)); } else { setQueue(p => { const [f, ...r] = p; return [...r, f]; }); }
+    setStatus('idle'); setMascotEmotion('happy'); setSelectedOption(null); setSentenceOrder([]);
+  };
+
+  const handleSelectOption = (opt) => {
+    if (status !== 'idle') return;
+    setSelectedOption(opt.id);
+    if (opt.text && (question.type === 'listen' || question.type === 'select')) {
+        // En preguntas de tipo 'listen', las opciones suelen estar en el idioma de la app (es), pero en este contexto educativo
+        // si es una palabra en el idioma que aprendes, la pronunciamos.
+        // Asumimos que si es texto simple en una lección, pronunciamos en el idioma del curso.
+        sayWord(opt.text, courseId);
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col bg-white max-w-3xl mx-auto w-full relative z-50">
+      <div className="p-6 flex items-center gap-4"><button onClick={onExit}><X className="text-slate-400 hover:text-slate-600" /></button><ProgressBar current={completedCount} total={initialCount} /><div className={`flex items-center font-bold gap-1 animate-pulse ${plan === 'free' ? 'text-red-500' : 'text-purple-500'}`} onClick={onOpenPlans}><Heart fill="currentColor" /> {plan === 'free' ? lives : '∞'}</div></div>
+      <div className="flex-1 overflow-y-auto px-6 pb-40"><h2 className="text-2xl font-bold text-slate-700 mt-4 mb-4">{question.question}</h2>{question.type !== 'arrange' && <div className="flex justify-center mb-6"><Mascot emotion={mascotEmotion} hasSuit={hasSuit} /></div>}
+      {question.type === 'select' && <div className="grid grid-cols-2 gap-4">{question.options.map(opt => (<div key={opt.id} onClick={() => handleSelectOption(opt)} className={`border-2 rounded-2xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all active:scale-95 ${selectedOption === opt.id ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200'}`}>{opt.image && <span className="text-4xl">{opt.image}</span>}<span className="text-lg text-slate-700 font-bold">{opt.text}</span></div>))}</div>}
+      {question.type === 'listen' && (
+        <div className="flex flex-col items-center gap-8">
+            <Button3D 
+                color="blue" 
+                onClick={() => sayWord(question.audioText, courseId)} 
+                className="rounded-full w-32 h-32 flex items-center justify-center"
+                data-text={question.audioText}
+                data-lang={courseId}
+            >
+                <Volume2 size={48}/>
+            </Button3D>
+            {question.audioText && <p className="text-slate-400 font-bold">CLICK TO LISTEN</p>}
+            <div className="grid w-full gap-2">
+                {question.options.map(opt => (
+                    <div key={opt.id} onClick={() => handleSelectOption(opt)} className={`p-4 border-2 rounded-xl cursor-pointer font-bold ${selectedOption === opt.id ? 'bg-blue-100 border-blue-500 text-blue-600' : 'bg-white'}`}>{opt.text}</div>
+                ))}
+            </div>
+        </div>
+      )}
+      {question.type === 'arrange' && <div className="space-y-8"><div className="bg-white border-2 border-slate-200 p-4 rounded-2xl text-lg font-bold text-slate-700">"{question.target}"</div><div className="min-h-[60px] border-b-2 border-slate-200 flex flex-wrap gap-2 py-2">{sentenceOrder.map((word, i) => (<button key={i} onClick={() => setSentenceOrder(sentenceOrder.filter((_, idx) => idx !== i))} className="bg-white border border-slate-300 px-3 py-2 rounded-xl font-bold">{word}</button>))}</div><div className="flex flex-wrap gap-2 justify-center">{question.words.map((word, i) => (<button key={i} onClick={() => !sentenceOrder.includes(word) && setSentenceOrder([...sentenceOrder, word])} className={`border-b-4 px-4 py-2 rounded-xl font-bold ${sentenceOrder.includes(word) ? 'bg-slate-200 text-transparent' : 'bg-white border-slate-300'}`} disabled={sentenceOrder.includes(word)}>{word}</button>))}</div></div>}
+      </div>
+      <div className={`fixed bottom-0 left-0 right-0 p-6 border-t-2 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'wrong' ? 'bg-red-100 border-red-200' : 'bg-white border-slate-200'}`}><div className="max-w-3xl mx-auto flex items-center justify-between">{status !== 'idle' && <div className={`flex items-center gap-4 font-bold text-xl ${status === 'correct' ? 'text-green-700' : 'text-red-700'}`}>{status === 'correct' ? <Check size={28}/> : <X size={28}/>}<div><div className="text-lg">{status === 'correct' ? t('correct') : t('wrong')}</div></div></div>}<div className={`${status === 'idle' ? 'w-full' : ''}`}>{status === 'idle' ? <Button3D fullWidth color="green" onClick={handleCheck} disabled={(!selectedOption && question.type !== 'arrange') || (question.type === 'arrange' && sentenceOrder.length === 0)}>{t('check')}</Button3D> : <Button3D color={status === 'correct' ? 'green' : 'red'} onClick={handleContinue}>{t('continue')}</Button3D>}</div></div></div>
+    </div>
+  );
+};
+
+const SuccessScreen = ({ onFinish, xpGained, gemsGained, isPerfect, t }) => {
+  useEffect(() => { playSound('complete'); }, []);
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-8 bg-white text-center animate-in zoom-in">
+      <div className="mb-8 relative z-10"><Trophy size={120} className="text-yellow-400 relative z-10 animate-bounce" /></div>
+      <h1 className="text-4xl font-extrabold text-yellow-500 mb-2">{t('correct')}</h1>
+      {isPerfect && <div className="bg-orange-100 text-orange-600 px-4 py-1 rounded-full font-black text-sm mb-4 animate-pulse">{t('perfect_lesson')}</div>}
+      <div className="flex gap-4 mb-8">
+         <div className="bg-yellow-50 border-2 border-yellow-200 p-4 rounded-xl flex flex-col items-center min-w-[100px]"><span className="text-yellow-600 font-bold text-xs">{t('xp_gained')}</span><span className="text-2xl font-black text-slate-700">+{xpGained}</span></div>
+         {gemsGained > 0 && <div className="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl flex flex-col items-center min-w-[100px]"><span className="text-blue-600 font-bold text-xs">{t('gems_gained')}</span><span className="text-2xl font-black text-slate-700">+{gemsGained}</span></div>}
+      </div>
+      <Button3D fullWidth color="green" onClick={onFinish} className="max-w-sm animate-pulse">{t('continue')}</Button3D>
+    </div>
+  );
+};
+
+const StreakScreen = ({ streak, onContinue, t }) => {
+  useEffect(() => { playSound('streak'); }, []);
+  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-8 bg-white text-center animate-in fade-in bg-gradient-to-b from-orange-50 to-white">
+      <div className="mb-8 relative z-10">
+        <Flame size={150} className="text-orange-500 fill-orange-500 animate-bounce drop-shadow-2xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-black text-4xl">{streak}</div>
+      </div>
+      <h1 className="text-3xl font-extrabold text-orange-500 mb-2 uppercase">{t('streak_title')}</h1>
+      <p className="text-lg text-slate-500 font-bold mb-8">{streak} {t('streak_days')}</p>
+      
+      <div className="flex gap-2 mb-12">
+        {days.map((d, i) => (
+          <div key={i} className="flex flex-col items-center gap-2">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 ${i === 3 ? 'bg-orange-500 border-orange-600 text-white scale-110 shadow-lg' : 'bg-white border-slate-200 text-slate-400'}`}>
+              {i === 3 ? <Check size={20} strokeWidth={4} /> : i < 3 ? <Check size={20} className="text-orange-500" /> : ''}
+            </div>
+            <span className={`text-xs font-bold ${i === 3 ? 'text-orange-500' : 'text-slate-300'}`}>{d}</span>
+          </div>
+        ))}
+      </div>
+      
+      <p className="text-slate-400 font-bold mb-8">{t('streak_keep')}</p>
+      <Button3D fullWidth color="orange" onClick={onContinue} className="max-w-sm">{t('continue')}</Button3D>
+    </div>
+  );
+};
+
+// --- GAMEAPP ---
+
+const GameApp = ({ user, onLogout }) => {
+  const [activeTab, setActiveTab] = usePersistedState('lingo_tab', 'learn', user);
+  const [course, setCourse] = usePersistedState('lingo_course', null, user);
+  const [lives, setLives] = usePersistedState('lingo_lives', 5, user);
+  const [xp, setXp] = usePersistedState('lingo_xp', 0, user);
+  const [gems, setGems] = usePersistedState('lingo_gems', 500, user); 
+  const [streak, setStreak] = usePersistedState('lingo_streak', 0, user);
+  const [plan, setPlan] = usePersistedState('lingo_plan', 'free', user);
+  const [quests, setQuests] = usePersistedState('lingo_quests', INITIAL_QUESTS, user);
+  const [hasSuit, setHasSuit] = usePersistedState('lingo_suit', false, user);
+  const [appLanguage, setAppLanguage] = usePersistedState('lingo_app_lang', 'es', user);
+  // Almacena el progreso de niveles por ID de curso: { 'en': [...levels], 'fr': [...levels] }
+  const [allLevelsProgress, setAllLevelsProgress] = usePersistedState('lingo_all_course_progress', {}, user);
+
+  const [currentView, setCurrentView] = useState('app'); 
+  const [currentLevelId, setCurrentLevelId] = useState(1);
+  const [sessionResults, setSessionResults] = useState({ xp: 0, gems: 0, perfect: false });
+  const [showPlansModal, setShowPlansModal] = useState(false);
+  const [showCourseModal, setShowCourseModal] = useState(false); 
+
+  const t = (key) => (UI_TRANSLATIONS[appLanguage] && UI_TRANSLATIONS[appLanguage][key]) || UI_TRANSLATIONS['es'][key] || key;
+  
+  // Deriva los niveles actuales basados en el curso seleccionado.
+  // Si no hay progreso guardado para este idioma, usa una COPIA FRESCA de getInitialLevels.
+  const currentLevels = (course && allLevelsProgress[course.id]) 
+    ? allLevelsProgress[course.id] 
+    : getInitialLevels();
+
+  const handleResetLevels = () => { 
+    if (window.confirm(t('confirm_reset'))) { 
+      // Reinicia solo el progreso del idioma actual usando una nueva copia limpia
+      setAllLevelsProgress(prev => ({ ...prev, [course.id]: getInitialLevels() })); 
+      playSound('wrong'); 
+    }
+  };
+
+  const startLesson = (levelId) => { setCurrentLevelId(levelId); setCurrentView('lesson'); };
+  
+  const handleChestReward = (levelId) => {
+     setGems(prev => prev + 50);
+     playSound('chest');
+     alert(t('chest_reward') || "You found 50 gems!");
+     
+     // Copia profunda para modificar el estado
+     const newLevels = JSON.parse(JSON.stringify(currentLevels));
+     const idx = newLevels.findIndex(l => l.id === levelId);
+     if (idx !== -1) {
+       newLevels[idx].status = 'completed';
+       if (idx < newLevels.length - 1) newLevels[idx + 1].status = 'current';
+     }
+     
+     // Guarda el progreso específicamente para el idioma actual
+     setAllLevelsProgress(prev => ({ ...prev, [course.id]: newLevels }));
+  };
+
+  const handleLessonComplete = ({ perfect }) => {
+     const earnedXp = 15 + (perfect ? 5 : 0);
+     const earnedGems = 5 + (perfect ? 5 : 0);
+     setSessionResults({ xp: earnedXp, gems: earnedGems, perfect });
+     setCurrentView('success');
+  };
+
+  const handleSuccessContinue = () => {
+    const { xp: gainedXp, gems: gainedGems, perfect } = sessionResults;
+    setXp(p => p + gainedXp); setGems(p => p + gainedGems); setStreak(p => p + 1);
+    
+    setQuests(p => p.map(q => { 
+       if (q.type === 'xp') return { ...q, current: Math.min(q.current + gainedXp, q.total) }; 
+       if (q.type === 'lesson') return { ...q, current: Math.min(q.current + 1, q.total) }; 
+       if (q.type === 'perfect' && perfect) return { ...q, current: Math.min(q.current + 1, q.total) };
+       return q; 
+    }));
+    
+    // Copia profunda para asegurar independencia de referencias
+    const newLevels = JSON.parse(JSON.stringify(currentLevels));
+    const idx = newLevels.findIndex(l => l.id === currentLevelId);
+    
+    if (idx !== -1) { 
+        newLevels[idx].status = 'completed'; 
+        if (idx < newLevels.length - 1) newLevels[idx + 1].status = 'current'; 
+    }
+    
+    // Persiste el progreso solo en la clave del idioma actual
+    setAllLevelsProgress(prev => ({ ...prev, [course.id]: newLevels })); 
+    
+    setCurrentView('streak');
+  };
+
+  const handleStreakContinue = () => {
+    setCurrentView('app');
+  };
+
+  const handleClaimQuest = (quest) => { if (quest.claimed) return; setXp(p => p + quest.rewardXp); setGems(p => p + quest.rewardGems); setQuests(p => p.map(q => q.id === quest.id ? { ...q, claimed: true } : q)); playSound('buy'); };
+  const handleBuyItem = (item) => { if (gems < item.cost) { playSound('wrong'); return; } if (item.id === 1) { if (lives >= 5) { playSound('click'); return; } setLives(5); } else if (item.id === 3) { if (hasSuit) return; setHasSuit(true); } setGems(p => p - item.cost); playSound('buy'); };
+  const handleSelectPlan = (newPlan) => { setPlan(newPlan); setShowPlansModal(false); playSound('buy'); if (newPlan !== 'free') setLives(5); };
+  
+  const handleSwitchCourse = (newCourse) => { 
+      setCourse(newCourse); 
+      setShowCourseModal(false); 
+      playSound('click'); 
+      // No necesitamos resetear manualmente currentLevels, React re-renderizará
+      // y la lógica de `const currentLevels = ...` seleccionará el progreso correcto.
+  };
+
+  if (!course && currentView !== 'onboarding') return <OnboardingScreen onSelectCourse={(c) => setCourse(c)} onBack={onLogout} />;
+  
+  if (currentView === 'lesson') return <LessonScreen courseId={course?.id} levelId={currentLevelId} onExit={() => setCurrentView('app')} onComplete={handleLessonComplete} lives={lives} setLives={setLives} hasSuit={hasSuit} gems={gems} setGems={setGems} xp={xp} setXp={setXp} plan={plan} onOpenPlans={() => setShowPlansModal(true)} t={t} />;
+  if (currentView === 'success') return <SuccessScreen onFinish={handleSuccessContinue} xpGained={sessionResults.xp} gemsGained={sessionResults.gems} isPerfect={sessionResults.perfect} t={t} />;
+  if (currentView === 'streak') return <StreakScreen streak={streak} onContinue={handleStreakContinue} t={t} />;
+
+  const getLivesDisplay = () => { if (plan === 'premium') return <span className="text-purple-500">∞</span>; if (plan === 'student') return <span className="text-orange-500">∞</span>; return lives; };
+  const getLivesColor = () => { if (plan === 'premium') return 'text-purple-500'; if (plan === 'student') return 'text-orange-500'; return lives === 0 ? 'text-gray-400' : 'text-red-500'; };
+
+  return (
+    <div className="bg-white min-h-screen text-slate-700 font-sans">
+      {showPlansModal && <PlansModal onClose={() => setShowPlansModal(false)} onSelectPlan={handleSelectPlan} currentPlan={plan} t={t} />}
+      {showCourseModal && <CourseModal onClose={() => setShowCourseModal(false)} onSelectCourse={handleSwitchCourse} currentCourseId={course?.id} t={t} />}
+      
+      <nav className="hidden md:flex flex-col p-4 border-r-2 border-slate-200 h-full fixed w-[256px] bg-white z-10"><div className="mb-8 px-4 flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('learn')}><Bird size={32} className="text-green-500" /><span className="text-2xl font-bold text-green-500 tracking-tighter">LingoQuest</span></div><div className="space-y-2">{[{ id: 'learn', icon: <Home size={28} />, label: 'learn' }, { id: 'leaderboard', icon: <Trophy size={28} />, label: 'leaderboard' }, { id: 'quests', icon: <Target size={28} />, label: 'quests' }, { id: 'shop', icon: <Store size={28} />, label: 'shop' }, { id: 'profile', icon: <User size={28} />, label: 'profile' }].map(item => (<button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex items-center gap-4 p-3 rounded-xl w-full text-left font-bold uppercase text-sm tracking-wide border-2 border-transparent transition-all ${activeTab === item.id ? 'bg-blue-50 text-blue-500 border-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}>{item.icon}{t(item.label)}</button>))}<button onClick={() => setShowCourseModal(true)} className="flex items-center gap-4 p-3 rounded-xl w-full text-left font-bold uppercase text-sm tracking-wide border-2 border-transparent text-slate-500 hover:bg-slate-100 transition-all"><Globe size={28} />{t('courses')}</button></div></nav>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 p-2 flex justify-around z-20 pb-safe">{[{ id: 'learn', icon: <Home /> }, { id: 'leaderboard', icon: <Trophy /> }, { id: 'quests', icon: <Target /> }, { id: 'shop', icon: <Store /> }].map(item => (<button key={item.id} onClick={() => setActiveTab(item.id)} className={`p-2 rounded-lg transition-colors ${activeTab === item.id ? 'text-blue-500 bg-blue-50' : 'text-slate-400'}`}>{item.icon}</button>))}</div>
+      <div className="flex justify-center">
+        <main className="w-full md:ml-[256px] lg:mr-[350px] min-h-screen p-4 md:p-6 lg:p-8 max-w-[800px] mb-20 md:mb-0">
+           <div className="md:hidden flex justify-between items-center mb-6 border-b-2 border-slate-100 pb-4 sticky top-0 bg-white z-40 pt-2"><span className="text-2xl shadow-sm rounded border border-slate-100 cursor-pointer" onClick={() => setShowCourseModal(true)}>{course?.flag || '🇺🇸'}</span><div className="flex gap-4 font-bold"><span className="text-orange-500 flex items-center gap-1"><Flame size={20} /> {streak}</span><span className="text-blue-500 flex items-center gap-1"><Gem size={20} /> {gems}</span><span className={`flex items-center gap-1 cursor-pointer ${getLivesColor()}`} onClick={() => setShowPlansModal(true)}><Heart size={20} fill="currentColor" /> {getLivesDisplay()}</span></div></div>
+           {activeTab === 'learn' && <LearnTab startLesson={startLesson} levels={currentLevels} openChest={handleChestReward} t={t} />}
+           {activeTab === 'leaderboard' && <LeaderboardTab courseId={course?.id} userXp={xp} userName={user} t={t} />}
+           {activeTab === 'quests' && <QuestsTab quests={quests} onClaim={handleClaimQuest} t={t} />}
+           {activeTab === 'shop' && <ShopTab userGems={gems} onBuy={handleBuyItem} purchasedItems={{3: hasSuit}} onOpenPlans={() => setShowPlansModal(true)} t={t} />}
+           {activeTab === 'profile' && (
+             <div className="flex flex-col items-center pt-20 text-slate-400 font-bold gap-4 animate-in slide-in-from-right">
+                <div className="w-32 h-32 bg-slate-100 rounded-full flex items-center justify-center text-4xl border-4 border-slate-200 relative">{USER_AVATAR}{plan === 'premium' && <div className="absolute -bottom-2 -right-2 bg-purple-500 text-white p-2 rounded-full"><Crown size={20} fill="currentColor"/></div>}{plan === 'student' && <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-2 rounded-full"><GraduationCap size={20} fill="currentColor"/></div>}</div>
+                <h2 className="text-2xl text-slate-700">{user}</h2>
+                <div className="bg-slate-100 px-4 py-2 rounded-xl font-bold uppercase tracking-widest text-sm mb-4">PLAN: {t(`plan_${plan}`)}</div>
+                <div className="w-full max-w-xs mb-6"><h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">{t('app_language')}</h3><div className="flex justify-center gap-3 flex-wrap">{['es', 'en', 'fr', 'pt', 'it', 'de'].map(lang => (<button key={lang} onClick={() => setAppLanguage(lang)} className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${appLanguage === lang ? 'border-blue-500 bg-blue-100 scale-110' : 'border-slate-200 hover:bg-slate-50'}`}><span className="text-xl">{{es:'🇪🇸', en:'🇺🇸', fr:'🇫🇷', pt:'🇧🇷', it:'🇮🇹', de:'🇩🇪'}[lang]}</span></button>))}</div></div>
+                <div className="flex gap-4"><Button3D size="small" color="red" onClick={onLogout}>{t('logout')}</Button3D><Button3D size="small" color="outline" onClick={handleResetLevels}>{t('reset')}</Button3D></div>
+             </div>
+           )}
+        </main>
+      </div>
+      <aside className="hidden lg:block w-[350px] p-6 h-full fixed right-0 overflow-y-auto border-l-2 border-slate-100"><div className="flex gap-4 justify-end mb-10 font-bold text-slate-700"><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer transition-colors" title="Cambiar curso" onClick={() => setShowCourseModal(true)}><span className="text-2xl rounded border border-slate-200 shadow-sm">{course?.flag || '🇺🇸'}</span></div><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer text-orange-500 transition-colors"><Flame /> {streak}</div><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer text-blue-500 transition-colors"><Gem /> {gems}</div><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer text-red-500 transition-colors" onClick={() => setShowPlansModal(true)}><Heart fill="currentColor" className={getLivesColor()} /> {getLivesDisplay()}</div></div><div className="space-y-6"><div className="border-2 border-slate-200 rounded-2xl p-4 bg-white"><h3 className="font-bold text-slate-700 text-lg mb-2">{t('unlock_league')}</h3><div className="flex items-center gap-4 text-slate-500"><Shield size={40} className="text-slate-300" /><p className="text-sm">{t('unlock_desc')}</p></div></div><div className="border-2 border-slate-200 rounded-2xl p-4 bg-white"><div className="flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 text-lg">{t('quests')}</h3><button className="text-blue-500 font-bold text-sm hover:text-blue-400 transition-colors" onClick={() => setActiveTab('quests')}>VER TODO</button></div><div className="flex items-center gap-4"><Zap size={32} className="text-yellow-500 fill-current" /><div className="flex-1"><p className="font-bold text-slate-700 text-sm">{t('quest_xp')}</p><div className="h-3 w-full bg-slate-200 rounded-full mt-2"><div className="h-full bg-yellow-400 rounded-full" style={{width: '75%'}}></div></div></div></div></div></div></aside>
+    </div>
+  );
+};
+
+export default function App() {
+  const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('lingo_current_user') || null);
+  const [authMode, setAuthMode] = useState(null);
+  useEffect(() => { if (currentUser) localStorage.setItem('lingo_current_user', currentUser); else localStorage.removeItem('lingo_current_user'); }, [currentUser]);
+  const handleLogin = (username) => { setCurrentUser(username); setAuthMode(null); };
+  const handleLogout = () => { setCurrentUser(null); setAuthMode(null); };
+  if (!currentUser) { if (authMode === 'login' || authMode === 'register') return <AuthScreen mode={authMode} onAuth={handleLogin} onBack={() => setAuthMode(null)} />; return <LandingScreen onStart={() => setAuthMode('register')} onLogin={() => setAuthMode('login')} />; }
+  return <GameApp key={currentUser} user={currentUser} onLogout={handleLogout} />;
+}
