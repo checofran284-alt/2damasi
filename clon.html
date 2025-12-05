@@ -1,13 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Heart, Star, Flame, Bird, Volume2, X, Check, ChevronRight, 
-  Gem, Home, Trophy, User, Settings, Store, Map as MapIcon, 
-  Target, Zap, Shield, Menu, RefreshCw, Shirt, Clock, Crown, Gift, GraduationCap, Globe, Languages, ShoppingBag, BookOpen, Dumbbell, Star as StarIcon
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LingoQuest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-// --- TRADUCCIONES DE LA INTERFAZ ---
-const UI_TRANSLATIONS = {
-  es: {
+    <!-- Tailwind CSS CDN (para que se vean bien las clases) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React y ReactDOM desde CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel para poder usar JSX directamente en el navegador -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // --- ICONOS SVG INTEGRADOS (Corregidos y Optimizados) ---
+      const IconBase = ({ children, size = 24, className = "", ...props }) => (
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width={size} 
+          height={size} 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          className={className} 
+          {...props}
+        >
+          {children}
+        </svg>
+      );
+
+      const Heart = (props) => <IconBase {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></IconBase>;
+      const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></IconBase>;
+      const Flame = (props) => <IconBase {...props}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.312-3-1-5a9.774 9.774 0 0 1 6 6 9.774 9.774 0 0 1 6 6 5.5 5.5 0 0 1-5.5 5.5h-7a5.5 5.5 0 0 1-5.5-5.5c0-3.038 2-5 5.5-5.5Z" /></IconBase>;
+      const Bird = (props) => <IconBase {...props}><path d="M16 7h.01"/><path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/><path d="m20 7 2 .5-2 .5"/><path d="M10 18v3"/><path d="M14 17.75V21"/><path d="M7 18a6 6 0 0 0 3.84-10.61"/></IconBase>;
+      const Volume2 = (props) => <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></IconBase>;
+      const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
+      const Check = (props) => <IconBase {...props}><polyline points="20 6 9 17 4 12"/></IconBase>;
+      const ChevronRight = (props) => <IconBase {...props}><path d="m9 18 6-6-6-6"/></IconBase>;
+      const Gem = (props) => <IconBase {...props}><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/></IconBase>;
+      const Home = (props) => <IconBase {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></IconBase>;
+      const Trophy = (props) => <IconBase {...props}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M12 15L12 22" /><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V15h8v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7Z" /></IconBase>;
+      const User = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
+      const Store = (props) => <IconBase {...props}><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></IconBase>;
+      const Target = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconBase>;
+      const Zap = (props) => <IconBase {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
+      const Shield = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></IconBase>;
+      const Clock = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></IconBase>;
+      const Crown = (props) => <IconBase {...props}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></IconBase>;
+      const Gift = (props) => <IconBase {...props}><polyline points="20 12 20 22 4 22 4 12"/><rect width="20" height="5" x="2" y="7"/><line x1="12" x2="12" y1="22" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></IconBase>;
+      const GraduationCap = (props) => <IconBase {...props}><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></IconBase>;
+      const Globe = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></IconBase>;
+      const BookOpen = (props) => <IconBase {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></IconBase>;
+      const Dumbbell = (props) => <IconBase {...props}><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></IconBase>;
+      const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></IconBase>;
+      const Upload = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></IconBase>;
+      const Moon = (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconBase>;
+      const Sun = (props) => <IconBase {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconBase>;
+
+      // --- TRADUCCIONES DE LA INTERFAZ ---
+      const UI_TRANSLATIONS = { /* ⬇️ aquí va TODO el objeto UI_TRANSLATIONS que me pasaste */ es: {
     learn: 'Aprender', leaderboard: 'Ranking', quests: 'Misiones', shop: 'Tienda', profile: 'Perfil', courses: 'Cursos',
     unit: 'Unidad', start: 'EMPEZAR', unit_desc: 'Primeros pasos, Saludos', unit_2_desc: 'Comida, Animales y Plurales',
     league: 'Liga Diamante', unlock_league: 'Desbloquea Ligas', unlock_desc: 'Completa más lecciones para competir.',
@@ -27,7 +89,9 @@ const UI_TRANSLATIONS = {
     perfect_lesson: '¡LECCIÓN PERFECTA!', xp_gained: 'XP GANADA', gems_gained: 'GEMAS',
     quest_complete_toast: '¡Misión completada!', chest_open: '¡Cofre Abierto!', chest_reward: 'Has encontrado 50 gemas',
     locked_level: 'Nivel bloqueado',
-    streak_title: '¡RACHA EN LLAMAS!', streak_days: 'días de racha', streak_keep: '¡Sigue así mañana!'
+    streak_title: '¡RACHA EN LLAMAS!', streak_days: 'días de racha', streak_keep: '¡Sigue así mañana!',
+    export_progress: 'Exportar Progreso', import_progress: 'Importar Progreso', import_success: '¡Progreso importado con éxito!', import_error: 'Error al importar el archivo.',
+    eye_protection: 'Modo Oscuro'
   },
   en: {
     learn: 'Learn', leaderboard: 'Leaderboard', quests: 'Quests', shop: 'Shop', profile: 'Profile', courses: 'Courses',
@@ -49,37 +113,136 @@ const UI_TRANSLATIONS = {
     perfect_lesson: 'PERFECT LESSON!', xp_gained: 'XP GAINED', gems_gained: 'GEMS',
     quest_complete_toast: 'Quest completed!', chest_open: 'Chest Opened!', chest_reward: 'You found 50 gems',
     locked_level: 'Level locked',
-    streak_title: 'STREAK ON FIRE!', streak_days: 'day streak', streak_keep: 'Keep it up tomorrow!'
+    streak_title: 'STREAK ON FIRE!', streak_days: 'day streak', streak_keep: 'Keep it up tomorrow!',
+    export_progress: 'Export Progress', import_progress: 'Import Progress', import_success: 'Progress imported successfully!', import_error: 'Error importing file.',
+    eye_protection: 'Dark Mode'
   },
+  fr: {
+    learn: 'Apprendre', leaderboard: 'Classement', quests: 'Quêtes', shop: 'Boutique', profile: 'Profil', courses: 'Cours',
+    unit: 'Unité', start: 'COMMENCER', unit_desc: 'Bases, Salutations', unit_2_desc: 'Nourriture, Animaux & Pluriels',
+    league: 'Ligue Diamant', unlock_league: 'Débloquer les ligues', unlock_desc: 'Terminez plus de leçons pour participer.',
+    daily_quests: 'Quêtes du jour', claim: 'RÉCLAMER', 
+    quest_xp: 'Gagnez 50 XP', quest_lesson: 'Terminez 3 leçons', quest_speak: 'Parlez 5 minutes', quest_perfect: '1 Leçon Parfaite',
+    quest_gems: 'Gagnez 20 Gemmes', quest_streak: 'Prolongez votre série', quest_buy: 'Achetez en boutique',
+    refill_lives: 'Recharger les Vies', refill_desc: 'Restaure vos 5 cœurs.',
+    streak_guard: 'Garde de Série', streak_desc: 'Protège votre série si vous manquez un jour.',
+    suit: 'Costume Élégant', suit_desc: 'Habillez votre hibou avec style.',
+    super_lingo: 'Super Lingo', super_desc: 'Vies illimitées, sans pub et plus.', see_plans: 'VOIR LES PLANS',
+    ready: 'POSSÉDÉ', buy: 'ACHETER',
+    profile_title: 'Mon Profil', logout: 'Déconnexion', reset: 'Réinitialiser',
+    check: 'VÉRIFIER', continue: 'CONTINUER', correct: 'Bien joué !', wrong: 'Bonne réponse :',
+    out_of_lives: 'Plus de vies !', refill_btn: 'Recharger', unlimited: 'Vies Illimitées', no_thanks: 'Non merci, quitter', wait_text: 'Attendez 20 min pour +1 vie',
+    plan_title: 'Choisissez votre Plan', plan_desc: 'Débloquez tout le potentiel', plan_free: 'Normal', plan_premium: 'Premium', plan_student: 'Étudiant', select: 'SÉLECTIONNER', current: 'ACTUEL',
+    app_language: 'Langue de l\'App', confirm_reset: 'Voulez-vous vraiment réinitialiser la progression de CE cours ?',
+    perfect_lesson: 'LEÇON PARFAITE !', xp_gained: 'XP GAGNÉS', gems_gained: 'GEMMES',
+    quest_complete_toast: 'Quête terminée !', chest_open: 'Coffre Ouvert !', chest_reward: 'Vous avez trouvé 50 gemmes',
+    locked_level: 'Niveau verrouillé',
+    streak_title: 'SÉRIE EN FEU !', streak_days: 'jours de série', streak_keep: 'Continuez comme ça demain !',
+    export_progress: 'Exporter Progression', import_progress: 'Importer Progression', import_success: 'Progression importée avec succès !', import_error: 'Erreur lors de l\'importation.',
+    eye_protection: 'Mode Sombre'
+  },
+  pt: {
+    learn: 'Aprender', leaderboard: 'Ranking', quests: 'Missões', shop: 'Loja', profile: 'Perfil', courses: 'Cursos',
+    unit: 'Unidade', start: 'COMEÇAR', unit_desc: 'Básico, Saudações', unit_2_desc: 'Comida, Animais e Plurais',
+    league: 'Liga Diamante', unlock_league: 'Desbloqueie Ligas', unlock_desc: 'Complete mais lições para competir.',
+    daily_quests: 'Missões Diárias', claim: 'RESGATAR', 
+    quest_xp: 'Ganhe 50 XP', quest_lesson: 'Complete 3 lições', quest_speak: 'Fale por 5 minutos', quest_perfect: '1 Lição Perfeita',
+    quest_gems: 'Ganhe 20 Gemas', quest_streak: 'Aumente sua ofensiva', quest_buy: 'Compre na loja',
+    refill_lives: 'Recarregar Vidas', refill_desc: 'Restaura seus 5 corações.',
+    streak_guard: 'Proteção de Ofensiva', streak_desc: 'Protege sua ofensiva se você perder um dia.',
+    suit: 'Terno Elegante', suit_desc: 'Vista sua coruja com estilo.',
+    super_lingo: 'Super Lingo', super_desc: 'Vidas ilimitadas, sem anúncios e mais.', see_plans: 'VER PLANOS',
+    ready: 'JÁ TEM', buy: 'COMPRAR',
+    profile_title: 'Meu Perfil', logout: 'Sair', reset: 'Resetar Nível',
+    check: 'VERIFICAR', continue: 'CONTINUAR', correct: 'Muito bem!', wrong: 'Solução correta:',
+    out_of_lives: 'Sem vidas!', refill_btn: 'Recarregar', unlimited: 'Vidas Ilimitadas', no_thanks: 'Não, sair', wait_text: 'Espere 20 min para +1 vida',
+    plan_title: 'Escolha seu Plano', plan_desc: 'Desbloqueie todo o potencial', plan_free: 'Normal', plan_premium: 'Premium', plan_student: 'Estudante', select: 'SELECIONAR', current: 'ATUAL',
+    app_language: 'Idioma do App', confirm_reset: 'Tem certeza que quer reiniciar o progresso DESTE curso?',
+    perfect_lesson: 'LIÇÃO PERFEITA!', xp_gained: 'XP GANHO', gems_gained: 'GEMAS',
+    quest_complete_toast: 'Missão completa!', chest_open: 'Baú Aberto!', chest_reward: 'Você encontrou 50 gemas',
+    locked_level: 'Nível bloqueado',
+    streak_title: 'OFENSIVA EM CHAMAS!', streak_days: 'dias de ofensiva', streak_keep: 'Continue assim amanhã!',
+    export_progress: 'Exportar Progresso', import_progress: 'Importar Progresso', import_success: 'Progresso importado com sucesso!', import_error: 'Erro ao importar arquivo.',
+    eye_protection: 'Modo Escuro'
+  },
+  it: {
+    learn: 'Impara', leaderboard: 'Classifica', quests: 'Missioni', shop: 'Negozio', profile: 'Profilo', courses: 'Corsi',
+    unit: 'Unità', start: 'INIZIA', unit_desc: 'Basi, Saluti', unit_2_desc: 'Cibo, Animali e Plurali',
+    league: 'Lega Diamante', unlock_league: 'Sblocca le Leghe', unlock_desc: 'Completa più lezioni per competere.',
+    daily_quests: 'Missioni del giorno', claim: 'RISCATTA', 
+    quest_xp: 'Guadagna 50 XP', quest_lesson: 'Completa 3 lezioni', quest_speak: 'Parla 5 minuti', quest_perfect: '1 Lezione Perfetta',
+    quest_gems: 'Guadagna 20 Gemme', quest_streak: 'Estendi la serie', quest_buy: 'Compra nel negozio',
+    refill_lives: 'Ricarica Vite', refill_desc: 'Ripristina i tuoi 5 cuori.',
+    streak_guard: 'Congela Serie', streak_desc: 'Protegge la tua serie se salti un giorno.',
+    suit: 'Abito Elegante', suit_desc: 'Vesti il tuo gufo con stile.',
+    super_lingo: 'Super Lingo', super_desc: 'Vite illimitate, niente pubblicità e altro.', see_plans: 'VEDI PIANI',
+    ready: 'POSSEDUTO', buy: 'COMPRA',
+    profile_title: 'Il Mio Profilo', logout: 'Esci', reset: 'Resetta Livello',
+    check: 'CONTROLLA', continue: 'CONTINUA', correct: 'Ben fatto!', wrong: 'Soluzione corretta:',
+    out_of_lives: 'Vite finite!', refill_btn: 'Ricarica', unlimited: 'Vite Illimitate', no_thanks: 'No grazie, esci', wait_text: 'Attendi 20 min per +1 vita',
+    plan_title: 'Scegli il tuo Piano', plan_desc: 'Sblocca tutto il potenziale', plan_free: 'Normale', plan_premium: 'Premium', plan_student: 'Studente', select: 'SELEZIONA', current: 'ATTUALE',
+    app_language: 'Lingua App', confirm_reset: 'Sei sicuro di voler resettare i progressi di QUESTO corso?',
+    perfect_lesson: 'LEZIONE PERFETTA!', xp_gained: 'XP GUADAGNATI', gems_gained: 'GEMME',
+    quest_complete_toast: 'Missione completata!', chest_open: 'Forziere Aperto!', chest_reward: 'Hai trovato 50 gemme',
+    locked_level: 'Livello bloccato',
+    streak_title: 'SERIE INFIAMMATA!', streak_days: 'giorni di serie', streak_keep: 'Continua così domani!',
+    export_progress: 'Esporta Progressi', import_progress: 'Importa Progressi', import_success: 'Progressi importati con successo!', import_error: 'Errore durante l\'importazione.',
+    eye_protection: 'Modalità Scura'
+  },
+  de: {
+    learn: 'Lernen', leaderboard: 'Rangliste', quests: 'Quests', shop: 'Laden', profile: 'Profil', courses: 'Kurse',
+    unit: 'Einheit', start: 'STARTEN', unit_desc: 'Grundlagen, Grüße', unit_2_desc: 'Essen, Tiere & Mehrzahl',
+    league: 'Diamant-Liga', unlock_league: 'Ligen freischalten', unlock_desc: 'Schließe mehr Lektionen ab, um teilzunehmen.',
+    daily_quests: 'Tagesquests', claim: 'ABHOLEN', 
+    quest_xp: 'Verdiene 50 XP', quest_lesson: 'Schließe 3 Lektionen ab', quest_speak: 'Sprich 5 Minuten', quest_perfect: '1 Perfekte Lektion',
+    quest_gems: 'Verdiene 20 Edelsteine', quest_streak: 'Verlängere deine Serie', quest_buy: 'Im Laden kaufen',
+    refill_lives: 'Leben auffüllen', refill_desc: 'Stellt deine 5 Herzen wieder her.',
+    streak_guard: 'Serien-Schutz', streak_desc: 'Schützt deine Serie, wenn du einen Tag verpasst.',
+    suit: 'Schicker Anzug', suit_desc: 'Kleide deine Eule mit Stil.',
+    super_lingo: 'Super Lingo', super_desc: 'Unbegrenzte Leben, keine Werbung und mehr.', see_plans: 'PLÄNE ANSEHEN',
+    ready: 'IM BESITZ', buy: 'KAUFEN',
+    profile_title: 'Mein Profil', logout: 'Abmelden', reset: 'Level zurücksetzen',
+    check: 'PRÜFEN', continue: 'WEITER', correct: 'Gut gemacht!', wrong: 'Richtige Lösung:',
+    out_of_lives: 'Keine Leben mehr!', refill_btn: 'Auffüllen', unlimited: 'Unbegrenzte Leben', no_thanks: 'Nein danke, beenden', wait_text: 'Warte 20 Min für +1 Leben',
+    plan_title: 'Wähle deinen Plan', plan_desc: 'Schalte das volle Potenzial frei', plan_free: 'Normal', plan_premium: 'Premium', plan_student: 'Student', select: 'AUSWÄHLEN', current: 'AKTUELL',
+    app_language: 'App-Sprache', confirm_reset: 'Bist du sicher, dass du den Fortschritt DIESES Kurses zurücksetzen willst?',
+    perfect_lesson: 'PERFEKTE LEKTION!', xp_gained: 'XP GEWONNEN', gems_gained: 'EDELSTEINE',
+    quest_complete_toast: 'Quest abgeschlossen!', chest_open: 'Truhe Geöffnet!', chest_reward: 'Du hast 50 Edelsteine gefunden',
+    locked_level: 'Level gesperrt',
+    streak_title: 'SERIE BRENNT!', streak_days: 'Tage Serie', streak_keep: 'Mach morgen weiter so!',
+    export_progress: 'Fortschritt exportieren', import_progress: 'Fortschritt importieren', import_success: 'Fortschritt erfolgreich importiert!', import_error: 'Fehler beim Importieren.',
+    eye_protection: 'Dunkelmodus'
+  }
 };
+      // Para ahorrar espacio aquí, pega exactamente el objeto UI_TRANSLATIONS completo
+      // que tenías en tu código original justo en lugar de este comentario.
 
-// --- CONFIGURACIÓN Y DATOS ---
+      // --- CONFIGURACIÓN Y DATOS ---
+      const COURSES = [
+        { id: 'en', name: 'Inglés', flag: '🇺🇸' },
+        { id: 'fr', name: 'Francés', flag: '🇫🇷' },
+        { id: 'it', name: 'Italiano', flag: '🇮🇹' },
+        { id: 'de', name: 'Alemán', flag: '🇩🇪' },
+        { id: 'pt', name: 'Portugués', flag: '🇧🇷' },
+        { id: 'ru', name: 'Ruso', flag: '🇷🇺' },
+      ];
 
-const COURSES = [
-  { id: 'en', name: 'Inglés', flag: '🇺🇸' },
-  { id: 'fr', name: 'Francés', flag: '🇫🇷' },
-  { id: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { id: 'de', name: 'Alemán', flag: '🇩🇪' },
-  { id: 'pt', name: 'Portugués', flag: '🇧🇷' },
-  { id: 'ru', name: 'Ruso', flag: '🇷🇺' },
-];
+      const INITIAL_QUESTS = [
+        { id: 1, titleKey: 'quest_xp', current: 0, total: 50, rewardGems: 10, rewardXp: 20, type: 'xp' },
+        { id: 2, titleKey: 'quest_lesson', current: 0, total: 3, rewardGems: 20, rewardXp: 30, type: 'lesson' },
+        { id: 3, titleKey: 'quest_perfect', current: 0, total: 1, rewardGems: 50, rewardXp: 50, type: 'perfect' },
+        { id: 4, titleKey: 'quest_gems', current: 0, total: 20, rewardGems: 30, rewardXp: 10, type: 'gems' },
+      ];
 
-const INITIAL_QUESTS = [
-  { id: 1, titleKey: 'quest_xp', current: 0, total: 50, rewardGems: 10, rewardXp: 20, type: 'xp' },
-  { id: 2, titleKey: 'quest_lesson', current: 0, total: 3, rewardGems: 20, rewardXp: 30, type: 'lesson' },
-  { id: 3, titleKey: 'quest_perfect', current: 0, total: 1, rewardGems: 50, rewardXp: 50, type: 'perfect' },
-  { id: 4, titleKey: 'quest_gems', current: 0, total: 20, rewardGems: 30, rewardXp: 10, type: 'gems' },
-];
+      const SHOP_ITEMS = [
+        { id: 1, nameKey: 'refill_lives', descKey: 'refill_desc', icon: '❤️', cost: 350, type: 'consumable' },
+        { id: 2, nameKey: 'streak_guard', descKey: 'streak_desc', icon: '🔥', cost: 200, type: 'consumable' },
+        { id: 3, nameKey: 'suit', descKey: 'suit_desc', icon: '👔', cost: 1000, type: 'one-time' },
+      ];
 
-const SHOP_ITEMS = [
-  { id: 1, nameKey: 'refill_lives', descKey: 'refill_desc', icon: '❤️', cost: 350, type: 'consumable' },
-  { id: 2, nameKey: 'streak_guard', descKey: 'streak_desc', icon: '🔥', cost: 200, type: 'consumable' },
-  { id: 3, nameKey: 'suit', descKey: 'suit_desc', icon: '👔', cost: 1000, type: 'one-time' },
-];
+      const USER_AVATAR = '🦉';
 
-const USER_AVATAR = '🦉'; // Avatar por defecto del usuario
-
-// Datos simulados de ranking por curso
+     // Datos simulados de ranking por curso
 const LEADERBOARD_DATA = {
   en: [
     { id: 'u1', name: 'Pierre D.', xp: 850, avatar: '👨🏼', country: '🇫🇷' },
@@ -280,16 +443,16 @@ const Mascot = ({ emotion, hasSuit }) => {
 
 // --- MODALES ---
 
-const PlansModal = ({ onClose, onSelectPlan, currentPlan, t }) => (
+const PlansModal = ({ onClose, onSelectPlan, currentPlan, t, isDarkMode }) => (
   <div className="fixed inset-0 bg-black/60 z-[110] flex items-center justify-center p-4 animate-in fade-in">
-    <div className="bg-white w-full max-w-4xl rounded-3xl p-6 overflow-hidden flex flex-col h-[85vh] md:h-auto shadow-2xl relative animate-in zoom-in-95">
+    <div className={`${isDarkMode ? 'bg-[#2C2C2C] text-[#EAEAEA]' : 'bg-white text-[#333333]'} w-full max-w-4xl rounded-3xl p-6 overflow-hidden flex flex-col h-[85vh] md:h-auto shadow-2xl relative animate-in zoom-in-95`}>
        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 z-10"><X size={32} /></button>
-       <div className="text-center mb-8 mt-2"><h2 className="text-3xl font-black text-slate-700 mb-2">{t('plan_title')}</h2><p className="text-slate-500">{t('plan_desc')}</p></div>
+       <div className="text-center mb-8 mt-2"><h2 className={`text-3xl font-black mb-2`}>{t('plan_title')}</h2><p className="opacity-80">{t('plan_desc')}</p></div>
        <div className="grid md:grid-cols-3 gap-4 overflow-y-auto pb-4 px-2">
           {['free', 'premium', 'student'].map(planType => (
-             <div key={planType} className={`border-2 rounded-2xl p-6 flex flex-col gap-4 relative transition-all hover:shadow-lg ${currentPlan === planType ? `border-${planType === 'free' ? 'green' : planType === 'premium' ? 'purple' : 'orange'}-500 bg-${planType === 'free' ? 'green' : planType === 'premium' ? 'purple' : 'orange'}-50 ring-2` : 'border-slate-200'}`}>
-                <h3 className={`text-xl font-black text-${planType === 'free' ? 'slate-700' : planType === 'premium' ? 'purple-600' : 'orange-500'}`}>{t(`plan_${planType}`)}</h3>
-                <ul className="text-sm space-y-3 flex-1 text-slate-600">
+             <div key={planType} className={`border-2 rounded-2xl p-6 flex flex-col gap-4 relative transition-all hover:shadow-lg ${currentPlan === planType ? `border-${planType === 'free' ? 'green' : planType === 'premium' ? 'purple' : 'orange'}-500 ${isDarkMode ? 'bg-[#383838]' : `bg-${planType === 'free' ? 'green' : planType === 'premium' ? 'purple' : 'orange'}-50`} ring-2` : isDarkMode ? 'border-[#444] bg-[#383838]' : 'border-slate-200 bg-white'}`}>
+                <h3 className={`text-xl font-black ${isDarkMode ? 'text-[#EAEAEA]' : `text-${planType === 'free' ? 'slate-700' : planType === 'premium' ? 'purple-600' : 'orange-500'}`}`}>{t(`plan_${planType}`)}</h3>
+                <ul className={`text-sm space-y-3 flex-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-600'}`}>
                    <li className="flex gap-2"><Heart className="text-red-500 shrink-0" size={18}/> {planType === 'free' ? '5 Vidas' : '∞ Vidas'}</li>
                    <li className="flex gap-2">📺 {planType === 'free' ? 'Ads' : 'No Ads'}</li>
                 </ul>
@@ -301,11 +464,11 @@ const PlansModal = ({ onClose, onSelectPlan, currentPlan, t }) => (
   </div>
 );
 
-const HeartsModal = ({ onRefill, onExit, userGems, onOpenPlans, t }) => (
+const HeartsModal = ({ onRefill, onExit, userGems, onOpenPlans, t, isDarkMode }) => (
   <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 animate-in fade-in">
-    <div className="bg-white w-full max-w-sm rounded-3xl p-6 flex flex-col items-center text-center shadow-2xl animate-in zoom-in-95">
+    <div className={`${isDarkMode ? 'bg-[#2C2C2C] text-[#EAEAEA]' : 'bg-white text-[#333333]'} w-full max-w-sm rounded-3xl p-6 flex flex-col items-center text-center shadow-2xl animate-in zoom-in-95`}>
       <div className="mb-4 relative"><Heart size={80} className="text-gray-200 fill-gray-100" /><Heart size={40} className="text-red-500 fill-current absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" /></div>
-      <h2 className="text-2xl font-black text-slate-700 mb-2">{t('out_of_lives')}</h2>
+      <h2 className="text-2xl font-black mb-2">{t('out_of_lives')}</h2>
       <div className="w-full space-y-3 mt-4">
         <Button3D fullWidth color="green" onClick={onRefill} disabled={userGems < 300}><div className="flex items-center justify-center gap-2"><span>{t('refill_btn')}</span><div className="flex items-center text-white/90 text-sm bg-black/10 px-2 py-0.5 rounded-lg"><Gem size={14} className="mr-1" /> 300</div></div></Button3D>
         <Button3D fullWidth color="purple" onClick={onOpenPlans}><div className="flex items-center justify-center gap-2"><Crown size={20} fill="currentColor" /><span>{t('unlimited')}</span></div></Button3D>
@@ -315,15 +478,15 @@ const HeartsModal = ({ onRefill, onExit, userGems, onOpenPlans, t }) => (
   </div>
 );
 
-const CourseModal = ({ onClose, onSelectCourse, currentCourseId, t }) => (
+const CourseModal = ({ onClose, onSelectCourse, currentCourseId, t, isDarkMode }) => (
   <div className="fixed inset-0 bg-black/60 z-[120] flex items-center justify-center p-4 animate-in fade-in">
-    <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95">
+    <div className={`${isDarkMode ? 'bg-[#2C2C2C] text-[#EAEAEA]' : 'bg-white text-[#333333]'} w-full max-w-lg rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95`}>
        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 z-10"><X size={32} /></button>
-       <h2 className="text-2xl font-black text-slate-700 mb-6 text-center">{t('courses')}</h2>
+       <h2 className="text-2xl font-black mb-6 text-center">{t('courses')}</h2>
        <div className="grid gap-3 max-h-[60vh] overflow-y-auto">
           {COURSES.map(course => (
-             <div key={course.id} onClick={() => onSelectCourse(course)} className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all hover:bg-slate-50 active:scale-95 ${currentCourseId === course.id ? 'border-green-500 bg-green-50 ring-2 ring-green-100' : 'border-slate-200'}`}>
-                <span className="text-4xl shadow-sm rounded-md border border-slate-100">{course.flag}</span><span className="font-bold text-slate-700 text-lg flex-1">{course.name}</span>{currentCourseId === course.id && <Check className="text-green-500" size={24} strokeWidth={3} />}
+             <div key={course.id} onClick={() => onSelectCourse(course)} className={`border-2 rounded-2xl p-4 flex items-center gap-4 cursor-pointer transition-all hover:opacity-90 active:scale-95 ${currentCourseId === course.id ? 'border-green-500 bg-green-50 ring-2 ring-green-100' : isDarkMode ? 'border-[#444] bg-[#383838]' : 'border-slate-200 hover:bg-slate-50'}`}>
+                <span className={`text-4xl shadow-sm rounded-md border ${isDarkMode ? 'border-[#555]' : 'border-slate-100'}`}>{course.flag}</span><span className="font-bold text-lg flex-1">{course.name}</span>{currentCourseId === course.id && <Check className="text-green-500" size={24} strokeWidth={3} />}
              </div>
           ))}
        </div>
@@ -371,7 +534,7 @@ const OnboardingScreen = ({ onSelectCourse, onBack }) => (
 
 // --- COMPONENTES PRINCIPALES ---
 
-const LearnTab = ({ startLesson, levels, openChest, t }) => (
+const LearnTab = ({ startLesson, levels, openChest, t, isDarkMode }) => (
   <div className="flex flex-col items-center pb-32 animate-in fade-in">
     {/* UNIT 1 */}
     <div className="w-full bg-green-500 p-6 rounded-2xl text-white mb-10 flex justify-between items-center border-b-4 border-green-600 shadow-sm mx-4">
@@ -389,17 +552,17 @@ const LearnTab = ({ startLesson, levels, openChest, t }) => (
                     startLesson(level.id);
                  }
               }} 
-              className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-b-8 transition-transform active:border-b-0 active:translate-y-2 ${level.status === 'current' ? 'bg-green-500 border-green-600 cursor-pointer animate-pulse-slow' : level.status === 'completed' ? 'bg-yellow-400 border-yellow-500 cursor-pointer' : 'bg-gray-200 border-gray-300 cursor-pointer hover:bg-gray-300'}`}
+              className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-b-8 transition-transform active:border-b-0 active:translate-y-2 ${level.status === 'current' ? 'bg-green-500 border-green-600 cursor-pointer animate-pulse-slow' : level.status === 'completed' ? 'bg-yellow-400 border-yellow-500 cursor-pointer' : isDarkMode ? 'bg-[#383838] border-[#444] hover:bg-[#444]' : 'bg-gray-200 border-gray-300 cursor-pointer hover:bg-gray-300'}`}
             >
               {level.icon === 'chest' ? <Gift size={40} className={level.status === 'completed' ? "text-yellow-700" : "text-white"} /> :
                level.status === 'current' ? <Star size={40} fill="white" className="text-white" /> : 
                level.status === 'completed' ? <Check size={40} className="text-yellow-700" /> : 
-               level.icon === 'book' ? <BookOpen size={40} className="text-gray-400" /> :
-               level.icon === 'dumbbell' ? <Dumbbell size={40} className="text-gray-400" /> :
-               level.icon === 'trophy' ? <Trophy size={40} className="text-gray-400" /> :
-               <div className="opacity-40"><Star size={40} className="text-gray-400" /></div>}
+               level.icon === 'book' ? <BookOpen size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /> :
+               level.icon === 'dumbbell' ? <Dumbbell size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /> :
+               level.icon === 'trophy' ? <Trophy size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /> :
+               <div className="opacity-40"><Star size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /></div>}
             </button>
-            {level.status === 'current' && <div className="absolute -top-14 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-xl shadow-lg border-2 border-slate-200 whitespace-nowrap animate-bounce font-bold text-slate-700 z-20">{t('start')}<div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-r-2 border-b-2 border-slate-200"></div></div>}
+            {level.status === 'current' && <div className={`absolute -top-14 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl shadow-lg border-2 whitespace-nowrap animate-bounce font-bold z-20 ${isDarkMode ? 'bg-[#383838] border-[#444] text-[#EAEAEA]' : 'bg-white border-slate-200 text-slate-700'}`}>{t('start')}<div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 rotate-45 border-r-2 border-b-2 ${isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white border-slate-200'}`}></div></div>}
           </div>
         </div>
       ))}
@@ -421,15 +584,15 @@ const LearnTab = ({ startLesson, levels, openChest, t }) => (
                     startLesson(level.id);
                  }
               }} 
-              className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-b-8 transition-transform active:border-b-0 active:translate-y-2 ${level.status === 'current' ? 'bg-blue-500 border-blue-600 cursor-pointer animate-pulse-slow' : level.status === 'completed' ? 'bg-yellow-400 border-yellow-500 cursor-pointer' : 'bg-gray-200 border-gray-300 cursor-pointer hover:bg-gray-300'}`}
+              className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg border-b-8 transition-transform active:border-b-0 active:translate-y-2 ${level.status === 'current' ? 'bg-blue-500 border-blue-600 cursor-pointer animate-pulse-slow' : level.status === 'completed' ? 'bg-yellow-400 border-yellow-500 cursor-pointer' : isDarkMode ? 'bg-[#383838] border-[#444] hover:bg-[#444]' : 'bg-gray-200 border-gray-300 cursor-pointer hover:bg-gray-300'}`}
             >
               {level.icon === 'chest' ? <Gift size={40} className={level.status === 'completed' ? "text-yellow-700" : "text-white"} /> :
                level.status === 'current' ? <Star size={40} fill="white" className="text-white" /> : 
                level.status === 'completed' ? <Check size={40} className="text-yellow-700" /> : 
-               level.icon === 'book' ? <BookOpen size={40} className="text-gray-400" /> :
-               level.icon === 'dumbbell' ? <Dumbbell size={40} className="text-gray-400" /> :
-               level.icon === 'trophy' ? <Trophy size={40} className="text-gray-400" /> :
-               <div className="opacity-40"><Star size={40} className="text-gray-400" /></div>}
+               level.icon === 'book' ? <BookOpen size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /> :
+               level.icon === 'dumbbell' ? <Dumbbell size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /> :
+               level.icon === 'trophy' ? <Trophy size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /> :
+               <div className="opacity-40"><Star size={40} className={isDarkMode ? "text-gray-400" : "text-gray-400"} /></div>}
             </button>
           </div>
         </div>
@@ -439,7 +602,7 @@ const LearnTab = ({ startLesson, levels, openChest, t }) => (
   </div>
 );
 
-const LeaderboardTab = ({ courseId, userXp, userName, t }) => {
+const LeaderboardTab = ({ courseId, userXp, userName, t, isDarkMode }) => {
   // Obtener la lista correcta basada en el curso seleccionado o fallback a 'default'
   const baseList = LEADERBOARD_DATA[courseId] || LEADERBOARD_DATA['default'];
   
@@ -451,21 +614,21 @@ const LeaderboardTab = ({ courseId, userXp, userName, t }) => {
 
   return (
     <div className="max-w-md mx-auto w-full pt-6 animate-in slide-in-from-right">
-      <h2 className="text-2xl font-bold text-slate-700 mb-6 text-center">{t('league')} 💎</h2>
-      <div className="border-2 border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+      <h2 className="text-2xl font-bold mb-6 text-center">{t('league')} 💎</h2>
+      <div className={`border-2 rounded-2xl overflow-hidden shadow-sm ${isDarkMode ? 'border-[#444] bg-[#2C2C2C]' : 'border-slate-200 bg-white'}`}>
         {sortedList.map((user, idx) => (
-          <div key={user.id} className={`flex items-center p-4 border-b border-slate-100 ${user.isUser ? 'bg-blue-50' : 'bg-white'}`}>
-            <span className={`font-bold w-8 ${idx < 3 ? 'text-yellow-500' : 'text-slate-400'}`}>{idx + 1}</span>
+          <div key={user.id} className={`flex items-center p-4 border-b ${isDarkMode ? 'border-[#444]' : 'border-slate-100'} ${user.isUser ? (isDarkMode ? 'bg-[#383838]' : 'bg-blue-50') : (isDarkMode ? 'bg-[#2C2C2C]' : 'bg-white')}`}>
+            <span className={`font-bold w-8 ${idx < 3 ? 'text-yellow-500' : isDarkMode ? 'text-gray-500' : 'text-slate-400'}`}>{idx + 1}</span>
             <div className="relative">
-              <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-xl mr-4 border border-slate-200">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl mr-4 border ${isDarkMode ? 'bg-[#383838] border-[#555]' : 'bg-slate-100 border-slate-200'}`}>
                 {user.avatar}
               </div>
               <div className="absolute -bottom-1 right-2 text-sm drop-shadow-sm" title="País de origen">
                 {user.country}
               </div>
             </div>
-            <span className={`flex-1 font-bold ${user.isUser ? 'text-blue-600' : 'text-slate-700'}`}>{user.name}</span>
-            <span className="font-bold text-slate-500">{user.xp} XP</span>
+            <span className={`flex-1 font-bold ${user.isUser ? 'text-blue-500' : ''}`}>{user.name}</span>
+            <span className="font-bold opacity-80">{user.xp} XP</span>
           </div>
         ))}
       </div>
@@ -473,16 +636,16 @@ const LeaderboardTab = ({ courseId, userXp, userName, t }) => {
   );
 };
 
-const QuestsTab = ({ quests, onClaim, t }) => (
+const QuestsTab = ({ quests, onClaim, t, isDarkMode }) => (
   <div className="max-w-md mx-auto w-full pt-6 space-y-4 animate-in slide-in-from-right">
-    <h2 className="text-2xl font-bold text-slate-700 mb-6">{t('daily_quests')}</h2>
+    <h2 className="text-2xl font-bold mb-6">{t('daily_quests')}</h2>
     {quests.map(quest => {
       const isComplete = quest.current >= quest.total;
       return (
-        <div key={quest.id} className={`border-2 rounded-2xl p-4 flex gap-4 items-center shadow-sm transition-all ${isComplete ? 'border-yellow-400 bg-yellow-50' : 'border-slate-200 bg-white'} ${quest.claimed ? 'opacity-60' : ''}`}>
+        <div key={quest.id} className={`border-2 rounded-2xl p-4 flex gap-4 items-center shadow-sm transition-all ${isComplete ? 'border-yellow-400 bg-yellow-50' : isDarkMode ? 'border-[#444] bg-[#383838]' : 'border-slate-200 bg-white'} ${quest.claimed ? 'opacity-60' : ''}`}>
           <div className="text-4xl">{quest.type === 'xp' ? '⚡' : quest.type === 'lesson' ? '📚' : '🗣️'}</div>
           <div className="flex-1">
-            <div className="flex justify-between mb-2"><h3 className="font-bold text-slate-700">{t(quest.titleKey)}</h3>{quest.claimed ? <span className="font-bold text-green-600 flex items-center gap-1"><Check size={16} /></span> : <span className="font-bold text-yellow-500">+{quest.reward}</span>}</div>
+            <div className="flex justify-between mb-2"><h3 className={`font-bold ${isComplete && !isDarkMode ? 'text-slate-700' : ''}`}>{t(quest.titleKey)}</h3>{quest.claimed ? <span className="font-bold text-green-600 flex items-center gap-1"><Check size={16} /></span> : <span className="font-bold text-yellow-500">+{quest.reward}</span>}</div>
             {!quest.claimed && isComplete ? <Button3D size="small" color="blue" fullWidth onClick={() => onClaim(quest)} className="animate-pulse"><div className="flex items-center justify-center gap-2"><Gift size={18} /> {t('claim')}</div></Button3D> : <ProgressBar current={quest.current} total={quest.total} color={isComplete ? 'bg-green-500' : 'bg-yellow-400'} />}
           </div>
         </div>
@@ -491,18 +654,18 @@ const QuestsTab = ({ quests, onClaim, t }) => (
   </div>
 );
 
-const ShopTab = ({ userGems, onBuy, purchasedItems, onOpenPlans, t }) => (
+const ShopTab = ({ userGems, onBuy, purchasedItems, onOpenPlans, t, isDarkMode }) => (
   <div className="max-w-md mx-auto w-full pt-6 animate-in slide-in-from-right">
-    <div className="flex justify-between items-end mb-6"><h2 className="text-2xl font-bold text-slate-700">{t('shop')}</h2><div className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl font-bold flex items-center gap-2 border-2 border-blue-100 shadow-sm"><Gem fill="currentColor" size={20} /><span className="text-xl">{userGems}</span></div></div>
+    <div className="flex justify-between items-end mb-6"><h2 className="text-2xl font-bold">{t('shop')}</h2><div className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 border-2 shadow-sm ${isDarkMode ? 'bg-[#383838] border-[#444] text-blue-400' : 'bg-blue-50 border-blue-100 text-blue-600'}`}><Gem fill="currentColor" size={20} /><span className="text-xl">{userGems}</span></div></div>
     <div className="mb-8 cursor-pointer" onClick={onOpenPlans}><div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden group"><div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 group-hover:scale-110 transition-transform"></div><div className="relative z-10"><div className="flex items-center gap-2 mb-2"><Crown className="text-yellow-300" fill="currentColor" /><h3 className="text-xl font-black">{t('super_lingo')}</h3></div><p className="opacity-90 mb-4 text-sm font-medium">{t('super_desc')}</p><button className="bg-white text-purple-600 px-4 py-2 rounded-xl font-bold text-sm shadow-md hover:bg-slate-50 transition-colors">{t('see_plans')}</button></div></div></div>
     <div className="grid gap-4">
       {SHOP_ITEMS.map(item => {
         const isBought = purchasedItems[item.id];
         const canAfford = userGems >= item.cost;
         return (
-          <div key={item.id} className="border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors bg-white shadow-sm">
+          <div key={item.id} className={`border-2 rounded-2xl p-4 flex items-center gap-4 transition-colors shadow-sm ${isDarkMode ? 'border-[#444] bg-[#383838] hover:bg-[#444]' : 'border-slate-200 bg-white hover:bg-slate-50'}`}>
             <div className="text-4xl">{item.icon}</div>
-            <div className="flex-1"><h3 className="font-bold text-slate-700">{t(item.nameKey)}</h3><p className="text-slate-400 text-sm mb-2">{t(item.descKey)}</p></div>
+            <div className="flex-1"><h3 className="font-bold">{t(item.nameKey)}</h3><p className={`text-sm mb-2 ${isDarkMode ? 'text-gray-400' : 'text-slate-400'}`}>{t(item.descKey)}</p></div>
             <Button3D size="small" color={isBought ? 'gray' : canAfford ? 'white' : 'gray'} className="min-w-[100px]" onClick={() => onBuy(item)} disabled={isBought}>{isBought ? <span className="text-green-600 flex items-center gap-1"><Check size={16} /> {t('ready')}</span> : <span className={`flex items-center gap-1 ${canAfford ? 'text-blue-500' : 'text-slate-400'}`}><Gem size={16} /> {item.cost}</span>}</Button3D>
           </div>
         );
@@ -511,23 +674,34 @@ const ShopTab = ({ userGems, onBuy, purchasedItems, onOpenPlans, t }) => (
   </div>
 );
 
-const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, hasSuit, gems, setGems, plan, onOpenPlans, t }) => {
+const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, hasSuit, gems, setGems, plan, onOpenPlans, t, isDarkMode }) => {
   const [queue, setQueue] = useState(() => { 
-    // 1. Intentar cargar lecciones del idioma seleccionado
+    // 1. Cargar lecciones del idioma actual
     const courseContent = ALL_COURSE_DATA[courseId];
-    
-    // 2. Si existen, buscar el nivel específico. Si no, fallback al nivel 1 de ese idioma o inglés
-    // Esto previene crashes si el nivel no existe en el idioma nuevo.
     let questions = [];
+    
+    // 2. Selección de nivel con fallbacks seguros
     if (courseContent && courseContent[levelId]) {
       questions = courseContent[levelId];
     } else if (courseContent && courseContent[1]) {
-      questions = courseContent[1]; // Fallback a nivel 1 del mismo idioma
+      questions = courseContent[1]; 
     } else {
-      questions = ALL_COURSE_DATA['en'][1]; // Fallback final a inglés
+      questions = ALL_COURSE_DATA['en'][1]; 
+    }
+
+    // 3. LOGICA DE DEDUPLICACIÓN ROBUSTA (Set por ID)
+    const uniqueQuestions = [];
+    const seenIds = new Set();
+
+    for (const q of questions) {
+      if (!seenIds.has(q.id)) {
+        seenIds.add(q.id);
+        uniqueQuestions.push(q);
+      }
     }
     
-    return [...questions]; 
+    // Solo retornamos una copia limpia y única de las preguntas
+    return [...uniqueQuestions]; 
   });
 
   const [initialCount] = useState(() => queue.length);
@@ -544,7 +718,7 @@ const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, 
   const handleRefillLives = () => { if (gems >= 300) { setGems(p => p - 300); setLives(5); setShowHeartsModal(false); playSound('buy'); } else { playSound('wrong'); } };
   
   if (!question && !showHeartsModal) return null;
-  if (showHeartsModal) return <HeartsModal onExit={onExit} onRefill={handleRefillLives} userGems={gems} onOpenPlans={() => { setShowHeartsModal(false); onOpenPlans(); }} t={t} />;
+  if (showHeartsModal) return <HeartsModal onExit={onExit} onRefill={handleRefillLives} userGems={gems} onOpenPlans={() => { setShowHeartsModal(false); onOpenPlans(); }} t={t} isDarkMode={isDarkMode} />;
 
   const handleCheck = () => {
     let isCorrect = false;
@@ -566,10 +740,19 @@ const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, 
   };
 
   return (
-    <div className="h-full flex flex-col bg-white max-w-3xl mx-auto w-full relative z-50">
+    <div className={`min-h-screen flex flex-col w-full relative z-50 ${
+      isDarkMode
+        ? 'bg-[#2C2C2C] text-[#EAEAEA]'
+        : 'bg-white max-w-3xl mx-auto'
+        }`}>
+
       <div className="p-6 flex items-center gap-4"><button onClick={onExit}><X className="text-slate-400 hover:text-slate-600" /></button><ProgressBar current={completedCount} total={initialCount} /><div className={`flex items-center font-bold gap-1 animate-pulse ${plan === 'free' ? 'text-red-500' : 'text-purple-500'}`} onClick={onOpenPlans}><Heart fill="currentColor" /> {plan === 'free' ? lives : '∞'}</div></div>
-      <div className="flex-1 overflow-y-auto px-6 pb-40"><h2 className="text-2xl font-bold text-slate-700 mt-4 mb-4">{question.question}</h2>{question.type !== 'arrange' && <div className="flex justify-center mb-6"><Mascot emotion={mascotEmotion} hasSuit={hasSuit} /></div>}
-      {question.type === 'select' && <div className="grid grid-cols-2 gap-4">{question.options.map(opt => (<div key={opt.id} onClick={() => handleSelectOption(opt)} className={`border-2 rounded-2xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all active:scale-95 ${selectedOption === opt.id ? 'bg-blue-100 border-blue-400' : 'bg-white border-slate-200'}`}>{opt.image && <span className="text-4xl">{opt.image}</span>}<span className="text-lg text-slate-700 font-bold">{opt.text}</span></div>))}</div>}
+      <div
+  className={`flex-1 overflow-y-auto px-6 pb-40 ${
+    isDarkMode ? 'bg-[#2C2C2C]' : 'bg-white'
+     }`} >
+<h2 className="text-2xl font-bold mt-4 mb-4">{question.question}</h2>{question.type !== 'arrange' && <div className="flex justify-center mb-6"><Mascot emotion={mascotEmotion} hasSuit={hasSuit} /></div>}
+      {question.type === 'select' && <div className="grid grid-cols-2 gap-4">{question.options.map(opt => (<div key={opt.id} onClick={() => handleSelectOption(opt)} className={`border-2 rounded-2xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all active:scale-95 ${selectedOption === opt.id ? 'bg-blue-100 border-blue-400' : isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white border-slate-200'}`}>{opt.image && <span className="text-4xl">{opt.image}</span>}<span className={`text-lg font-bold ${selectedOption === opt.id ? 'text-slate-700' : ''}`}>{opt.text}</span></div>))}</div>}
       {question.type === 'listen' && (
         <div className="flex flex-col items-center gap-8">
             <Button3D 
@@ -584,14 +767,14 @@ const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, 
             {question.audioText && <p className="text-slate-400 font-bold">CLICK TO LISTEN</p>}
             <div className="grid w-full gap-2">
                 {question.options.map(opt => (
-                    <div key={opt.id} onClick={() => handleSelectOption(opt)} className={`p-4 border-2 rounded-xl cursor-pointer font-bold ${selectedOption === opt.id ? 'bg-blue-100 border-blue-500 text-blue-600' : 'bg-white'}`}>{opt.text}</div>
+                    <div key={opt.id} onClick={() => handleSelectOption(opt)} className={`p-4 border-2 rounded-xl cursor-pointer font-bold ${selectedOption === opt.id ? 'bg-blue-100 border-blue-500 text-blue-600' : isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white'}`}>{opt.text}</div>
                 ))}
             </div>
         </div>
       )}
-      {question.type === 'arrange' && <div className="space-y-8"><div className="bg-white border-2 border-slate-200 p-4 rounded-2xl text-lg font-bold text-slate-700">"{question.target}"</div><div className="min-h-[60px] border-b-2 border-slate-200 flex flex-wrap gap-2 py-2">{sentenceOrder.map((word, i) => (<button key={i} onClick={() => setSentenceOrder(sentenceOrder.filter((_, idx) => idx !== i))} className="bg-white border border-slate-300 px-3 py-2 rounded-xl font-bold">{word}</button>))}</div><div className="flex flex-wrap gap-2 justify-center">{question.words.map((word, i) => (<button key={i} onClick={() => !sentenceOrder.includes(word) && setSentenceOrder([...sentenceOrder, word])} className={`border-b-4 px-4 py-2 rounded-xl font-bold ${sentenceOrder.includes(word) ? 'bg-slate-200 text-transparent' : 'bg-white border-slate-300'}`} disabled={sentenceOrder.includes(word)}>{word}</button>))}</div></div>}
+      {question.type === 'arrange' && <div className="space-y-8"><div className={`border-2 p-4 rounded-2xl text-lg font-bold ${isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white border-slate-200 text-slate-700'}`}>"{question.target}"</div><div className={`min-h-[60px] border-b-2 flex flex-wrap gap-2 py-2 ${isDarkMode ? 'border-[#444]' : 'border-slate-200'}`}>{sentenceOrder.map((word, i) => (<button key={i} onClick={() => setSentenceOrder(sentenceOrder.filter((_, idx) => idx !== i))} className={`border px-3 py-2 rounded-xl font-bold ${isDarkMode ? 'bg-[#383838] border-[#555] text-white' : 'bg-white border-slate-300'}`}>{word}</button>))}</div><div className="flex flex-wrap gap-2 justify-center">{question.words.map((word, i) => (<button key={i} onClick={() => !sentenceOrder.includes(word) && setSentenceOrder([...sentenceOrder, word])} className={`border-b-4 px-4 py-2 rounded-xl font-bold ${sentenceOrder.includes(word) ? (isDarkMode ? 'bg-[#333] text-transparent' : 'bg-slate-200 text-transparent') : (isDarkMode ? 'bg-[#383838] border-[#555] text-white' : 'bg-white border-slate-300')}`} disabled={sentenceOrder.includes(word)}>{word}</button>))}</div></div>}
       </div>
-      <div className={`fixed bottom-0 left-0 right-0 p-6 border-t-2 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'wrong' ? 'bg-red-100 border-red-200' : 'bg-white border-slate-200'}`}><div className="max-w-3xl mx-auto flex items-center justify-between">{status !== 'idle' && <div className={`flex items-center gap-4 font-bold text-xl ${status === 'correct' ? 'text-green-700' : 'text-red-700'}`}>{status === 'correct' ? <Check size={28}/> : <X size={28}/>}<div><div className="text-lg">{status === 'correct' ? t('correct') : t('wrong')}</div></div></div>}<div className={`${status === 'idle' ? 'w-full' : ''}`}>{status === 'idle' ? <Button3D fullWidth color="green" onClick={handleCheck} disabled={(!selectedOption && question.type !== 'arrange') || (question.type === 'arrange' && sentenceOrder.length === 0)}>{t('check')}</Button3D> : <Button3D color={status === 'correct' ? 'green' : 'red'} onClick={handleContinue}>{t('continue')}</Button3D>}</div></div></div>
+      <div className={`fixed bottom-0 left-0 right-0 p-6 border-t-2 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'wrong' ? 'bg-red-100 border-red-200' : isDarkMode ? 'bg-[#2C2C2C] border-[#444]' : 'bg-white border-slate-200'}`}><div className="max-w-3xl mx-auto flex items-center justify-between">{status !== 'idle' && <div className={`flex items-center gap-4 font-bold text-xl ${status === 'correct' ? 'text-green-700' : 'text-red-700'}`}>{status === 'correct' ? <Check size={28}/> : <X size={28}/>}<div><div className="text-lg">{status === 'correct' ? t('correct') : t('wrong')}</div></div></div>}<div className={`${status === 'idle' ? 'w-full' : ''}`}>{status === 'idle' ? <Button3D fullWidth color="green" onClick={handleCheck} disabled={(!selectedOption && question.type !== 'arrange') || (question.type === 'arrange' && sentenceOrder.length === 0)}>{t('check')}</Button3D> : <Button3D color={status === 'correct' ? 'green' : 'red'} onClick={handleContinue}>{t('continue')}</Button3D>}</div></div></div>
     </div>
   );
 };
@@ -655,8 +838,8 @@ const GameApp = ({ user, onLogout }) => {
   const [quests, setQuests] = usePersistedState('lingo_quests', INITIAL_QUESTS, user);
   const [hasSuit, setHasSuit] = usePersistedState('lingo_suit', false, user);
   const [appLanguage, setAppLanguage] = usePersistedState('lingo_app_lang', 'es', user);
-  // Almacena el progreso de niveles por ID de curso: { 'en': [...levels], 'fr': [...levels] }
   const [allLevelsProgress, setAllLevelsProgress] = usePersistedState('lingo_all_course_progress', {}, user);
+  const [isDarkMode, setIsDarkMode] = usePersistedState('lingo_dark_mode', false, user);
 
   const [currentView, setCurrentView] = useState('app'); 
   const [currentLevelId, setCurrentLevelId] = useState(1);
@@ -667,14 +850,12 @@ const GameApp = ({ user, onLogout }) => {
   const t = (key) => (UI_TRANSLATIONS[appLanguage] && UI_TRANSLATIONS[appLanguage][key]) || UI_TRANSLATIONS['es'][key] || key;
   
   // Deriva los niveles actuales basados en el curso seleccionado.
-  // Si no hay progreso guardado para este idioma, usa una COPIA FRESCA de getInitialLevels.
   const currentLevels = (course && allLevelsProgress[course.id]) 
     ? allLevelsProgress[course.id] 
     : getInitialLevels();
 
   const handleResetLevels = () => { 
     if (window.confirm(t('confirm_reset'))) { 
-      // Reinicia solo el progreso del idioma actual usando una nueva copia limpia
       setAllLevelsProgress(prev => ({ ...prev, [course.id]: getInitialLevels() })); 
       playSound('wrong'); 
     }
@@ -687,15 +868,12 @@ const GameApp = ({ user, onLogout }) => {
      playSound('chest');
      alert(t('chest_reward') || "You found 50 gems!");
      
-     // Copia profunda para modificar el estado
      const newLevels = JSON.parse(JSON.stringify(currentLevels));
      const idx = newLevels.findIndex(l => l.id === levelId);
      if (idx !== -1) {
        newLevels[idx].status = 'completed';
        if (idx < newLevels.length - 1) newLevels[idx + 1].status = 'current';
      }
-     
-     // Guarda el progreso específicamente para el idioma actual
      setAllLevelsProgress(prev => ({ ...prev, [course.id]: newLevels }));
   };
 
@@ -717,7 +895,6 @@ const GameApp = ({ user, onLogout }) => {
        return q; 
     }));
     
-    // Copia profunda para asegurar independencia de referencias
     const newLevels = JSON.parse(JSON.stringify(currentLevels));
     const idx = newLevels.findIndex(l => l.id === currentLevelId);
     
@@ -726,9 +903,7 @@ const GameApp = ({ user, onLogout }) => {
         if (idx < newLevels.length - 1) newLevels[idx + 1].status = 'current'; 
     }
     
-    // Persiste el progreso solo en la clave del idioma actual
     setAllLevelsProgress(prev => ({ ...prev, [course.id]: newLevels })); 
-    
     setCurrentView('streak');
   };
 
@@ -744,55 +919,158 @@ const GameApp = ({ user, onLogout }) => {
       setCourse(newCourse); 
       setShowCourseModal(false); 
       playSound('click'); 
-      // No necesitamos resetear manualmente currentLevels, React re-renderizará
-      // y la lógica de `const currentLevels = ...` seleccionará el progreso correcto.
+  };
+
+  // --- IMPORT/EXPORT ---
+  const handleExportProgress = () => {
+    const dataStr = JSON.stringify(allLevelsProgress, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = `lingoquest_progress_${user}_${new Date().toISOString().split('T')[0]}.json`;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleImportProgress = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+        if (typeof importedData === 'object' && importedData !== null) {
+          setAllLevelsProgress(importedData);
+          alert(t('import_success'));
+        } else {
+          alert(t('import_error'));
+        }
+      } catch (error) {
+        console.error(error);
+        alert(t('import_error'));
+      }
+    };
+    reader.readAsText(file);
   };
 
   if (!course && currentView !== 'onboarding') return <OnboardingScreen onSelectCourse={(c) => setCourse(c)} onBack={onLogout} />;
   
-  if (currentView === 'lesson') return <LessonScreen courseId={course?.id} levelId={currentLevelId} onExit={() => setCurrentView('app')} onComplete={handleLessonComplete} lives={lives} setLives={setLives} hasSuit={hasSuit} gems={gems} setGems={setGems} xp={xp} setXp={setXp} plan={plan} onOpenPlans={() => setShowPlansModal(true)} t={t} />;
+  if (currentView === 'lesson') return <LessonScreen key={`${course?.id}-${currentLevelId}`} courseId={course?.id} levelId={currentLevelId} onExit={() => setCurrentView('app')} onComplete={handleLessonComplete} lives={lives} setLives={setLives} hasSuit={hasSuit} gems={gems} setGems={setGems} xp={xp} setXp={setXp} plan={plan} onOpenPlans={() => setShowPlansModal(true)} t={t} isDarkMode={isDarkMode} />;
   if (currentView === 'success') return <SuccessScreen onFinish={handleSuccessContinue} xpGained={sessionResults.xp} gemsGained={sessionResults.gems} isPerfect={sessionResults.perfect} t={t} />;
   if (currentView === 'streak') return <StreakScreen streak={streak} onContinue={handleStreakContinue} t={t} />;
 
   const getLivesDisplay = () => { if (plan === 'premium') return <span className="text-purple-500">∞</span>; if (plan === 'student') return <span className="text-orange-500">∞</span>; return lives; };
   const getLivesColor = () => { if (plan === 'premium') return 'text-purple-500'; if (plan === 'student') return 'text-orange-500'; return lives === 0 ? 'text-gray-400' : 'text-red-500'; };
-  
+
+  // --- PALETA DE COLORES PERSONALIZADA (Según Requisito) ---
+  // Oscuro: bg-[#2C2C2C], text-[#EAEAEA]
+  // Claro: bg-[#F5F5F5], text-[#333333]
+  const appBg = isDarkMode ? 'bg-[#2C2C2C]' : 'bg-[#F5F5F5]';
+  const appText = isDarkMode ? 'text-[#EAEAEA]' : 'text-[#333333]';
+  const navBg = isDarkMode ? 'bg-[#2C2C2C]' : 'bg-white';
+  const navBorder = isDarkMode ? 'border-[#444]' : 'border-slate-200';
+
   return (
-    <div className="bg-white min-h-screen text-slate-700 font-sans">
-      {showPlansModal && <PlansModal onClose={() => setShowPlansModal(false)} onSelectPlan={handleSelectPlan} currentPlan={plan} t={t} />}
-      {showCourseModal && <CourseModal onClose={() => setShowCourseModal(false)} onSelectCourse={handleSwitchCourse} currentCourseId={course?.id} t={t} />}
+    <div className={`min-h-screen font-sans ${appBg} ${appText}`}>
+      {showPlansModal && <PlansModal onClose={() => setShowPlansModal(false)} onSelectPlan={handleSelectPlan} currentPlan={plan} t={t} isDarkMode={isDarkMode} />}
+      {showCourseModal && <CourseModal onClose={() => setShowCourseModal(false)} onSelectCourse={handleSwitchCourse} currentCourseId={course?.id} t={t} isDarkMode={isDarkMode} />}
       
-      <nav className="hidden md:flex flex-col p-4 border-r-2 border-slate-200 h-full fixed w-[256px] bg-white z-10"><div className="mb-8 px-4 flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('learn')}><Bird size={32} className="text-green-500" /><span className="text-2xl font-bold text-green-500 tracking-tighter">LingoQuest</span></div><div className="space-y-2">{[{ id: 'learn', icon: <Home size={28} />, label: 'learn' }, { id: 'leaderboard', icon: <Trophy size={28} />, label: 'leaderboard' }, { id: 'quests', icon: <Target size={28} />, label: 'quests' }, { id: 'shop', icon: <Store size={28} />, label: 'shop' }, { id: 'profile', icon: <User size={28} />, label: 'profile' }].map(item => (<button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex items-center gap-4 p-3 rounded-xl w-full text-left font-bold uppercase text-sm tracking-wide border-2 border-transparent transition-all ${activeTab === item.id ? 'bg-blue-50 text-blue-500 border-blue-200' : 'text-slate-500 hover:bg-slate-100'}`}>{item.icon}{t(item.label)}</button>))}<button onClick={() => setShowCourseModal(true)} className="flex items-center gap-4 p-3 rounded-xl w-full text-left font-bold uppercase text-sm tracking-wide border-2 border-transparent text-slate-500 hover:bg-slate-100 transition-all"><Globe size={28} />{t('courses')}</button></div></nav>
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 p-2 flex justify-around z-20 pb-safe">{[{ id: 'learn', icon: <Home /> }, { id: 'leaderboard', icon: <Trophy /> }, { id: 'quests', icon: <Target /> }, { id: 'shop', icon: <Store /> }].map(item => (<button key={item.id} onClick={() => setActiveTab(item.id)} className={`p-2 rounded-lg transition-colors ${activeTab === item.id ? 'text-blue-500 bg-blue-50' : 'text-slate-400'}`}>{item.icon}</button>))}</div>
+      <nav className={`hidden md:flex flex-col p-4 border-r-2 h-full fixed w-[256px] z-10 ${navBg} ${navBorder}`}>
+        <div className="mb-8 px-4 flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('learn')}><Bird size={32} className="text-green-500" /><span className="text-2xl font-bold text-green-500 tracking-tighter">LingoQuest</span></div>
+        <div className="space-y-2">
+          {[{ id: 'learn', icon: <Home size={28} />, label: 'learn' }, { id: 'leaderboard', icon: <Trophy size={28} />, label: 'leaderboard' }, { id: 'quests', icon: <Target size={28} />, label: 'quests' }, { id: 'shop', icon: <Store size={28} />, label: 'shop' }, { id: 'profile', icon: <User size={28} />, label: 'profile' }].map(item => (<button key={item.id} onClick={() => setActiveTab(item.id)} className={`flex items-center gap-4 p-3 rounded-xl w-full text-left font-bold uppercase text-sm tracking-wide border-2 border-transparent transition-all ${activeTab === item.id ? (isDarkMode ? 'bg-[#383838] text-blue-400 border-[#444]' : 'bg-blue-50 text-blue-500 border-blue-200') : (isDarkMode ? 'text-gray-400 hover:bg-[#383838]' : 'text-slate-500 hover:bg-slate-100')}`}>{item.icon}{t(item.label)}</button>))}
+          <button onClick={() => setShowCourseModal(true)} className={`flex items-center gap-4 p-3 rounded-xl w-full text-left font-bold uppercase text-sm tracking-wide border-2 border-transparent transition-all ${isDarkMode ? 'text-gray-400 hover:bg-[#383838]' : 'text-slate-500 hover:bg-slate-100'}`}><Globe size={28} />{t('courses')}</button>
+        </div>
+      </nav>
+      <div className={`md:hidden fixed bottom-0 left-0 right-0 border-t-2 p-2 flex justify-around z-20 pb-safe ${navBg} ${navBorder}`}>
+        {[{ id: 'learn', icon: <Home /> }, { id: 'leaderboard', icon: <Trophy /> }, { id: 'quests', icon: <Target /> }, { id: 'shop', icon: <Store /> }].map(item => (<button key={item.id} onClick={() => setActiveTab(item.id)} className={`p-2 rounded-lg transition-colors ${activeTab === item.id ? 'text-blue-500 bg-blue-50' : isDarkMode ? 'text-gray-400' : 'text-slate-400'}`}>{item.icon}</button>))}
+      </div>
       <div className="flex justify-center">
         <main className="w-full md:ml-[256px] lg:mr-[350px] min-h-screen p-4 md:p-6 lg:p-8 max-w-[800px] mb-20 md:mb-0">
-           <div className="md:hidden flex justify-between items-center mb-6 border-b-2 border-slate-100 pb-4 sticky top-0 bg-white z-40 pt-2"><span className="text-2xl shadow-sm rounded border border-slate-100 cursor-pointer" onClick={() => setShowCourseModal(true)}>{course?.flag || '🇺🇸'}</span><div className="flex gap-4 font-bold"><span className="text-orange-500 flex items-center gap-1"><Flame size={20} /> {streak}</span><span className="text-blue-500 flex items-center gap-1"><Gem size={20} /> {gems}</span><span className={`flex items-center gap-1 cursor-pointer ${getLivesColor()}`} onClick={() => setShowPlansModal(true)}><Heart size={20} fill="currentColor" /> {getLivesDisplay()}</span></div></div>
-           {activeTab === 'learn' && <LearnTab startLesson={startLesson} levels={currentLevels} openChest={handleChestReward} t={t} />}
-           {activeTab === 'leaderboard' && <LeaderboardTab courseId={course?.id} userXp={xp} userName={user} t={t} />}
-           {activeTab === 'quests' && <QuestsTab quests={quests} onClaim={handleClaimQuest} t={t} />}
-           {activeTab === 'shop' && <ShopTab userGems={gems} onBuy={handleBuyItem} purchasedItems={{3: hasSuit}} onOpenPlans={() => setShowPlansModal(true)} t={t} />}
+           <div className={`md:hidden flex justify-between items-center mb-6 border-b-2 pb-4 sticky top-0 z-40 pt-2 ${navBg} ${navBorder}`}>
+             <span className={`text-2xl shadow-sm rounded border cursor-pointer ${isDarkMode ? 'border-[#444]' : 'border-slate-100'}`} onClick={() => setShowCourseModal(true)}>{course?.flag || '🇺🇸'}</span>
+             <div className="flex gap-4 font-bold"><span className="text-orange-500 flex items-center gap-1"><Flame size={20} /> {streak}</span><span className="text-blue-500 flex items-center gap-1"><Gem size={20} /> {gems}</span><span className={`flex items-center gap-1 cursor-pointer ${getLivesColor()}`} onClick={() => setShowPlansModal(true)}><Heart size={20} fill="currentColor" /> {getLivesDisplay()}</span></div>
+           </div>
+           {activeTab === 'learn' && <LearnTab startLesson={startLesson} levels={currentLevels} openChest={handleChestReward} t={t} isDarkMode={isDarkMode} />}
+           {activeTab === 'leaderboard' && <LeaderboardTab courseId={course?.id} userXp={xp} userName={user} t={t} isDarkMode={isDarkMode} />}
+           {activeTab === 'quests' && <QuestsTab quests={quests} onClaim={handleClaimQuest} t={t} isDarkMode={isDarkMode} />}
+           {activeTab === 'shop' && <ShopTab userGems={gems} onBuy={handleBuyItem} purchasedItems={{3: hasSuit}} onOpenPlans={() => setShowPlansModal(true)} t={t} isDarkMode={isDarkMode} />}
            {activeTab === 'profile' && (
-             <div className="flex flex-col items-center pt-20 text-slate-400 font-bold gap-4 animate-in slide-in-from-right">
-                <div className="w-32 h-32 bg-slate-100 rounded-full flex items-center justify-center text-4xl border-4 border-slate-200 relative">{USER_AVATAR}{plan === 'premium' && <div className="absolute -bottom-2 -right-2 bg-purple-500 text-white p-2 rounded-full"><Crown size={20} fill="currentColor"/></div>}{plan === 'student' && <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-2 rounded-full"><GraduationCap size={20} fill="currentColor"/></div>}</div>
-                <h2 className="text-2xl text-slate-700">{user}</h2>
-                <div className="bg-slate-100 px-4 py-2 rounded-xl font-bold uppercase tracking-widest text-sm mb-4">PLAN: {t(`plan_${plan}`)}</div>
-                <div className="w-full max-w-xs mb-6"><h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 text-center">{t('app_language')}</h3><div className="flex justify-center gap-3 flex-wrap">{['es', 'en', 'fr', 'pt', 'it', 'de'].map(lang => (<button key={lang} onClick={() => setAppLanguage(lang)} className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${appLanguage === lang ? 'border-blue-500 bg-blue-100 scale-110' : 'border-slate-200 hover:bg-slate-50'}`}><span className="text-xl">{{es:'🇪🇸', en:'🇺🇸', fr:'🇫🇷', pt:'🇧🇷', it:'🇮🇹', de:'🇩🇪'}[lang]}</span></button>))}</div></div>
+             <div className="flex flex-col items-center pt-20 font-bold gap-4 animate-in slide-in-from-right text-inherit">
+                <div className={`w-32 h-32 rounded-full flex items-center justify-center text-4xl border-4 relative ${isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-slate-100 border-slate-200'}`}>{USER_AVATAR}{plan === 'premium' && <div className="absolute -bottom-2 -right-2 bg-purple-500 text-white p-2 rounded-full"><Crown size={20} fill="currentColor"/></div>}{plan === 'student' && <div className="absolute -bottom-2 -right-2 bg-orange-500 text-white p-2 rounded-full"><GraduationCap size={20} fill="currentColor"/></div>}</div>
+                <h2 className="text-2xl">{user}</h2>
+                <div className={`px-4 py-2 rounded-xl font-bold uppercase tracking-widest text-sm mb-4 ${isDarkMode ? 'bg-[#383838] text-gray-300' : 'bg-slate-100 text-slate-500'}`}>PLAN: {t(`plan_${plan}`)}</div>
+                
+                <div className="w-full max-w-xs mb-4">
+                  <h3 className={`text-sm font-bold uppercase tracking-widest mb-3 text-center ${isDarkMode ? 'text-gray-400' : 'text-slate-400'}`}>{t('eye_protection')}</h3>
+                  <div 
+                    className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white border-slate-200'}`} 
+                    onClick={() => setIsDarkMode(!isDarkMode)}
+                  >
+                    <div className="flex items-center gap-3">
+                      {isDarkMode ? <Moon className="text-blue-400" /> : <Sun className="text-orange-400" />}
+                      <span>{isDarkMode ? 'On' : 'Off'}</span>
+                    </div>
+                    {/* SWITCH VISUAL */}
+                    <div className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${isDarkMode ? 'bg-green-500' : 'bg-gray-300'}`}>
+                      <div className={`absolute top-1 left-1 bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${isDarkMode ? 'translate-x-7' : 'translate-x-0'}`}></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full max-w-xs mb-6"><h3 className={`text-sm font-bold uppercase tracking-widest mb-3 text-center ${isDarkMode ? 'text-gray-400' : 'text-slate-400'}`}>{t('app_language')}</h3><div className="flex justify-center gap-3 flex-wrap">{['es', 'en', 'fr', 'pt', 'it', 'de'].map(lang => (<button key={lang} onClick={() => setAppLanguage(lang)} className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${appLanguage === lang ? 'border-blue-500 bg-blue-100 scale-110' : isDarkMode ? 'border-[#444] hover:bg-[#444]' : 'border-slate-200 hover:bg-slate-50'}`}><span className="text-xl">{{es:'🇪🇸', en:'🇺🇸', fr:'🇫🇷', pt:'🇧🇷', it:'🇮🇹', de:'🇩🇪'}[lang]}</span></button>))}</div></div>
+                <div className="flex gap-4 mb-4">
+                    <input type="file" id="import-file" style={{ display: 'none' }} accept=".json" onChange={handleImportProgress} />
+                    <Button3D size="small" color="blue" onClick={handleExportProgress}><div className="flex items-center gap-2"><Download size={18}/> {t('export_progress')}</div></Button3D>
+                    <Button3D size="small" color="orange" onClick={() => document.getElementById('import-file').click()}><div className="flex items-center gap-2"><Upload size={18}/> {t('import_progress')}</div></Button3D>
+                </div>
                 <div className="flex gap-4"><Button3D size="small" color="red" onClick={onLogout}>{t('logout')}</Button3D><Button3D size="small" color="outline" onClick={handleResetLevels}>{t('reset')}</Button3D></div>
              </div>
            )}
         </main>
       </div>
-      <aside className="hidden lg:block w-[350px] p-6 h-full fixed right-0 overflow-y-auto border-l-2 border-slate-100"><div className="flex gap-4 justify-end mb-10 font-bold text-slate-700"><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer transition-colors" title="Cambiar curso" onClick={() => setShowCourseModal(true)}><span className="text-2xl rounded border border-slate-200 shadow-sm">{course?.flag || '🇺🇸'}</span></div><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer text-orange-500 transition-colors"><Flame /> {streak}</div><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer text-blue-500 transition-colors"><Gem /> {gems}</div><div className="flex items-center gap-2 hover:bg-slate-100 p-2 rounded-xl cursor-pointer text-red-500 transition-colors" onClick={() => setShowPlansModal(true)}><Heart fill="currentColor" className={getLivesColor()} /> {getLivesDisplay()}</div></div><div className="space-y-6"><div className="border-2 border-slate-200 rounded-2xl p-4 bg-white"><h3 className="font-bold text-slate-700 text-lg mb-2">{t('unlock_league')}</h3><div className="flex items-center gap-4 text-slate-500"><Shield size={40} className="text-slate-300" /><p className="text-sm">{t('unlock_desc')}</p></div></div><div className="border-2 border-slate-200 rounded-2xl p-4 bg-white"><div className="flex justify-between items-center mb-4"><h3 className="font-bold text-slate-700 text-lg">{t('quests')}</h3><button className="text-blue-500 font-bold text-sm hover:text-blue-400 transition-colors" onClick={() => setActiveTab('quests')}>VER TODO</button></div><div className="flex items-center gap-4"><Zap size={32} className="text-yellow-500 fill-current" /><div className="flex-1"><p className="font-bold text-slate-700 text-sm">{t('quest_xp')}</p><div className="h-3 w-full bg-slate-200 rounded-full mt-2"><div className="h-full bg-yellow-400 rounded-full" style={{width: '75%'}}></div></div></div></div></div></div></aside>
+      <aside className={`hidden lg:block w-[350px] p-6 h-full fixed right-0 overflow-y-auto border-l-2 ${navBg} ${navBorder}`}>
+        <div className="flex gap-4 justify-end mb-10 font-bold">
+          <div className={`flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-colors ${isDarkMode ? 'hover:bg-[#383838]' : 'hover:bg-slate-100'}`} title="Cambiar curso" onClick={() => setShowCourseModal(true)}><span className={`text-2xl rounded border shadow-sm ${isDarkMode ? 'border-[#444]' : 'border-slate-200'}`}>{course?.flag || '🇺🇸'}</span></div>
+          <div className={`flex items-center gap-2 p-2 rounded-xl cursor-pointer text-orange-500 transition-colors ${isDarkMode ? 'hover:bg-[#383838]' : 'hover:bg-slate-100'}`}><Flame /> {streak}</div>
+          <div className={`flex items-center gap-2 p-2 rounded-xl cursor-pointer text-blue-500 transition-colors ${isDarkMode ? 'hover:bg-[#383838]' : 'hover:bg-slate-100'}`}><Gem /> {gems}</div>
+          <div className={`flex items-center gap-2 p-2 rounded-xl cursor-pointer text-red-500 transition-colors ${isDarkMode ? 'hover:bg-[#383838]' : 'hover:bg-slate-100'}`} onClick={() => setShowPlansModal(true)}><Heart fill="currentColor" className={getLivesColor()} /> {getLivesDisplay()}</div>
+        </div>
+        <div className="space-y-6">
+          <div className={`border-2 rounded-2xl p-4 ${isDarkMode ? 'border-[#444] bg-[#383838]' : 'border-slate-200 bg-white'}`}><h3 className="font-bold text-lg mb-2">{t('unlock_league')}</h3><div className="flex items-center gap-4 text-slate-500"><Shield size={40} className="text-slate-300" /><p className="text-sm">{t('unlock_desc')}</p></div></div>
+          <div className={`border-2 rounded-2xl p-4 ${isDarkMode ? 'border-[#444] bg-[#383838]' : 'border-slate-200 bg-white'}`}><div className="flex justify-between items-center mb-4"><h3 className="font-bold text-lg">{t('quests')}</h3><button className="text-blue-500 font-bold text-sm hover:text-blue-400 transition-colors" onClick={() => setActiveTab('quests')}>VER TODO</button></div><div className="flex items-center gap-4"><Zap size={32} className="text-yellow-500 fill-current" /><div className="flex-1"><p className={`font-bold text-sm ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>{t('quest_xp')}</p><div className={`h-3 w-full rounded-full mt-2 ${isDarkMode ? 'bg-[#2C2C2C]' : 'bg-slate-200'}`}><div className="h-full bg-yellow-400 rounded-full" style={{width: '75%'}}></div></div></div></div></div>
+        </div>
+      </aside>
     </div>
   );
 };
 
-export default function App() {
-  const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('lingo_current_user') || null);
-  const [authMode, setAuthMode] = useState(null);
-  useEffect(() => { if (currentUser) localStorage.setItem('lingo_current_user', currentUser); else localStorage.removeItem('lingo_current_user'); }, [currentUser]);
-  const handleLogin = (username) => { setCurrentUser(username); setAuthMode(null); };
-  const handleLogout = () => { setCurrentUser(null); setAuthMode(null); };
-  if (!currentUser) { if (authMode === 'login' || authMode === 'register') return <AuthScreen mode={authMode} onAuth={handleLogin} onBack={() => setAuthMode(null)} />; return <LandingScreen onStart={() => setAuthMode('register')} onLogin={() => setAuthMode('login')} />; }
-  return <GameApp key={currentUser} user={currentUser} onLogout={handleLogout} />;
-}
+      function App() {
+        const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('lingo_current_user') || null);
+        const [authMode, setAuthMode] = useState(null);
+
+        useEffect(() => {
+          if (currentUser) localStorage.setItem('lingo_current_user', currentUser);
+          else localStorage.removeItem('lingo_current_user');
+        }, [currentUser]);
+
+        const handleLogin = (username) => { setCurrentUser(username); setAuthMode(null); };
+        const handleLogout = () => { setCurrentUser(null); setAuthMode(null); };
+
+        if (!currentUser) {
+          if (authMode === 'login' || authMode === 'register') {
+            return <AuthScreen mode={authMode} onAuth={handleLogin} onBack={() => setAuthMode(null)} />;
+          }
+          return <LandingScreen onStart={() => setAuthMode('register')} onLogin={() => setAuthMode('login')} />;
+        }
+        return <GameApp key={currentUser} user={currentUser} onLogout={handleLogout} />;
+      }
+
+      // Montamos la app en el div#root
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
