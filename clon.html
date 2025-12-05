@@ -23,50 +23,215 @@
 
       // --- ICONOS SVG INTEGRADOS (Corregidos y Optimizados) ---
       const IconBase = ({ children, size = 24, className = "", ...props }) => (
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width={size} 
-          height={size} 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          className={className} 
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
           {...props}
         >
           {children}
         </svg>
       );
 
-      const Heart = (props) => <IconBase {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></IconBase>;
-      const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></IconBase>;
-      const Flame = (props) => <IconBase {...props}><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.312-3-1-5a9.774 9.774 0 0 1 6 6 9.774 9.774 0 0 1 6 6 5.5 5.5 0 0 1-5.5 5.5h-7a5.5 5.5 0 0 1-5.5-5.5c0-3.038 2-5 5.5-5.5Z" /></IconBase>;
-      const Bird = (props) => <IconBase {...props}><path d="M16 7h.01"/><path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/><path d="m20 7 2 .5-2 .5"/><path d="M10 18v3"/><path d="M14 17.75V21"/><path d="M7 18a6 6 0 0 0 3.84-10.61"/></IconBase>;
-      const Volume2 = (props) => <IconBase {...props}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /></IconBase>;
-      const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
-      const Check = (props) => <IconBase {...props}><polyline points="20 6 9 17 4 12"/></IconBase>;
-      const ChevronRight = (props) => <IconBase {...props}><path d="m9 18 6-6-6-6"/></IconBase>;
-      const Gem = (props) => <IconBase {...props}><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/></IconBase>;
-      const Home = (props) => <IconBase {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></IconBase>;
-      const Trophy = (props) => <IconBase {...props}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M12 15L12 22" /><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V15h8v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7Z" /></IconBase>;
-      const User = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
-      const Store = (props) => <IconBase {...props}><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></IconBase>;
-      const Target = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconBase>;
-      const Zap = (props) => <IconBase {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
-      const Shield = (props) => <IconBase {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></IconBase>;
-      const Clock = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></IconBase>;
-      const Crown = (props) => <IconBase {...props}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></IconBase>;
-      const Gift = (props) => <IconBase {...props}><polyline points="20 12 20 22 4 22 4 12"/><rect width="20" height="5" x="2" y="7"/><line x1="12" x2="12" y1="22" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></IconBase>;
-      const GraduationCap = (props) => <IconBase {...props}><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></IconBase>;
-      const Globe = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></IconBase>;
-      const BookOpen = (props) => <IconBase {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></IconBase>;
-      const Dumbbell = (props) => <IconBase {...props}><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></IconBase>;
-      const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></IconBase>;
-      const Upload = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></IconBase>;
-      const Moon = (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconBase>;
-      const Sun = (props) => <IconBase {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconBase>;
+      const Heart = (props) => (
+        <IconBase {...props}>
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+        </IconBase>
+      );
+      const Star = (props) => (
+        <IconBase {...props}>
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </IconBase>
+      );
+      const Flame = (props) => (
+        <IconBase {...props}>
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-2.312-3-1-5a9.774 9.774 0 0 1 6 6 9.774 9.774 0 0 1 6 6 5.5 5.5 0 0 1-5.5 5.5h-7a5.5 5.5 0 0 1-5.5-5.5c0-3.038 2-5 5.5-5.5Z" />
+        </IconBase>
+      );
+      const Bird = (props) => (
+        <IconBase {...props}>
+          <path d="M16 7h.01" />
+          <path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20" />
+          <path d="m20 7 2 .5-2 .5" />
+          <path d="M10 18v3" />
+          <path d="M14 17.75V21" />
+          <path d="M7 18a6 6 0 0 0 3.84-10.61" />
+        </IconBase>
+      );
+      const Volume2 = (props) => (
+        <IconBase {...props}>
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </IconBase>
+      );
+      // ⭐ NUEVO: icono micrófono
+      const Mic = (props) => (
+        <IconBase {...props}>
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+          <line x1="12" x2="12" y1="19" y2="23" />
+          <line x1="8" x2="16" y1="23" y2="23" />
+        </IconBase>
+      );
+      const X = (props) => (
+        <IconBase {...props}>
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </IconBase>
+      );
+      const Check = (props) => (
+        <IconBase {...props}>
+          <polyline points="20 6 9 17 4 12" />
+        </IconBase>
+      );
+      const ChevronRight = (props) => (
+        <IconBase {...props}>
+          <path d="m9 18 6-6-6-6" />
+        </IconBase>
+      );
+      const Gem = (props) => (
+        <IconBase {...props}>
+          <path d="M6 3h12l4 6-10 13L2 9Z" />
+          <path d="M11 3 8 9l4 13 4-13-3-6" />
+        </IconBase>
+      );
+      const Home = (props) => (
+        <IconBase {...props}>
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </IconBase>
+      );
+      const Trophy = (props) => (
+        <IconBase {...props}>
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+          <path d="M12 15L12 22" />
+          <path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V15h8v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7Z" />
+        </IconBase>
+      );
+      const User = (props) => (
+        <IconBase {...props}>
+          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </IconBase>
+      );
+      const Store = (props) => (
+        <IconBase {...props}>
+          <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+          <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+          <path d="M2 7h20" />
+          <path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
+        </IconBase>
+      );
+      const Target = (props) => (
+        <IconBase {...props}>
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </IconBase>
+      );
+      const Zap = (props) => (
+        <IconBase {...props}>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </IconBase>
+      );
+      const Shield = (props) => (
+        <IconBase {...props}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </IconBase>
+      );
+      const Clock = (props) => (
+        <IconBase {...props}>
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </IconBase>
+      );
+      const Crown = (props) => (
+        <IconBase {...props}>
+          <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+        </IconBase>
+      );
+      const Gift = (props) => (
+        <IconBase {...props}>
+          <polyline points="20 12 20 22 4 22 4 12" />
+          <rect width="20" height="5" x="2" y="7" />
+          <line x1="12" x2="12" y1="22" y2="7" />
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+        </IconBase>
+      );
+      const GraduationCap = (props) => (
+        <IconBase {...props}>
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c3 3 9 3 12 0v-5" />
+        </IconBase>
+      );
+      const Globe = (props) => (
+        <IconBase {...props}>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" x2="22" y1="12" y2="12" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </IconBase>
+      );
+      const BookOpen = (props) => (
+        <IconBase {...props}>
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </IconBase>
+      );
+      const Dumbbell = (props) => (
+        <IconBase {...props}>
+          <path d="m6.5 6.5 11 11" />
+          <path d="m21 21-1-1" />
+          <path d="m3 3 1 1" />
+          <path d="m18 22 4-4" />
+          <path d="m2 6 4-4" />
+          <path d="m3 10 7-7" />
+          <path d="m14 21 7-7" />
+        </IconBase>
+      );
+      const Download = (props) => (
+        <IconBase {...props}>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" x2="12" y1="15" y2="3" />
+        </IconBase>
+      );
+      const Upload = (props) => (
+        <IconBase {...props}>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" x2="12" y1="3" y2="15" />
+        </IconBase>
+      );
+      const Moon = (props) => (
+        <IconBase {...props}>
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </IconBase>
+      );
+      const Sun = (props) => (
+        <IconBase {...props}>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </IconBase>
+      );
 
       // --- TRADUCCIONES DE LA INTERFAZ ---
       const UI_TRANSLATIONS = { /* ⬇️ aquí va TODO el objeto UI_TRANSLATIONS que me pasaste */ es: {
@@ -219,12 +384,12 @@
 
       // --- CONFIGURACIÓN Y DATOS ---
       const COURSES = [
-        { id: 'en', name: 'Inglés', flag: '🇺🇸' },
-        { id: 'fr', name: 'Francés', flag: '🇫🇷' },
-        { id: 'it', name: 'Italiano', flag: '🇮🇹' },
-        { id: 'de', name: 'Alemán', flag: '🇩🇪' },
-        { id: 'pt', name: 'Portugués', flag: '🇧🇷' },
-        { id: 'ru', name: 'Ruso', flag: '🇷🇺' },
+        { id: "en", name: "Inglés", flag: "🇺🇸" },
+        { id: "fr", name: "Francés", flag: "🇫🇷" },
+        { id: "it", name: "Italiano", flag: "🇮🇹" },
+        { id: "de", name: "Alemán", flag: "🇩🇪" },
+        { id: "pt", name: "Portugués", flag: "🇧🇷" },
+        { id: "ru", name: "Ruso", flag: "🇷🇺" },
       ];
 
       const INITIAL_QUESTS = [
@@ -315,81 +480,1575 @@ const getInitialLevels = () => [
 const ALL_COURSE_DATA = {
   en: { 
     1: [
-      { id: 'en-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Cat', image: '🐱', correct: true }, { id: 'b', text: 'Dog', image: '🐶', correct: false }, { id: 'c', text: 'Bird', image: '🐦', correct: false }, { id: 'd', text: 'Fish', image: '🐟', correct: false }] },
-      { id: 'en-1-2', type: 'listen', question: 'Escucha y selecciona', audioText: 'Hello', options: [{ id: 'a', text: 'Hola', correct: true }, { id: 'b', text: 'Adiós', correct: false }, { id: 'c', text: 'Gracias', correct: false }] },
-      { id: 'en-1-3', type: 'arrange', question: 'Traduce', target: 'Hola gato', words: ['Hello', 'cat', 'dog', 'bye'], correctOrder: ['Hello', 'cat'] },
+     {
+              id: "en-1-1",
+              type: "select",
+              question: '¿Cómo se dice "gato"?',
+              options: [
+                { id: "a", text: "Cat", image: "🐱", correct: true },
+                { id: "b", text: "Dog", image: "🐶", correct: false },
+                { id: "c", text: "Bird", image: "🐦", correct: false },
+                { id: "d", text: "Fish", image: "🐟", correct: false },
+              ],
+            },
+            {
+              id: "en-1-2",
+              type: "listen",
+              question: "Escucha y selecciona",
+              audioText: "Hello",
+              options: [
+                { id: "a", text: "Hola", correct: true },
+                { id: "b", text: "Adiós", correct: false },
+                { id: "c", text: "Gracias", correct: false },
+              ],
+            },
+            {
+              id: "en-1-3",
+              type: "arrange",
+              question: "Traduce",
+              target: "Hola gato",
+              words: ["Hello", "cat", "dog", "bye"],
+              correctOrder: ["Hello", "cat"],
+            },
+            // ⭐ NUEVO: rellenar
+            {
+              id: "en-1-type-1",
+              type: "type",
+              question: 'Escribe "Dog"',
+              validAnswers: ["Dog", "dog"],
+            },
+            // ⭐ NUEVO: hablar
+            {
+              id: "en-1-speak-1",
+              type: "speak",
+              question: 'Di "Hello"',
+              targetPhrase: "Hello",
+            },],
+     2: [
+      {
+        id: 'en-2-1',
+        type: 'select',
+        question: '¿Cómo se dice "yo soy"?',
+        options: [
+          { id: 'a', text: 'I am', correct: true },
+          { id: 'b', text: 'You are', correct: false },
+          { id: 'c', text: 'He is', correct: false },
+          { id: 'd', text: 'She are', correct: false }
+        ]
+      },
+      {
+        id: 'en-2-2',
+        type: 'arrange',
+        question: 'Traduce: "Yo soy un niño"',
+        target: 'Yo soy un niño',
+        words: ['I', 'am', 'a', 'boy', 'girl'],
+        correctOrder: ['I', 'am', 'a', 'boy']
+      },
+      {
+        id: 'en-2-3',
+        type: 'type',
+        question: 'Completa: "You ___ my friend"',
+        validAnswers: ['are']
+      },
+      {
+        id: 'en-2-4',
+        type: 'speak',
+        question: 'Di "I am happy"',
+        targetPhrase: 'I am happy'
+      }
     ],
-    2: [
-      { id: 'en-2-1', type: 'arrange', question: 'Traduce', target: 'El niño come una manzana', words: ['The', 'boy', 'eats', 'an', 'apple', 'runs'], correctOrder: ['The', 'boy', 'eats', 'an', 'apple'] },
-      { id: 'en-2-2', type: 'arrange', question: 'Traduce', target: 'Yo soy un hombre', words: ['I', 'am', 'a', 'man', 'woman'], correctOrder: ['I', 'am', 'a', 'man'] }
-    ],
+
+    // NIVEL 3 – Comida básica
     3: [
-        { id: 'en-3-1', type: 'select', question: '¿Qué es "Water"?', options: [{id: 'a', text: 'Agua', image: '💧', correct: true}, {id: 'b', text: 'Pan', image: '🍞', correct: false}] },
-        { id: 'en-3-2', type: 'select', question: '¿Qué es "Bread"?', options: [{id: 'a', text: 'Pan', image: '🍞', correct: true}, {id: 'b', text: 'Manzana', image: '🍎', correct: false}] },
-        { id: 'en-3-3', type: 'listen', question: 'Escucha', audioText: 'Coffee', options: [{id: 'a', text: 'Café', correct: true}, {id: 'b', text: 'Té', correct: false}] }
+      {
+        id: 'en-3-1',
+        type: 'select',
+        question: '¿Qué significa "Water"?',
+        options: [
+          { id: 'a', text: 'Agua', image: '💧', correct: true },
+          { id: 'b', text: 'Pan', image: '🍞', correct: false },
+          { id: 'c', text: 'Leche', image: '🥛', correct: false }
+        ]
+      },
+      {
+        id: 'en-3-2',
+        type: 'select',
+        question: '¿Qué significa "Bread"?',
+        options: [
+          { id: 'a', text: 'Pan', image: '🍞', correct: true },
+          { id: 'b', text: 'Manzana', image: '🍎', correct: false },
+          { id: 'c', text: 'Agua', image: '💧', correct: false }
+        ]
+      },
+      {
+        id: 'en-3-3',
+        type: 'listen',
+        question: 'Escucha y elige la traducción',
+        audioText: 'Coffee',
+        options: [
+          { id: 'a', text: 'Café', correct: true },
+          { id: 'b', text: 'Té', correct: false }
+        ]
+      },
+      {
+        id: 'en-3-4',
+        type: 'arrange',
+        question: 'Traduce: "Yo como pan"',
+        target: 'Yo como pan',
+        words: ['I', 'eat', 'bread', 'drink', 'water'],
+        correctOrder: ['I', 'eat', 'bread']
+      },
+      {
+        id: 'en-3-5',
+        type: 'type',
+        question: 'Escribe la palabra en inglés para "manzana"',
+        validAnswers: ['Apple', 'apple']
+      }
     ],
+
+    // NIVEL 4 – Familia y posesivos
+    4: [
+      {
+        id: 'en-4-1',
+        type: 'select',
+        question: '¿Cómo se dice "madre"?',
+        options: [
+          { id: 'a', text: 'Mother', correct: true },
+          { id: 'b', text: 'Father', correct: false },
+          { id: 'c', text: 'Sister', correct: false }
+        ]
+      },
+      {
+        id: 'en-4-2',
+        type: 'select',
+        question: '¿Cómo se dice "hermano"?',
+        options: [
+          { id: 'a', text: 'Brother', correct: true },
+          { id: 'b', text: 'Sister', correct: false },
+          { id: 'c', text: 'Mother', correct: false }
+        ]
+      },
+      {
+        id: 'en-4-3',
+        type: 'arrange',
+        question: 'Traduce: "Mi madre es feliz"',
+        target: 'Mi madre es feliz',
+        words: ['My', 'mother', 'is', 'happy', 'sad'],
+        correctOrder: ['My', 'mother', 'is', 'happy']
+      },
+      {
+        id: 'en-4-4',
+        type: 'type',
+        question: 'Completa: "This is my ___ (hermano)"',
+        validAnswers: ['brother']
+      },
+      {
+        id: 'en-4-5',
+        type: 'speak',
+        question: 'Di "This is my mother"',
+        targetPhrase: 'This is my mother'
+      }
+    ],
+
+    // NIVEL 5 – Animales y plurales
     5: [
-        { id: 'en-5-1', type: 'arrange', question: 'Traduce (Difícil)', target: 'Ella bebe agua y come pan', words: ['She', 'drinks', 'water', 'and', 'eats', 'bread', 'apple'], correctOrder: ['She', 'drinks', 'water', 'and', 'eats', 'bread'] },
-        { id: 'en-5-2', type: 'listen', question: 'Escucha', audioText: 'Good morning', options: [{id: 'a', text: 'Buenos días', correct: true}, {id: 'b', text: 'Buenas noches', correct: false}] }
+      {
+        id: 'en-5-1',
+        type: 'select',
+        question: '¿Cómo se dice "caballo"?',
+        options: [
+          { id: 'a', text: 'Horse', image: '🐴', correct: true },
+          { id: 'b', text: 'Cow', image: '🐮', correct: false }
+        ]
+      },
+      {
+        id: 'en-5-2',
+        type: 'select',
+        question: '¿Cómo se dice "cerdo"?',
+        options: [
+          { id: 'a', text: 'Pig', image: '🐷', correct: true },
+          { id: 'b', text: 'Dog', image: '🐶', correct: false }
+        ]
+      },
+      {
+        id: 'en-5-3',
+        type: 'arrange',
+        question: 'Traduce: "Los gatos comen"',
+        target: 'Los gatos comen',
+        words: ['The', 'cats', 'eat', 'dog', 'runs'],
+        correctOrder: ['The', 'cats', 'eat']
+      },
+      {
+        id: 'en-5-4',
+        type: 'type',
+        question: 'Escribe el plural de "dog"',
+        validAnswers: ['dogs']
+      },
+      {
+        id: 'en-5-5',
+        type: 'speak',
+        question: 'Di "The dogs run"',
+        targetPhrase: 'The dogs run'
+      }
     ],
+
+    // NIVEL 6 – Colores y descripciones
     6: [
-        { id: 'en-6-1', type: 'select', question: '¿Cómo se dice "Caballo"?', options: [{id: 'a', text: 'Horse', image: '🐴', correct: true}, {id: 'b', text: 'Cow', image: '🐮', correct: false}] },
-        { id: 'en-6-2', type: 'select', question: '¿Cómo se dice "Cerdo"?', options: [{id: 'a', text: 'Pig', image: '🐷', correct: true}, {id: 'b', text: 'Dog', image: '🐶', correct: false}] }
-    ],
-    7: [
-        { id: 'en-7-1', type: 'arrange', question: 'Traduce', target: 'Los gatos comen', words: ['The', 'cats', 'eat', 'dog', 's'], correctOrder: ['The', 'cats', 'eat'] },
-        { id: 'en-7-2', type: 'select', question: 'Selecciona "Niñas"', options: [{id:'a', text:'Girls', correct:true}, {id:'b', text:'Boys', correct:false}] }
-    ],
-    8: [
-        { id: 'en-8-1', type: 'select', question: '¿Qué es "Red"?', options: [{id:'a', text:'Rojo', image:'🔴', correct:true}, {id:'b', text:'Azul', image:'🔵', correct:false}] },
-        { id: 'en-8-2', type: 'arrange', question: 'Traduce', target: 'Una manzana roja', words: ['A', 'red', 'apple', 'blue'], correctOrder: ['A', 'red', 'apple'] }
-    ],
-    10: [
-        { id: 'en-10-1', type: 'arrange', question: 'Traduce', target: 'El niño pequeño come una manzana grande', words: ['The', 'small', 'boy', 'eats', 'a', 'big', 'apple'], correctOrder: ['The', 'small', 'boy', 'eats', 'a', 'big', 'apple'] },
-        { id: 'en-10-2', type: 'listen', question: 'Escucha', audioText: 'Goodbye my friend', options: [{id:'a', text:'Adiós mi amigo', correct:true}, {id:'b', text:'Hola mi amigo', correct:false}] }
+      {
+        id: 'en-6-1',
+        type: 'select',
+        question: '¿Qué significa "Red"?',
+        options: [
+          { id: 'a', text: 'Rojo', image: '🔴', correct: true },
+          { id: 'b', text: 'Azul', image: '🔵', correct: false }
+        ]
+      },
+      {
+        id: 'en-6-2',
+        type: 'select',
+        question: '¿Qué significa "Blue"?',
+        options: [
+          { id: 'a', text: 'Azul', image: '🔵', correct: true },
+          { id: 'b', text: 'Rojo', image: '🔴', correct: false }
+        ]
+      },
+      {
+        id: 'en-6-3',
+        type: 'arrange',
+        question: 'Traduce: "Una manzana roja grande"',
+        target: 'Una manzana roja grande',
+        words: ['A', 'big', 'red', 'apple', 'small'],
+        correctOrder: ['A', 'big', 'red', 'apple']
+      },
+      {
+        id: 'en-6-4',
+        type: 'type',
+        question: 'Completa: "The sky is ___ (azul)"',
+        validAnswers: ['blue']
+      },
+      {
+        id: 'en-6-5',
+        type: 'speak',
+        question: 'Di "The apple is red"',
+        targetPhrase: 'The apple is red'
+      }
     ]
   },
   fr: {
-    1: [
-      { id: 'fr-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Chat', image: '🐱', correct: true }, { id: 'b', text: 'Chien', image: '🐶', correct: false }, { id: 'c', text: 'Oiseau', image: '🐦', correct: false }, { id: 'd', text: 'Poisson', image: '🐟', correct: false }] },
-      { id: 'fr-1-2', type: 'listen', question: 'Escucha', audioText: 'Bonjour', options: [{ id: 'a', text: 'Hola', correct: true }, { id: 'b', text: 'Adiós', correct: false }, { id: 'c', text: 'Por favor', correct: false }] },
-      { id: 'fr-1-3', type: 'arrange', question: 'Traduce', target: 'Un hombre', words: ['Un', 'homme', 'femme', 'une'], correctOrder: ['Un', 'homme'] },
-    ],
-    2: [
-      { id: 'fr-2-1', type: 'arrange', question: 'Traduce', target: 'Yo soy una mujer', words: ['Je', 'suis', 'une', 'femme', 'homme'], correctOrder: ['Je', 'suis', 'une', 'femme'] }
-    ],
-    3: [
-        { id: 'fr-3-1', type: 'select', question: '¿Qué es "Eau"?', options: [{id: 'a', text: 'Agua', image: '💧', correct: true}, {id: 'b', text: 'Pan', image: '🍞', correct: false}] }
-    ]
+     // NIVEL 1 – Presentaciones y saludos
+  1: [
+    {
+      id: "fr-1-1",
+      type: "select",
+      question: "¿Qué significa “Bonjour”?",
+      options: [
+        { id: "a", text: "Hola", correct: true },
+        { id: "b", text: "Adiós", correct: false },
+        { id: "c", text: "Gracias", correct: false }
+      ]
+    },
+    {
+      id: "fr-1-2",
+      type: "select",
+      question: "¿Qué significa “Bonsoir”?",
+      options: [
+        { id: "a", text: "Buenas noches", correct: true },
+        { id: "b", text: "Buenos días", correct: false },
+        { id: "c", text: "Buenas tardes", correct: false }
+      ]
+    },
+    {
+      id: "fr-1-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Salut",
+      options: [
+        { id: "a", text: "Hola", correct: true },
+        { id: "b", text: "Adiós", correct: false }
+      ]
+    },
+    {
+      id: "fr-1-4",
+      type: "type",
+      question: "Escribe la traducción de “Bonjour”",
+      validAnswers: ["hola", "Hola"]
+    },
+    {
+      id: "fr-1-5",
+      type: "speak",
+      question: "Di “Bonjour”",
+      targetPhrase: "Bonjour"
+    }
+  ],
+
+  // NIVEL 2 – El verbo ÊTRE (ser)
+  2: [
+    {
+      id: "fr-2-1",
+      type: "select",
+      question: "¿Qué significa “Je suis”?",
+      options: [
+        { id: "a", text: "Yo soy", correct: true },
+        { id: "b", text: "Tú eres", correct: false },
+        { id: "c", text: "Él es", correct: false }
+      ]
+    },
+    {
+      id: "fr-2-2",
+      type: "arrange",
+      question: "Traduce: “Soy una mujer”",
+      target: "Soy una mujer",
+      words: ["Je", "suis", "une", "femme", "homme"],
+      correctOrder: ["Je", "suis", "une", "femme"]
+    },
+    {
+      id: "fr-2-3",
+      type: "type",
+      question: "Completa: “Tu ___ un garçon”",
+      validAnswers: ["es", "ES"]
+    },
+    {
+      id: "fr-2-4",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Il est",
+      options: [
+        { id: "a", text: "Él es", correct: true },
+        { id: "b", text: "Yo soy", correct: false }
+      ]
+    },
+    {
+      id: "fr-2-5",
+      type: "speak",
+      question: "Di “Je suis heureux”",
+      targetPhrase: "Je suis heureux"
+    }
+  ],
+
+  // NIVEL 3 – Comida básica
+  3: [
+    {
+      id: "fr-3-1",
+      type: "select",
+      question: "¿Qué significa “Pain”?",
+      options: [
+        { id: "a", text: "Pan", correct: true },
+        { id: "b", text: "Leche", correct: false },
+        { id: "c", text: "Agua", correct: false }
+      ]
+    },
+    {
+      id: "fr-3-2",
+      type: "select",
+      question: "¿Qué significa “Fromage”?",
+      options: [
+        { id: "a", text: "Queso", correct: true },
+        { id: "b", text: "Carne", correct: false }
+      ]
+    },
+    {
+      id: "fr-3-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Pomme",
+      options: [
+        { id: "a", text: "Manzana", correct: true },
+        { id: "b", text: "Verdura", correct: false }
+      ]
+    },
+    {
+      id: "fr-3-4",
+      type: "arrange",
+      question: "Traduce: “Como una manzana”",
+      target: "Como una manzana",
+      words: ["Je", "mange", "une", "pomme", "banane"],
+      correctOrder: ["Je", "mange", "une", "pomme"]
+    },
+    {
+      id: "fr-3-5",
+      type: "type",
+      question: "Escribe la palabra en francés para “agua”",
+      validAnswers: ["eau"]
+    }
+  ],
+
+  // NIVEL 4 – Familia
+  4: [
+    {
+      id: "fr-4-1",
+      type: "select",
+      question: "¿Qué significa “Mère”?",
+      options: [
+        { id: "a", text: "Madre", correct: true },
+        { id: "b", text: "Padre", correct: false }
+      ]
+    },
+    {
+      id: "fr-4-2",
+      type: "select",
+      question: "¿Qué significa “Frère”?",
+      options: [
+        { id: "a", text: "Hermano", correct: true },
+        { id: "b", text: "Hermana", correct: false }
+      ]
+    },
+    {
+      id: "fr-4-3",
+      type: "arrange",
+      question: "Traduce: “Mi madre es amable”",
+      target: "Mi madre es amable",
+      words: ["Ma", "mère", "est", "gentille", "méchante"],
+      correctOrder: ["Ma", "mère", "est", "gentille"]
+    },
+    {
+      id: "fr-4-4",
+      type: "type",
+      question: "Completa: “C’est ma ___ (hermana)”",
+      validAnswers: ["soeur", "sœur"]
+    },
+    {
+      id: "fr-4-5",
+      type: "speak",
+      question: "Di “C’est mon père”",
+      targetPhrase: "C’est mon père"
+    }
+  ],
+
+  // NIVEL 5 – Animales y plurales
+  5: [
+    {
+      id: "fr-5-1",
+      type: "select",
+      question: "¿Qué significa “Cheval”?",
+      options: [
+        { id: "a", text: "Caballo", correct: true },
+        { id: "b", text: "Vaca", correct: false }
+      ]
+    },
+    {
+      id: "fr-5-2",
+      type: "select",
+      question: "¿Qué significa “Cochon”?",
+      options: [
+        { id: "a", text: "Cerdo", correct: true },
+        { id: "b", text: "Perro", correct: false }
+      ]
+    },
+    {
+      id: "fr-5-3",
+      type: "arrange",
+      question: "Traduce: “Los gatos comen”",
+      target: "Los gatos comen",
+      words: ["Les", "chats", "mangent", "chien", "court"],
+      correctOrder: ["Les", "chats", "mangent"]
+    },
+    {
+      id: "fr-5-4",
+      type: "type",
+      question: "Escribe el plural de “chien”",
+      validAnswers: ["chiens"]
+    },
+    {
+      id: "fr-5-5",
+      type: "speak",
+      question: "Di “Les chiens courent”",
+      targetPhrase: "Les chiens courent"
+    }
+  ],
+
+  // NIVEL 6 – Colores y descripciones
+  6: [
+    {
+      id: "fr-6-1",
+      type: "select",
+      question: "¿Qué significa “Rouge”?",
+      options: [
+        { id: "a", text: "Rojo", correct: true },
+        { id: "b", text: "Azul", correct: false }
+      ]
+    },
+    {
+      id: "fr-6-2",
+      type: "select",
+      question: "¿Qué significa “Bleu”?",
+      options: [
+        { id: "a", text: "Azul", correct: true },
+        { id: "b", text: "Rojo", correct: false }
+      ]
+    },
+    {
+      id: "fr-6-3",
+      type: "arrange",
+      question: "Traduce: “Una flor roja bonita”",
+      target: "Una flor roja bonita",
+      words: ["Une", "jolie", "fleur", "rouge", "bleue"],
+      correctOrder: ["Une", "jolie", "fleur", "rouge"]
+    },
+    {
+      id: "fr-6-4",
+      type: "type",
+      question: "Completa: “Le ciel est ___ (azul)”",
+      validAnswers: ["bleu"]
+    },
+    {
+      id: "fr-6-5",
+      type: "speak",
+      question: "Di “La pomme est rouge”",
+      targetPhrase: "La pomme est rouge"
+    }
+  ]
   },
   it: {
-    1: [
-      { id: 'it-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Gatto', image: '🐱', correct: true }, { id: 'b', text: 'Cane', image: '🐶', correct: false }, { id: 'c', text: 'Uccello', image: '🐦', correct: false }] },
-      { id: 'it-1-2', type: 'listen', question: 'Escucha', audioText: 'Ciao', options: [{ id: 'a', text: 'Hola/Adiós', correct: true }, { id: 'b', text: 'Gracias', correct: false }] },
-      { id: 'it-1-3', type: 'arrange', question: 'Traduce', target: 'El pan', words: ['Il', 'pane', 'la', 'mela'], correctOrder: ['Il', 'pane'] },
-    ]
-  },
+  // NIVEL 1 – Saludos y presentaciones
+  1: [
+    {
+      id: "it-1-1",
+      type: "select",
+      question: "¿Qué significa “Ciao”?",
+      options: [
+        { id: "a", text: "Hola / Adiós", correct: true },
+        { id: "b", text: "Gracias", correct: false },
+        { id: "c", text: "Por favor", correct: false }
+      ]
+    },
+    {
+      id: "it-1-2",
+      type: "select",
+      question: "¿Qué significa “Buongiorno”?",
+      options: [
+        { id: "a", text: "Buenos días", correct: true },
+        { id: "b", text: "Buenas noches", correct: false }
+      ]
+    },
+    {
+      id: "it-1-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Buonasera",
+      options: [
+        { id: "a", text: "Buenas tardes / noches", correct: true },
+        { id: "b", text: "Buenos días", correct: false }
+      ]
+    },
+    {
+      id: "it-1-4",
+      type: "type",
+      question: "Escribe la traducción de “Ciao”",
+      validAnswers: ["hola", "Hola", "hola / adiós", "Hola / Adiós"]
+    },
+    {
+      id: "it-1-5",
+      type: "speak",
+      question: "Di “Buongiorno”",
+      targetPhrase: "Buongiorno"
+    }
+  ],
+
+  // NIVEL 2 – El verbo ESSERE (ser/estar)
+  2: [
+    {
+      id: "it-2-1",
+      type: "select",
+      question: "¿Qué significa “Io sono”?",
+      options: [
+        { id: "a", text: "Yo soy", correct: true },
+        { id: "b", text: "Tú eres", correct: false },
+        { id: "c", text: "Él es", correct: false }
+      ]
+    },
+    {
+      id: "it-2-2",
+      type: "arrange",
+      question: "Traduce: “Soy una mujer”",
+      target: "Soy una mujer",
+      words: ["Io", "sono", "una", "donna", "uomo"],
+      correctOrder: ["Io", "sono", "una", "donna"]
+    },
+    {
+      id: "it-2-3",
+      type: "type",
+      question: "Completa: “Tu ___ un ragazzo”",
+      validAnswers: ["sei", "SEI"]
+    },
+    {
+      id: "it-2-4",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Lui è",
+      options: [
+        { id: "a", text: "Él es", correct: true },
+        { id: "b", text: "Yo soy", correct: false }
+      ]
+    },
+    {
+      id: "it-2-5",
+      type: "speak",
+      question: "Di “Io sono felice”",
+      targetPhrase: "Io sono felice"
+    }
+  ],
+
+  // NIVEL 3 – Comida básica
+  3: [
+    {
+      id: "it-3-1",
+      type: "select",
+      question: "¿Qué significa “Pane”?",
+      options: [
+        { id: "a", text: "Pan", correct: true },
+        { id: "b", text: "Leche", correct: false },
+        { id: "c", text: "Agua", correct: false }
+      ]
+    },
+    {
+      id: "it-3-2",
+      type: "select",
+      question: "¿Qué significa “Mela”?",
+      options: [
+        { id: "a", text: "Manzana", correct: true },
+        { id: "b", text: "Carne", correct: false }
+      ]
+    },
+    {
+      id: "it-3-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Formaggio",
+      options: [
+        { id: "a", text: "Queso", correct: true },
+        { id: "b", text: "Pescado", correct: false }
+      ]
+    },
+    {
+      id: "it-3-4",
+      type: "arrange",
+      question: "Traduce: “Como una manzana”",
+      target: "Como una manzana",
+      words: ["Io", "mangio", "una", "mela", "pane"],
+      correctOrder: ["Io", "mangio", "una", "mela"]
+    },
+    {
+      id: "it-3-5",
+      type: "type",
+      question: "Escribe la palabra en italiano para “agua”",
+      validAnswers: ["acqua"]
+    }
+  ],
+
+  // NIVEL 4 – Familia
+  4: [
+    {
+      id: "it-4-1",
+      type: "select",
+      question: "¿Qué significa “Madre”?",
+      options: [
+        { id: "a", text: "Madre", correct: true },
+        { id: "b", text: "Padre", correct: false }
+      ]
+    },
+    {
+      id: "it-4-2",
+      type: "select",
+      question: "¿Qué significa “Fratello”?",
+      options: [
+        { id: "a", text: "Hermano", correct: true },
+        { id: "b", text: "Hermana", correct: false }
+      ]
+    },
+    {
+      id: "it-4-3",
+      type: "arrange",
+      question: "Traduce: “Mi madre es amable”",
+      target: "Mi madre es amable",
+      words: ["Mia", "madre", "è", "gentile", "cattiva"],
+      correctOrder: ["Mia", "madre", "è", "gentile"]
+    },
+    {
+      id: "it-4-4",
+      type: "type",
+      question: "Completa: “Questa è mia ___ (hermana)”",
+      validAnswers: ["sorella"]
+    },
+    {
+      id: "it-4-5",
+      type: "speak",
+      question: "Di “Questo è mio padre”",
+      targetPhrase: "Questo è mio padre"
+    }
+  ],
+
+  // NIVEL 5 – Animales y plurales
+  5: [
+    {
+      id: "it-5-1",
+      type: "select",
+      question: "¿Qué significa “Cavallo”?",
+      options: [
+        { id: "a", text: "Caballo", correct: true },
+        { id: "b", text: "Vaca", correct: false }
+      ]
+    },
+    {
+      id: "it-5-2",
+      type: "select",
+      question: "¿Qué significa “Maiale”?",
+      options: [
+        { id: "a", text: "Cerdo", correct: true },
+        { id: "b", text: "Perro", correct: false }
+      ]
+    },
+    {
+      id: "it-5-3",
+      type: "arrange",
+      question: "Traduce: “Los gatos comen”",
+      target: "Los gatos comen",
+      words: ["I", "gatti", "mangiano", "cane", "corre"],
+      correctOrder: ["I", "gatti", "mangiano"]
+    },
+    {
+      id: "it-5-4",
+      type: "type",
+      question: "Escribe el plural de “cane” (perro)",
+      validAnswers: ["cani"]
+    },
+    {
+      id: "it-5-5",
+      type: "speak",
+      question: "Di “I cani corrono”",
+      targetPhrase: "I cani corrono"
+    }
+  ],
+
+  // NIVEL 6 – Colores y descripciones
+  6: [
+    {
+      id: "it-6-1",
+      type: "select",
+      question: "¿Qué significa “Rosso”?",
+      options: [
+        { id: "a", text: "Rojo", correct: true },
+        { id: "b", text: "Azul", correct: false }
+      ]
+    },
+    {
+      id: "it-6-2",
+      type: "select",
+      question: "¿Qué significa “Blu”?",
+      options: [
+        { id: "a", text: "Azul", correct: true },
+        { id: "b", text: "Verde", correct: false }
+      ]
+    },
+    {
+      id: "it-6-3",
+      type: "arrange",
+      question: "Traduce: “Una flor roja bonita”",
+      target: "Una flor roja bonita",
+      words: ["Un", "bel", "fiore", "rosso", "blu"],
+      correctOrder: ["Un", "bel", "fiore", "rosso"]
+    },
+    {
+      id: "it-6-4",
+      type: "type",
+      question: "Completa: “Il cielo è ___ (azul)”",
+      validAnswers: ["blu"]
+    },
+    {
+      id: "it-6-5",
+      type: "speak",
+      question: "Di “La mela è rossa”",
+      targetPhrase: "La mela è rossa"
+    }
+  ]
+},
+
   de: {
-    1: [
-      { id: 'de-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Katze', image: '🐱', correct: true }, { id: 'b', text: 'Hund', image: '🐶', correct: false }] },
-      { id: 'de-1-2', type: 'listen', question: 'Escucha', audioText: 'Guten Tag', options: [{ id: 'a', text: 'Buen día', correct: true }, { id: 'b', text: 'Adiós', correct: false }] },
-      { id: 'de-1-3', type: 'arrange', question: 'Traduce', target: 'Yo bebo agua', words: ['Ich', 'trinke', 'Wasser', 'Brot'], correctOrder: ['Ich', 'trinke', 'Wasser'] },
-    ]
-  },
+  // NIVEL 1 – Saludos y frases básicas
+  1: [
+    {
+      id: "de-1-1",
+      type: "select",
+      question: "¿Qué significa “Hallo”?",
+      options: [
+        { id: "a", text: "Hola", correct: true },
+        { id: "b", text: "Adiós", correct: false },
+        { id: "c", text: "Gracias", correct: false }
+      ]
+    },
+    {
+      id: "de-1-2",
+      type: "select",
+      question: "¿Qué significa “Guten Morgen”?",
+      options: [
+        { id: "a", text: "Buenos días", correct: true },
+        { id: "b", text: "Buenas noches", correct: false }
+      ]
+    },
+    {
+      id: "de-1-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Guten Abend",
+      options: [
+        { id: "a", text: "Buenas tardes/noches", correct: true },
+        { id: "b", text: "Hola", correct: false }
+      ]
+    },
+    {
+      id: "de-1-4",
+      type: "type",
+      question: "Escribe la traducción de “Hallo”",
+      validAnswers: ["hola", "Hola"]
+    },
+    {
+      id: "de-1-5",
+      type: "speak",
+      question: "Di “Guten Morgen”",
+      targetPhrase: "Guten Morgen"
+    }
+  ],
+
+  // NIVEL 2 – El verbo SEIN (ser/estar)
+  2: [
+    {
+      id: "de-2-1",
+      type: "select",
+      question: "¿Qué significa “Ich bin”?",
+      options: [
+        { id: "a", text: "Yo soy / yo estoy", correct: true },
+        { id: "b", text: "Tú eres", correct: false },
+        { id: "c", text: "Él es", correct: false }
+      ]
+    },
+    {
+      id: "de-2-2",
+      type: "arrange",
+      question: "Traduce: “Soy un hombre”",
+      target: "Soy un hombre",
+      words: ["Ich", "bin", "ein", "Mann", "Frau"],
+      correctOrder: ["Ich", "bin", "ein", "Mann"]
+    },
+    {
+      id: "de-2-3",
+      type: "type",
+      question: "Completa: “Du ___ ein Junge”",
+      validAnswers: ["bist"]
+    },
+    {
+      id: "de-2-4",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Er ist",
+      options: [
+        { id: "a", text: "Él es", correct: true },
+        { id: "b", text: "Yo soy", correct: false }
+      ]
+    },
+    {
+      id: "de-2-5",
+      type: "speak",
+      question: "Di “Ich bin glücklich”",
+      targetPhrase: "Ich bin glücklich"
+    }
+  ],
+
+  // NIVEL 3 – Comida básica
+  3: [
+    {
+      id: "de-3-1",
+      type: "select",
+      question: "¿Qué significa “Brot”?",
+      options: [
+        { id: "a", text: "Pan", correct: true },
+        { id: "b", text: "Leche", correct: false }
+      ]
+    },
+    {
+      id: "de-3-2",
+      type: "select",
+      question: "¿Qué significa “Apfel”?",
+      options: [
+        { id: "a", text: "Manzana", correct: true },
+        { id: "b", text: "Carne", correct: false }
+      ]
+    },
+    {
+      id: "de-3-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Käse",
+      options: [
+        { id: "a", text: "Queso", correct: true },
+        { id: "b", text: "Pescado", correct: false }
+      ]
+    },
+    {
+      id: "de-3-4",
+      type: "arrange",
+      question: "Traduce: “Como una manzana”",
+      target: "Como una manzana",
+      words: ["Ich", "esse", "einen", "Apfel", "Banane"],
+      correctOrder: ["Ich", "esse", "einen", "Apfel"]
+    },
+    {
+      id: "de-3-5",
+      type: "type",
+      question: "Escribe la palabra en alemán para “agua”",
+      validAnswers: ["wasser"]
+    }
+  ],
+
+  // NIVEL 4 – Familia
+  4: [
+    {
+      id: "de-4-1",
+      type: "select",
+      question: "¿Qué significa “Mutter”?",
+      options: [
+        { id: "a", text: "Madre", correct: true },
+        { id: "b", text: "Padre", correct: false }
+      ]
+    },
+    {
+      id: "de-4-2",
+      type: "select",
+      question: "¿Qué significa “Bruder”?",
+      options: [
+        { id: "a", text: "Hermano", correct: true },
+        { id: "b", text: "Hermana", correct: false }
+      ]
+    },
+    {
+      id: "de-4-3",
+      type: "arrange",
+      question: "Traduce: “Mi madre es amable”",
+      target: "Mi madre es amable",
+      words: ["Meine", "Mutter", "ist", "nett", "böse"],
+      correctOrder: ["Meine", "Mutter", "ist", "nett"]
+    },
+    {
+      id: "de-4-4",
+      type: "type",
+      question: "Completa: “Das ist mein ___ (hermana)”",
+      validAnswers: ["schwester"]
+    },
+    {
+      id: "de-4-5",
+      type: "speak",
+      question: "Di “Das ist mein Vater”",
+      targetPhrase: "Das ist mein Vater"
+    }
+  ],
+
+  // NIVEL 5 – Animales y plurales
+  5: [
+    {
+      id: "de-5-1",
+      type: "select",
+      question: "¿Qué significa “Pferd”?",
+      options: [
+        { id: "a", text: "Caballo", correct: true },
+        { id: "b", text: "Vaca", correct: false }
+      ]
+    },
+    {
+      id: "de-5-2",
+      type: "select",
+      question: "¿Qué significa “Schwein”?",
+      options: [
+        { id: "a", text: "Cerdo", correct: true },
+        { id: "b", text: "Perro", correct: false }
+      ]
+    },
+    {
+      id: "de-5-3",
+      type: "arrange",
+      question: "Traduce: “Los gatos comen”",
+      target: "Los gatos comen",
+      words: ["Die", "Katzen", "essen", "Hund", "rennt"],
+      correctOrder: ["Die", "Katzen", "essen"]
+    },
+    {
+      id: "de-5-4",
+      type: "type",
+      question: "Escribe el plural de “Hund”",
+      validAnswers: ["hunde"]
+    },
+    {
+      id: "de-5-5",
+      type: "speak",
+      question: "Di “Die Hunde rennen”",
+      targetPhrase: "Die Hunde rennen"
+    }
+  ],
+
+  // NIVEL 6 – Colores y descripciones
+  6: [
+    {
+      id: "de-6-1",
+      type: "select",
+      question: "¿Qué significa “Rot”?",
+      options: [
+        { id: "a", text: "Rojo", correct: true },
+        { id: "b", text: "Azul", correct: false }
+      ]
+    },
+    {
+      id: "de-6-2",
+      type: "select",
+      question: "¿Qué significa “Blau”?",
+      options: [
+        { id: "a", text: "Azul", correct: true },
+        { id: "b", text: "Rojo", correct: false }
+      ]
+    },
+    {
+      id: "de-6-3",
+      type: "arrange",
+      question: "Traduce: “Una flor roja bonita”",
+      target: "Una flor roja bonita",
+      words: ["Eine", "schöne", "rote", "Blume", "blaue"],
+      correctOrder: ["Eine", "schöne", "rote", "Blume"]
+    },
+    {
+      id: "de-6-4",
+      type: "type",
+      question: "Completa: “Der Himmel ist ___ (azul)”",
+      validAnswers: ["blau"]
+    },
+    {
+      id: "de-6-5",
+      type: "speak",
+      question: "Di “Der Apfel ist rot”",
+      targetPhrase: "Der Apfel ist rot"
+    }
+  ]
+},
+
   pt: {
-    1: [
-      { id: 'pt-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Gato', image: '🐱', correct: true }, { id: 'b', text: 'Cachorro', image: '🐶', correct: false }] },
-      { id: 'pt-1-2', type: 'listen', question: 'Escucha', audioText: 'Obrigado', options: [{ id: 'a', text: 'Gracias', correct: true }, { id: 'b', text: 'Hola', correct: false }] },
-      { id: 'pt-1-3', type: 'arrange', question: 'Traduce', target: 'El niño', words: ['O', 'menino', 'a', 'menina'], correctOrder: ['O', 'menino'] },
-    ]
-  },
+  // NIVEL 1 – Saludos y frases básicas
+  1: [
+    {
+      id: "pt-1-1",
+      type: "select",
+      question: "¿Qué significa “Olá”?",
+      options: [
+        { id: "a", text: "Hola", correct: true },
+        { id: "b", text: "Adiós", correct: false },
+        { id: "c", text: "Gracias", correct: false }
+      ]
+    },
+    {
+      id: "pt-1-2",
+      type: "select",
+      question: "¿Qué significa “Bom dia”?",
+      options: [
+        { id: "a", text: "Buenos días", correct: true },
+        { id: "b", text: "Buenas noches", correct: false }
+      ]
+    },
+    {
+      id: "pt-1-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Boa noite",
+      options: [
+        { id: "a", text: "Buenas noches", correct: true },
+        { id: "b", text: "Hola", correct: false }
+      ]
+    },
+    {
+      id: "pt-1-4",
+      type: "type",
+      question: "Escribe la traducción de “Olá”",
+      validAnswers: ["hola", "Hola"]
+    },
+    {
+      id: "pt-1-5",
+      type: "speak",
+      question: "Di “Bom dia”",
+      targetPhrase: "Bom dia"
+    }
+  ],
+
+  // NIVEL 2 – El verbo SER (ser/estar)
+  2: [
+    {
+      id: "pt-2-1",
+      type: "select",
+      question: "¿Qué significa “Eu sou”?",
+      options: [
+        { id: "a", text: "Yo soy", correct: true },
+        { id: "b", text: "Tú eres", correct: false },
+        { id: "c", text: "Ella es", correct: false }
+      ]
+    },
+    {
+      id: "pt-2-2",
+      type: "arrange",
+      question: "Traduce: “Soy un hombre”",
+      target: "Soy un hombre",
+      words: ["Eu", "sou", "um", "homem", "mulher"],
+      correctOrder: ["Eu", "sou", "um", "homem"]
+    },
+    {
+      id: "pt-2-3",
+      type: "type",
+      question: "Completa: “Tu ___ uma menina”",
+      validAnswers: ["és", "es"]
+    },
+    {
+      id: "pt-2-4",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Ele é",
+      options: [
+        { id: "a", text: "Él es", correct: true },
+        { id: "b", text: "Yo soy", correct: false }
+      ]
+    },
+    {
+      id: "pt-2-5",
+      type: "speak",
+      question: "Di “Eu sou feliz”",
+      targetPhrase: "Eu sou feliz"
+    }
+  ],
+
+  // NIVEL 3 – Comida básica
+  3: [
+    {
+      id: "pt-3-1",
+      type: "select",
+      question: "¿Qué significa “Pão”?",
+      options: [
+        { id: "a", text: "Pan", correct: true },
+        { id: "b", text: "Leche", correct: false }
+      ]
+    },
+    {
+      id: "pt-3-2",
+      type: "select",
+      question: "¿Qué significa “Maçã”?",
+      options: [
+        { id: "a", text: "Manzana", correct: true },
+        { id: "b", text: "Carne", correct: false }
+      ]
+    },
+    {
+      id: "pt-3-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Queijo",
+      options: [
+        { id: "a", text: "Queso", correct: true },
+        { id: "b", text: "Pescado", correct: false }
+      ]
+    },
+    {
+      id: "pt-3-4",
+      type: "arrange",
+      question: "Traduce: “Como una manzana”",
+      target: "Como una manzana",
+      words: ["Eu", "como", "uma", "maçã", "banana"],
+      correctOrder: ["Eu", "como", "uma", "maçã"]
+    },
+    {
+      id: "pt-3-5",
+      type: "type",
+      question: "Escribe la palabra en portugués para “agua”",
+      validAnswers: ["água", "agua"]
+    }
+  ],
+
+  // NIVEL 4 – Familia
+  4: [
+    {
+      id: "pt-4-1",
+      type: "select",
+      question: "¿Qué significa “Mãe”?",
+      options: [
+        { id: "a", text: "Madre", correct: true },
+        { id: "b", text: "Padre", correct: false }
+      ]
+    },
+    {
+      id: "pt-4-2",
+      type: "select",
+      question: "¿Qué significa “Irmão”?",
+      options: [
+        { id: "a", text: "Hermano", correct: true },
+        { id: "b", text: "Hermana", correct: false }
+      ]
+    },
+    {
+      id: "pt-4-3",
+      type: "arrange",
+      question: "Traduce: “Mi madre es amable”",
+      target: "Mi madre es amable",
+      words: ["Minha", "mãe", "é", "amável", "ruim"],
+      correctOrder: ["Minha", "mãe", "é", "amável"]
+    },
+    {
+      id: "pt-4-4",
+      type: "type",
+      question: "Completa: “Esta é minha ___ (hermana)”",
+      validAnswers: ["irmã"]
+    },
+    {
+      id: "pt-4-5",
+      type: "speak",
+      question: "Di “Este é meu pai”",
+      targetPhrase: "Este é meu pai"
+    }
+  ],
+
+  // NIVEL 5 – Animales y plurales
+  5: [
+    {
+      id: "pt-5-1",
+      type: "select",
+      question: "¿Qué significa “Cavalo”?",
+      options: [
+        { id: "a", text: "Caballo", correct: true },
+        { id: "b", text: "Vaca", correct: false }
+      ]
+    },
+    {
+      id: "pt-5-2",
+      type: "select",
+      question: "¿Qué significa “Porco”?",
+      options: [
+        { id: "a", text: "Cerdo", correct: true },
+        { id: "b", text: "Perro", correct: false }
+      ]
+    },
+    {
+      id: "pt-5-3",
+      type: "arrange",
+      question: "Traduce: “Los gatos comen”",
+      target: "Los gatos comen",
+      words: ["Os", "gatos", "comem", "cão", "corre"],
+      correctOrder: ["Os", "gatos", "comem"]
+    },
+    {
+      id: "pt-5-4",
+      type: "type",
+      question: "Escribe el plural de “cão”",
+      validAnswers: ["cães"]
+    },
+    {
+      id: "pt-5-5",
+      type: "speak",
+      question: "Di “Os cães correm”",
+      targetPhrase: "Os cães correm"
+    }
+  ],
+
+  // NIVEL 6 – Colores y descripciones
+  6: [
+    {
+      id: "pt-6-1",
+      type: "select",
+      question: "¿Qué significa “Vermelho”?",
+      options: [
+        { id: "a", text: "Rojo", correct: true },
+        { id: "b", text: "Azul", correct: false }
+      ]
+    },
+    {
+      id: "pt-6-2",
+      type: "select",
+      question: "¿Qué significa “Azul”?",
+      options: [
+        { id: "a", text: "Azul", correct: true },
+        { id: "b", text: "Rojo", correct: false }
+      ]
+    },
+    {
+      id: "pt-6-3",
+      type: "arrange",
+      question: "Traduce: “Una flor roja bonita”",
+      target: "Una flor roja bonita",
+      words: ["Uma", "bonita", "flor", "vermelha", "azul"],
+      correctOrder: ["Uma", "bonita", "flor", "vermelha"]
+    },
+    {
+      id: "pt-6-4",
+      type: "type",
+      question: "Completa: “O céu é ___ (azul)”",
+      validAnswers: ["azul"]
+    },
+    {
+      id: "pt-6-5",
+      type: "speak",
+      question: "Di “A maçã é vermelha”",
+      targetPhrase: "A maçã é vermelha"
+    }
+  ]
+},
+
   ru: {
-    1: [
-      { id: 'ru-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Кот', image: '🐱', correct: true }, { id: 'b', text: 'Собака', image: '🐶', correct: false }] },
-      { id: 'ru-1-2', type: 'listen', question: 'Escucha', audioText: 'Привет', options: [{ id: 'a', text: 'Hola', correct: true }, { id: 'b', text: 'Adiós', correct: false }] },
-      { id: 'ru-1-3', type: 'arrange', question: 'Traduce', target: 'Esto es una casa', words: ['Это', 'дом', 'кот', 'вода'], correctOrder: ['Это', 'дом'] },
-    ]
-  }
+  // NIVEL 1 – Saludos y frases básicas
+  1: [
+    {
+      id: "ru-1-1",
+      type: "select",
+      question: "¿Qué significa “Привет” (Privet)?",
+      options: [
+        { id: "a", text: "Hola", correct: true },
+        { id: "b", text: "Adiós", correct: false },
+        { id: "c", text: "Gracias", correct: false }
+      ]
+    },
+    {
+      id: "ru-1-2",
+      type: "select",
+      question: "¿Qué significa “Здравствуйте” (Zdravstvuyte)?",
+      options: [
+        { id: "a", text: "Hola (formal)", correct: true },
+        { id: "b", text: "Buenas noches", correct: false }
+      ]
+    },
+    {
+      id: "ru-1-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Доброе утро",
+      options: [
+        { id: "a", text: "Buenos días", correct: true },
+        { id: "b", text: "Buenas tardes", correct: false }
+      ]
+    },
+    {
+      id: "ru-1-4",
+      type: "type",
+      question: "Escribe la traducción de “Спасибо” (Spasibo)",
+      validAnswers: ["gracias", "Gracias"]
+    },
+    {
+      id: "ru-1-5",
+      type: "speak",
+      question: "Di “Привет”",
+      targetPhrase: "Привет"
+    }
+  ],
+
+  // NIVEL 2 – El verbo Быть (ser/estar implícito)
+  2: [
+    {
+      id: "ru-2-1",
+      type: "select",
+      question: "¿Qué significa “Я” (Ya)?",
+      options: [
+        { id: "a", text: "Yo", correct: true },
+        { id: "b", text: "Tú", correct: false }
+      ]
+    },
+    {
+      id: "ru-2-2",
+      type: "arrange",
+      question: "Traduce: “Soy una mujer”",
+      target: "Soy una mujer",
+      words: ["Я", "женщина", "мужчина", "есть"],
+      correctOrder: ["Я", "женщина"]
+    },
+    {
+      id: "ru-2-3",
+      type: "type",
+      question: "Traduce: “Ты мужчина”",
+      validAnswers: ["tú eres un hombre", "tu eres un hombre"]
+    },
+    {
+      id: "ru-2-4",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Он мальчик",
+      options: [
+        { id: "a", text: "Él es un niño", correct: true },
+        { id: "b", text: "Ella es una niña", correct: false }
+      ]
+    },
+    {
+      id: "ru-2-5",
+      type: "speak",
+      question: "Di “Я счастлив” (Yo soy feliz – masc.)",
+      targetPhrase: "Я счастлив"
+    }
+  ],
+
+  // NIVEL 3 – Comida básica
+  3: [
+    {
+      id: "ru-3-1",
+      type: "select",
+      question: "¿Qué significa “Хлеб” (Khleb)?",
+      options: [
+        { id: "a", text: "Pan", correct: true },
+        { id: "b", text: "Leche", correct: false }
+      ]
+    },
+    {
+      id: "ru-3-2",
+      type: "select",
+      question: "¿Qué significa “Яблоко” (Yabloko)?",
+      options: [
+        { id: "a", text: "Manzana", correct: true },
+        { id: "b", text: "Carne", correct: false }
+      ]
+    },
+    {
+      id: "ru-3-3",
+      type: "listen",
+      question: "Escucha y elige la traducción",
+      audioText: "Молоко",
+      options: [
+        { id: "a", text: "Leche", correct: true },
+        { id: "b", text: "Agua", correct: false }
+      ]
+    },
+    {
+      id: "ru-3-4",
+      type: "arrange",
+      question: "Traduce: “Como una manzana”",
+      target: "Como una manzana",
+      words: ["Я", "ем", "яблоко", "вода"],
+      correctOrder: ["Я", "ем", "яблоко"]
+    },
+    {
+      id: "ru-3-5",
+      type: "type",
+      question: "Escribe la palabra en ruso para “agua”",
+      validAnswers: ["вода"]
+    }
+  ],
+
+  // NIVEL 4 – Familia
+  4: [
+    {
+      id: "ru-4-1",
+      type: "select",
+      question: "¿Qué significa “Мама” (Mama)?",
+      options: [
+        { id: "a", text: "Madre", correct: true },
+        { id: "b", text: "Padre", correct: false }
+      ]
+    },
+    {
+      id: "ru-4-2",
+      type: "select",
+      question: "¿Qué significa “Брат” (Brat)?",
+      options: [
+        { id: "a", text: "Hermano", correct: true },
+        { id: "b", text: "Hermana", correct: false }
+      ]
+    },
+    {
+      id: "ru-4-3",
+      type: "arrange",
+      question: "Traduce: “Mi madre es amable”",
+      target: "Mi madre es amable",
+      words: ["Моя", "мама", "добрая", "злая"],
+      correctOrder: ["Моя", "мама", "добрая"]
+    },
+    {
+      id: "ru-4-4",
+      type: "type",
+      question: "Completa: “Это моя ___ (hermana)”",
+      validAnswers: ["сестра"]
+    },
+    {
+      id: "ru-4-5",
+      type: "speak",
+      question: "Di “Это мой папа”",
+      targetPhrase: "Это мой папа"
+    }
+  ],
+
+  // NIVEL 5 – Animales y plurales
+  5: [
+    {
+      id: "ru-5-1",
+      type: "select",
+      question: "¿Qué significa “Лошадь” (Loshad’)?",
+      options: [
+        { id: "a", text: "Caballo", correct: true },
+        { id: "b", text: "Cerdo", correct: false }
+      ]
+    },
+    {
+      id: "ru-5-2",
+      type: "select",
+      question: "¿Qué significa “Свинья” (Svinya)?",
+      options: [
+        { id: "a", text: "Cerdo", correct: true },
+        { id: "b", text: "Perro", correct: false }
+      ]
+    },
+    {
+      id: "ru-5-3",
+      type: "arrange",
+      question: "Traduce: “Los gatos comen”",
+      target: "Los gatos comen",
+      words: ["Кошки", "едят", "собака", "бегут"],
+      correctOrder: ["Кошки", "едят"]
+    },
+    {
+      id: "ru-5-4",
+      type: "type",
+      question: "Escribe el plural de “собака” (perro)",
+      validAnswers: ["собаки"]
+    },
+    {
+      id: "ru-5-5",
+      type: "speak",
+      question: "Di “Собаки бегут”",
+      targetPhrase: "Собаки бегут"
+    }
+  ],
+
+  // NIVEL 6 – Colores y descripciones
+  6: [
+    {
+      id: "ru-6-1",
+      type: "select",
+      question: "¿Qué significa “Красный” (Krasnyy)?",
+      options: [
+        { id: "a", text: "Rojo", correct: true },
+        { id: "b", text: "Azul", correct: false }
+      ]
+    },
+    {
+      id: "ru-6-2",
+      type: "select",
+      question: "¿Qué significa “Синий” (Siniy)?",
+      options: [
+        { id: "a", text: "Azul", correct: true },
+        { id: "b", text: "Rojo", correct: false }
+      ]
+    },
+    {
+      id: "ru-6-3",
+      type: "arrange",
+      question: "Traduce: “Una flor roja bonita”",
+      target: "Una flor roja bonita",
+      words: ["Красивая", "красная", "цветок", "синяя"],
+      correctOrder: ["Красивая", "красная", "цветок"]
+    },
+    {
+      id: "ru-6-4",
+      type: "type",
+      question: "Completa: “Небо ___ (azul)”",
+      validAnswers: ["синее"]
+    },
+    {
+      id: "ru-6-5",
+      type: "speak",
+      question: "Di “Яблоко красное”",
+      targetPhrase: "Яблоко красное"
+    }
+  ]
+},
 };
 
 // --- UTILIDADES ---
@@ -674,110 +2333,476 @@ const ShopTab = ({ userGems, onBuy, purchasedItems, onOpenPlans, t, isDarkMode }
   </div>
 );
 
-const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, hasSuit, gems, setGems, plan, onOpenPlans, t, isDarkMode }) => {
-  const [queue, setQueue] = useState(() => { 
-    // 1. Cargar lecciones del idioma actual
-    const courseContent = ALL_COURSE_DATA[courseId];
-    let questions = [];
-    
-    // 2. Selección de nivel con fallbacks seguros
-    if (courseContent && courseContent[levelId]) {
-      questions = courseContent[levelId];
-    } else if (courseContent && courseContent[1]) {
-      questions = courseContent[1]; 
-    } else {
-      questions = ALL_COURSE_DATA['en'][1]; 
-    }
+// 🔽🔽 AQUÍ VIENE LA PARTE IMPORTANTE: LessonScreen MODIFICADO 🔽🔽
+      const LessonScreen = ({
+        courseId,
+        levelId,
+        onComplete,
+        onExit,
+        lives,
+        setLives,
+        hasSuit,
+        gems,
+        setGems,
+        plan,
+        onOpenPlans,
+        t,
+        isDarkMode,
+      }) => {
+        const [queue, setQueue] = useState(() => {
+          const courseContent = ALL_COURSE_DATA[courseId];
+          let questions = [];
 
-    // 3. LOGICA DE DEDUPLICACIÓN ROBUSTA (Set por ID)
-    const uniqueQuestions = [];
-    const seenIds = new Set();
+          if (courseContent && courseContent[levelId]) {
+            questions = courseContent[levelId];
+          } else if (courseContent && courseContent[1]) {
+            questions = courseContent[1];
+          } else {
+            questions = ALL_COURSE_DATA["en"][1];
+          }
 
-    for (const q of questions) {
-      if (!seenIds.has(q.id)) {
-        seenIds.add(q.id);
-        uniqueQuestions.push(q);
-      }
-    }
-    
-    // Solo retornamos una copia limpia y única de las preguntas
-    return [...uniqueQuestions]; 
-  });
+          // dedupe por id
+          const uniqueQuestions = [];
+          const seenIds = new Set();
+          for (const q of questions) {
+            if (!seenIds.has(q.id)) {
+              seenIds.add(q.id);
+              uniqueQuestions.push(q);
+            }
+          }
+          return [...uniqueQuestions];
+        });
 
-  const [initialCount] = useState(() => queue.length);
-  const [completedCount, setCompletedCount] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [sentenceOrder, setSentenceOrder] = useState([]);
-  const [status, setStatus] = useState('idle');
-  const [mascotEmotion, setMascotEmotion] = useState('happy');
-  const [showHeartsModal, setShowHeartsModal] = useState(false);
-  const [mistakes, setMistakes] = useState(0); 
-  const question = queue[0];
+        const [initialCount] = useState(() => queue.length);
+        const [completedCount, setCompletedCount] = useState(0);
+        const [selectedOption, setSelectedOption] = useState(null);
+        const [sentenceOrder, setSentenceOrder] = useState([]);
+        const [status, setStatus] = useState("idle");
+        const [mascotEmotion, setMascotEmotion] = useState("happy");
+        const [showHeartsModal, setShowHeartsModal] = useState(false);
+        const [mistakes, setMistakes] = useState(0);
 
-  useEffect(() => { if (!question && status === 'idle' && !showHeartsModal) onComplete({ perfect: mistakes === 0 }); }, [queue, status, onComplete, question, showHeartsModal, mistakes]);
-  const handleRefillLives = () => { if (gems >= 300) { setGems(p => p - 300); setLives(5); setShowHeartsModal(false); playSound('buy'); } else { playSound('wrong'); } };
-  
-  if (!question && !showHeartsModal) return null;
-  if (showHeartsModal) return <HeartsModal onExit={onExit} onRefill={handleRefillLives} userGems={gems} onOpenPlans={() => { setShowHeartsModal(false); onOpenPlans(); }} t={t} isDarkMode={isDarkMode} />;
+        // ⭐ NUEVO estado para type/speak
+        const [typedAnswer, setTypedAnswer] = useState("");
+        const [spokenAnswer, setSpokenAnswer] = useState("");
+        const [isListening, setIsListening] = useState(false);
 
-  const handleCheck = () => {
-    let isCorrect = false;
-    if (question.type === 'select' || question.type === 'listen') { const selected = question.options.find(opt => opt.id === selectedOption); isCorrect = selected?.correct; } else if (question.type === 'arrange') isCorrect = JSON.stringify(sentenceOrder) === JSON.stringify(question.correctOrder);
-    if (isCorrect) { setStatus('correct'); setMascotEmotion('happy'); playSound('correct'); } else { setStatus('wrong'); setMascotEmotion('sad'); setMistakes(m => m + 1); if (plan === 'free') setLives(l => Math.max(0, l - 1)); playSound('wrong'); }
-  };
-  const handleContinue = () => {
-    if (lives === 0 && plan === 'free') { setShowHeartsModal(true); return; }
-    if (status === 'correct') { setCompletedCount(p => p + 1); setQueue(p => p.slice(1)); } else { setQueue(p => { const [f, ...r] = p; return [...r, f]; }); }
-    setStatus('idle'); setMascotEmotion('happy'); setSelectedOption(null); setSentenceOrder([]);
-  };
+        const question = queue[0];
 
-  const handleSelectOption = (opt) => {
-    if (status !== 'idle') return;
-    setSelectedOption(opt.id);
-    if (opt.text && (question.type === 'listen' || question.type === 'select')) {
-        sayWord(opt.text, courseId);
-    }
-  };
+        useEffect(() => {
+          if (!question && status === "idle" && !showHeartsModal) {
+            onComplete({ perfect: mistakes === 0 });
+          }
+        }, [queue, status, onComplete, question, showHeartsModal, mistakes]);
 
-  return (
-    <div className={`min-h-screen flex flex-col w-full relative z-50 ${
-      isDarkMode
-        ? 'bg-[#2C2C2C] text-[#EAEAEA]'
-        : 'bg-white max-w-3xl mx-auto'
-        }`}>
+        const handleRefillLives = () => {
+          if (gems >= 300) {
+            setGems((p) => p - 300);
+            setLives(5);
+            setShowHeartsModal(false);
+            playSound("buy");
+          } else {
+            playSound("wrong");
+          }
+        };
 
-      <div className="p-6 flex items-center gap-4"><button onClick={onExit}><X className="text-slate-400 hover:text-slate-600" /></button><ProgressBar current={completedCount} total={initialCount} /><div className={`flex items-center font-bold gap-1 animate-pulse ${plan === 'free' ? 'text-red-500' : 'text-purple-500'}`} onClick={onOpenPlans}><Heart fill="currentColor" /> {plan === 'free' ? lives : '∞'}</div></div>
-      <div
-  className={`flex-1 overflow-y-auto px-6 pb-40 ${
-    isDarkMode ? 'bg-[#2C2C2C]' : 'bg-white'
-     }`} >
-<h2 className="text-2xl font-bold mt-4 mb-4">{question.question}</h2>{question.type !== 'arrange' && <div className="flex justify-center mb-6"><Mascot emotion={mascotEmotion} hasSuit={hasSuit} /></div>}
-      {question.type === 'select' && <div className="grid grid-cols-2 gap-4">{question.options.map(opt => (<div key={opt.id} onClick={() => handleSelectOption(opt)} className={`border-2 rounded-2xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all active:scale-95 ${selectedOption === opt.id ? 'bg-blue-100 border-blue-400' : isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white border-slate-200'}`}>{opt.image && <span className="text-4xl">{opt.image}</span>}<span className={`text-lg font-bold ${selectedOption === opt.id ? 'text-slate-700' : ''}`}>{opt.text}</span></div>))}</div>}
-      {question.type === 'listen' && (
-        <div className="flex flex-col items-center gap-8">
-            <Button3D 
-                color="blue" 
-                onClick={() => sayWord(question.audioText, courseId)} 
-                className="rounded-full w-32 h-32 flex items-center justify-center"
-                data-text={question.audioText}
-                data-lang={courseId}
-            >
-                <Volume2 size={48}/>
-            </Button3D>
-            {question.audioText && <p className="text-slate-400 font-bold">CLICK TO LISTEN</p>}
-            <div className="grid w-full gap-2">
-                {question.options.map(opt => (
-                    <div key={opt.id} onClick={() => handleSelectOption(opt)} className={`p-4 border-2 rounded-xl cursor-pointer font-bold ${selectedOption === opt.id ? 'bg-blue-100 border-blue-500 text-blue-600' : isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white'}`}>{opt.text}</div>
-                ))}
+        if (!question && !showHeartsModal) return null;
+        if (showHeartsModal)
+          return (
+            <HeartsModal
+              onExit={onExit}
+              onRefill={handleRefillLives}
+              userGems={gems}
+              onOpenPlans={() => {
+                setShowHeartsModal(false);
+                onOpenPlans();
+              }}
+              t={t}
+              isDarkMode={isDarkMode}
+            />
+          );
+
+        // ⭐ NUEVO: reconocimiento de voz
+        const handleMicClick = () => {
+          const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SpeechRecognition) {
+            alert("Tu navegador no soporta reconocimiento de voz.");
+            return;
+          }
+          const recognition = new SpeechRecognition();
+          const langMap = {
+            en: "en-US",
+            es: "es-ES",
+            fr: "fr-FR",
+            de: "de-DE",
+            it: "it-IT",
+            pt: "pt-BR",
+            ru: "ru-RU",
+          };
+          recognition.lang = langMap[courseId] || "en-US";
+          recognition.interimResults = false;
+
+          setIsListening(true);
+          recognition.start();
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setSpokenAnswer(transcript);
+            setIsListening(false);
+          };
+          recognition.onerror = () => setIsListening(false);
+          recognition.onend = () => setIsListening(false);
+        };
+
+        const handleCheck = () => {
+          let isCorrect = false;
+
+          if (question.type === "select" || question.type === "listen") {
+            const selected = question.options.find(
+              (opt) => opt.id === selectedOption
+            );
+            isCorrect = selected?.correct;
+          } else if (question.type === "arrange") {
+            isCorrect =
+              JSON.stringify(sentenceOrder) ===
+              JSON.stringify(question.correctOrder);
+          } else if (question.type === "type") {
+            const normalized = typedAnswer.trim().toLowerCase();
+            isCorrect = Array.isArray(question.validAnswers)
+              ? question.validAnswers.some(
+                  (ans) => ans.toLowerCase() === normalized
+                )
+              : false;
+          } else if (question.type === "speak") {
+            const said = spokenAnswer.trim().toLowerCase();
+            const target = (question.targetPhrase || "").trim().toLowerCase();
+            if (said && target) {
+              isCorrect = said.includes(target) || target.includes(said);
+            } else {
+              isCorrect = false;
+            }
+          }
+
+          if (isCorrect) {
+            setStatus("correct");
+            setMascotEmotion("happy");
+            playSound("correct");
+          } else {
+            setStatus("wrong");
+            setMascotEmotion("sad");
+            setMistakes((m) => m + 1);
+            if (plan === "free") setLives((l) => Math.max(0, l - 1));
+            playSound("wrong");
+          }
+        };
+
+        const handleContinue = () => {
+          if (lives === 0 && plan === "free") {
+            setShowHeartsModal(true);
+            return;
+          }
+
+          // ⭐ CAMBIO: ya NO se reencola la pregunta cuando es wrong
+          setCompletedCount((p) => p + 1);
+          setQueue((p) => p.slice(1));
+
+          setStatus("idle");
+          setMascotEmotion("happy");
+          setSelectedOption(null);
+          setSentenceOrder([]);
+          setTypedAnswer("");
+          setSpokenAnswer("");
+          setIsListening(false);
+        };
+
+        const handleSelectOption = (opt) => {
+          if (status !== "idle") return;
+          setSelectedOption(opt.id);
+          if (
+            opt.text &&
+            (question.type === "listen" || question.type === "select")
+          ) {
+            sayWord(opt.text, courseId);
+          }
+        };
+
+        // ⭐ NUEVO: lógica para deshabilitar botón comprobar
+        const isCheckDisabled =
+          ((question.type === "select" || question.type === "listen") &&
+            !selectedOption) ||
+          (question.type === "arrange" && sentenceOrder.length === 0) ||
+          (question.type === "type" && !typedAnswer.trim()) ||
+          (question.type === "speak" && !spokenAnswer.trim());
+
+        return (
+          <div
+            className={`min-h-screen flex flex-col w-full relative z-50 ${
+              isDarkMode
+                ? "bg-[#2C2C2C] text-[#EAEAEA]"
+                : "bg-white max-w-3xl mx-auto"
+            }`}
+          >
+            <div className="p-6 flex items-center gap-4">
+              <button onClick={onExit}>
+                <X className="text-slate-400 hover:text-slate-600" />
+              </button>
+              <ProgressBar current={completedCount} total={initialCount} />
+              <div
+                className={`flex items-center font-bold gap-1 animate-pulse ${
+                  plan === "free" ? "text-red-500" : "text-purple-500"
+                }`}
+                onClick={onOpenPlans}
+              >
+                <Heart fill="currentColor" /> {plan === "free" ? lives : "∞"}
+              </div>
             </div>
-        </div>
-      )}
-      {question.type === 'arrange' && <div className="space-y-8"><div className={`border-2 p-4 rounded-2xl text-lg font-bold ${isDarkMode ? 'bg-[#383838] border-[#444]' : 'bg-white border-slate-200 text-slate-700'}`}>"{question.target}"</div><div className={`min-h-[60px] border-b-2 flex flex-wrap gap-2 py-2 ${isDarkMode ? 'border-[#444]' : 'border-slate-200'}`}>{sentenceOrder.map((word, i) => (<button key={i} onClick={() => setSentenceOrder(sentenceOrder.filter((_, idx) => idx !== i))} className={`border px-3 py-2 rounded-xl font-bold ${isDarkMode ? 'bg-[#383838] border-[#555] text-white' : 'bg-white border-slate-300'}`}>{word}</button>))}</div><div className="flex flex-wrap gap-2 justify-center">{question.words.map((word, i) => (<button key={i} onClick={() => !sentenceOrder.includes(word) && setSentenceOrder([...sentenceOrder, word])} className={`border-b-4 px-4 py-2 rounded-xl font-bold ${sentenceOrder.includes(word) ? (isDarkMode ? 'bg-[#333] text-transparent' : 'bg-slate-200 text-transparent') : (isDarkMode ? 'bg-[#383838] border-[#555] text-white' : 'bg-white border-slate-300')}`} disabled={sentenceOrder.includes(word)}>{word}</button>))}</div></div>}
-      </div>
-      <div className={`fixed bottom-0 left-0 right-0 p-6 border-t-2 ${status === 'correct' ? 'bg-green-100 border-green-200' : status === 'wrong' ? 'bg-red-100 border-red-200' : isDarkMode ? 'bg-[#2C2C2C] border-[#444]' : 'bg-white border-slate-200'}`}><div className="max-w-3xl mx-auto flex items-center justify-between">{status !== 'idle' && <div className={`flex items-center gap-4 font-bold text-xl ${status === 'correct' ? 'text-green-700' : 'text-red-700'}`}>{status === 'correct' ? <Check size={28}/> : <X size={28}/>}<div><div className="text-lg">{status === 'correct' ? t('correct') : t('wrong')}</div></div></div>}<div className={`${status === 'idle' ? 'w-full' : ''}`}>{status === 'idle' ? <Button3D fullWidth color="green" onClick={handleCheck} disabled={(!selectedOption && question.type !== 'arrange') || (question.type === 'arrange' && sentenceOrder.length === 0)}>{t('check')}</Button3D> : <Button3D color={status === 'correct' ? 'green' : 'red'} onClick={handleContinue}>{t('continue')}</Button3D>}</div></div></div>
-    </div>
-  );
-};
+
+            <div
+              className={`flex-1 overflow-y-auto px-6 pb-40 ${
+                isDarkMode ? "bg-[#2C2C2C]" : "bg-white"
+              }`}
+            >
+              <h2 className="text-2xl font-bold mt-4 mb-4">
+                {question.question}
+              </h2>
+
+              {question.type !== "arrange" && (
+                <div className="flex justify-center mb-6">
+                  <Mascot emotion={mascotEmotion} hasSuit={hasSuit} />
+                </div>
+              )}
+
+              {question.type === "select" && (
+                <div className="grid grid-cols-2 gap-4">
+                  {question.options.map((opt) => (
+                    <div
+                      key={opt.id}
+                      onClick={() => handleSelectOption(opt)}
+                      className={`border-2 rounded-2xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all active:scale-95 ${
+                        selectedOption === opt.id
+                          ? "bg-blue-100 border-blue-400"
+                          : isDarkMode
+                          ? "bg-[#383838] border-[#444]"
+                          : "bg-white border-slate-200"
+                      }`}
+                    >
+                      {opt.image && (
+                        <span className="text-4xl">{opt.image}</span>
+                      )}
+                      <span
+                        className={`text-lg font-bold ${
+                          selectedOption === opt.id ? "text-slate-700" : ""
+                        }`}
+                      >
+                        {opt.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {question.type === "listen" && (
+                <div className="flex flex-col items-center gap-8">
+                  <Button3D
+                    color="blue"
+                    onClick={() => sayWord(question.audioText, courseId)}
+                    className="rounded-full w-32 h-32 flex items-center justify-center"
+                  >
+                    <Volume2 size={48} />
+                  </Button3D>
+                  {question.audioText && (
+                    <p className="text-slate-400 font-bold">
+                      CLICK TO LISTEN
+                    </p>
+                  )}
+                  <div className="grid w-full gap-2">
+                    {question.options.map((opt) => (
+                      <div
+                        key={opt.id}
+                        onClick={() => handleSelectOption(opt)}
+                        className={`p-4 border-2 rounded-xl cursor-pointer font-bold ${
+                          selectedOption === opt.id
+                            ? "bg-blue-100 border-blue-500 text-blue-600"
+                            : isDarkMode
+                            ? "bg-[#383838] border-[#444]"
+                            : "bg-white"
+                        }`}
+                      >
+                        {opt.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {question.type === "arrange" && (
+                <div className="space-y-8">
+                  <div
+                    className={`border-2 p-4 rounded-2xl text-lg font-bold ${
+                      isDarkMode
+                        ? "bg-[#383838] border-[#444]"
+                        : "bg-white border-slate-200 text-slate-700"
+                    }`}
+                  >
+                    "{question.target}"
+                  </div>
+                  <div
+                    className={`min-h-[60px] border-b-2 flex flex-wrap gap-2 py-2 ${
+                      isDarkMode ? "border-[#444]" : "border-slate-200"
+                    }`}
+                  >
+                    {sentenceOrder.map((word, i) => (
+                      <button
+                        key={i}
+                        onClick={() =>
+                          setSentenceOrder(
+                            sentenceOrder.filter((_, idx) => idx !== i)
+                          )
+                        }
+                        className={`border px-3 py-2 rounded-xl font-bold ${
+                          isDarkMode
+                            ? "bg-[#383838] border-[#555] text-white"
+                            : "bg-white border-slate-300"
+                        }`}
+                      >
+                        {word}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {question.words.map((word, i) => (
+                      <button
+                        key={i}
+                        onClick={() =>
+                          !sentenceOrder.includes(word) &&
+                          setSentenceOrder([...sentenceOrder, word])
+                        }
+                        className={`border-b-4 px-4 py-2 rounded-xl font-bold ${
+                          sentenceOrder.includes(word)
+                            ? isDarkMode
+                              ? "bg-[#333] text-transparent"
+                              : "bg-slate-200 text-transparent"
+                            : isDarkMode
+                            ? "bg-[#383838] border-[#555] text-white"
+                            : "bg-white border-slate-300"
+                        }`}
+                        disabled={sentenceOrder.includes(word)}
+                      >
+                        {word}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ⭐ NUEVO: ejercicio de rellenar */}
+              {question.type === "type" && (
+                <div className="space-y-4">
+                  <div
+                    className={`border-2 p-4 rounded-2xl text-lg font-bold ${
+                      isDarkMode
+                        ? "bg-[#383838] border-[#444] text-white"
+                        : "bg-white border-slate-200 text-slate-700"
+                    }`}
+                  >
+                    {question.question}
+                  </div>
+                  <textarea
+                    rows={4}
+                    value={typedAnswer}
+                    onChange={(e) => setTypedAnswer(e.target.value)}
+                    className={`w-full p-4 rounded-2xl border-2 text-lg outline-none ${
+                      isDarkMode
+                        ? "bg-[#333] border-[#555] text-white"
+                        : "bg-slate-50 border-slate-200 text-slate-800"
+                    } focus:border-blue-500`}
+                    placeholder="Escribe aquí..."
+                  />
+                </div>
+              )}
+
+              {/* ⭐ NUEVO: ejercicio de hablar */}
+              {question.type === "speak" && (
+                <div className="flex flex-col items-center gap-8 pt-6">
+                  <div className="text-xl font-bold text-blue-400">
+                    “{question.targetPhrase || ""}”
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleMicClick}
+                    className={`w-32 h-32 rounded-full flex items-center justify-center shadow-lg border-b-4 active:border-b-0 active:translate-y-1 transition-all ${
+                      isListening
+                        ? "bg-red-500 border-red-700 text-white animate-pulse"
+                        : "bg-blue-500 border-blue-600 text-white"
+                    }`}
+                  >
+                    <Mic size={48} />
+                  </button>
+
+                  <p className="min-h-[24px] font-bold opacity-70 text-center px-4">
+                    {spokenAnswer || "Toca para hablar"}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div
+              className={`fixed bottom-0 left-0 right-0 p-6 border-t-2 ${
+                status === "correct"
+                  ? "bg-green-100 border-green-200"
+                  : status === "wrong"
+                  ? "bg-red-100 border-red-200"
+                  : isDarkMode
+                  ? "bg-[#2C2C2C] border-[#444]"
+                  : "bg-white border-slate-200"
+              }`}
+            >
+              <div className="max-w-3xl mx-auto flex items-center justify-between">
+                {status !== "idle" && (
+                  <div
+                    className={`flex items-center gap-4 font-bold text-xl ${
+                      status === "correct" ? "text-green-700" : "text-red-700"
+                    }`}
+                  >
+                    {status === "correct" ? (
+                      <Check size={28} />
+                    ) : (
+                      <X size={28} />
+                    )}
+                    <div>
+                      <div className="text-lg">
+                        {status === "correct" ? t("correct") : t("wrong")}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className={`${status === "idle" ? "w-full" : ""}`}>
+                  {status === "idle" ? (
+                    <Button3D
+                      fullWidth
+                      color="green"
+                      onClick={handleCheck}
+                      disabled={isCheckDisabled}
+                    >
+                      {t("check")}
+                    </Button3D>
+                  ) : (
+                    <Button3D
+                      color={status === "correct" ? "green" : "red"}
+                      onClick={handleContinue}
+                    >
+                      {t("continue")}
+                    </Button3D>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
 
 const SuccessScreen = ({ onFinish, xpGained, gemsGained, isPerfect, t }) => {
   useEffect(() => { playSound('complete'); }, []);
