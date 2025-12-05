@@ -186,19 +186,46 @@ const ALL_COURSE_DATA = {
         { id: 'en-10-2', type: 'listen', question: 'Escucha', audioText: 'Goodbye my friend', options: [{id:'a', text:'Adiós mi amigo', correct:true}, {id:'b', text:'Hola mi amigo', correct:false}] }
     ]
   },
-  default: {
+  fr: {
     1: [
-      { id: 'def-1', type: 'select', question: 'Básico 1', options: [{ id: 'a', text: 'A', correct: true }, { id: 'b', text: 'B', correct: false }] }
+      { id: 'fr-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Chat', image: '🐱', correct: true }, { id: 'b', text: 'Chien', image: '🐶', correct: false }, { id: 'c', text: 'Oiseau', image: '🐦', correct: false }, { id: 'd', text: 'Poisson', image: '🐟', correct: false }] },
+      { id: 'fr-1-2', type: 'listen', question: 'Escucha', audioText: 'Bonjour', options: [{ id: 'a', text: 'Hola', correct: true }, { id: 'b', text: 'Adiós', correct: false }, { id: 'c', text: 'Por favor', correct: false }] },
+      { id: 'fr-1-3', type: 'arrange', question: 'Traduce', target: 'Un hombre', words: ['Un', 'homme', 'femme', 'une'], correctOrder: ['Un', 'homme'] },
     ],
     2: [
-      { id: 'def-2', type: 'arrange', question: 'Frase 2', target: 'Test', words: ['Test'], correctOrder: ['Test'] }
+      { id: 'fr-2-1', type: 'arrange', question: 'Traduce', target: 'Yo soy una mujer', words: ['Je', 'suis', 'une', 'femme', 'homme'], correctOrder: ['Je', 'suis', 'une', 'femme'] }
     ],
-    3: [{ id: 'def-3', type: 'select', question: 'Actividad 3', options: [{id:'a', text:'OK', correct:true}] }],
-    5: [{ id: 'def-5', type: 'arrange', question: 'Desafío', target: 'Win', words: ['Win'], correctOrder: ['Win'] }],
-    6: [{ id: 'def-6', type: 'select', question: 'Nivel 6', options: [{id:'a', text:'OK', correct:true}] }],
-    7: [{ id: 'def-7', type: 'select', question: 'Nivel 7', options: [{id:'a', text:'OK', correct:true}] }],
-    8: [{ id: 'def-8', type: 'select', question: 'Nivel 8', options: [{id:'a', text:'OK', correct:true}] }],
-    10: [{ id: 'def-10', type: 'select', question: 'Final', options: [{id:'a', text:'OK', correct:true}] }],
+    3: [
+        { id: 'fr-3-1', type: 'select', question: '¿Qué es "Eau"?', options: [{id: 'a', text: 'Agua', image: '💧', correct: true}, {id: 'b', text: 'Pan', image: '🍞', correct: false}] }
+    ]
+  },
+  it: {
+    1: [
+      { id: 'it-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Gatto', image: '🐱', correct: true }, { id: 'b', text: 'Cane', image: '🐶', correct: false }, { id: 'c', text: 'Uccello', image: '🐦', correct: false }] },
+      { id: 'it-1-2', type: 'listen', question: 'Escucha', audioText: 'Ciao', options: [{ id: 'a', text: 'Hola/Adiós', correct: true }, { id: 'b', text: 'Gracias', correct: false }] },
+      { id: 'it-1-3', type: 'arrange', question: 'Traduce', target: 'El pan', words: ['Il', 'pane', 'la', 'mela'], correctOrder: ['Il', 'pane'] },
+    ]
+  },
+  de: {
+    1: [
+      { id: 'de-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Katze', image: '🐱', correct: true }, { id: 'b', text: 'Hund', image: '🐶', correct: false }] },
+      { id: 'de-1-2', type: 'listen', question: 'Escucha', audioText: 'Guten Tag', options: [{ id: 'a', text: 'Buen día', correct: true }, { id: 'b', text: 'Adiós', correct: false }] },
+      { id: 'de-1-3', type: 'arrange', question: 'Traduce', target: 'Yo bebo agua', words: ['Ich', 'trinke', 'Wasser', 'Brot'], correctOrder: ['Ich', 'trinke', 'Wasser'] },
+    ]
+  },
+  pt: {
+    1: [
+      { id: 'pt-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Gato', image: '🐱', correct: true }, { id: 'b', text: 'Cachorro', image: '🐶', correct: false }] },
+      { id: 'pt-1-2', type: 'listen', question: 'Escucha', audioText: 'Obrigado', options: [{ id: 'a', text: 'Gracias', correct: true }, { id: 'b', text: 'Hola', correct: false }] },
+      { id: 'pt-1-3', type: 'arrange', question: 'Traduce', target: 'El niño', words: ['O', 'menino', 'a', 'menina'], correctOrder: ['O', 'menino'] },
+    ]
+  },
+  ru: {
+    1: [
+      { id: 'ru-1-1', type: 'select', question: '¿Cómo se dice "gato"?', options: [{ id: 'a', text: 'Кот', image: '🐱', correct: true }, { id: 'b', text: 'Собака', image: '🐶', correct: false }] },
+      { id: 'ru-1-2', type: 'listen', question: 'Escucha', audioText: 'Привет', options: [{ id: 'a', text: 'Hola', correct: true }, { id: 'b', text: 'Adiós', correct: false }] },
+      { id: 'ru-1-3', type: 'arrange', question: 'Traduce', target: 'Esto es una casa', words: ['Это', 'дом', 'кот', 'вода'], correctOrder: ['Это', 'дом'] },
+    ]
   }
 };
 
@@ -485,7 +512,24 @@ const ShopTab = ({ userGems, onBuy, purchasedItems, onOpenPlans, t }) => (
 );
 
 const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, hasSuit, gems, setGems, plan, onOpenPlans, t }) => {
-  const [queue, setQueue] = useState(() => { const courseContent = ALL_COURSE_DATA[courseId] || ALL_COURSE_DATA['en']; const questions = courseContent[levelId] || (ALL_COURSE_DATA['default'][1]); return [...questions]; });
+  const [queue, setQueue] = useState(() => { 
+    // 1. Intentar cargar lecciones del idioma seleccionado
+    const courseContent = ALL_COURSE_DATA[courseId];
+    
+    // 2. Si existen, buscar el nivel específico. Si no, fallback al nivel 1 de ese idioma o inglés
+    // Esto previene crashes si el nivel no existe en el idioma nuevo.
+    let questions = [];
+    if (courseContent && courseContent[levelId]) {
+      questions = courseContent[levelId];
+    } else if (courseContent && courseContent[1]) {
+      questions = courseContent[1]; // Fallback a nivel 1 del mismo idioma
+    } else {
+      questions = ALL_COURSE_DATA['en'][1]; // Fallback final a inglés
+    }
+    
+    return [...questions]; 
+  });
+
   const [initialCount] = useState(() => queue.length);
   const [completedCount, setCompletedCount] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -517,9 +561,6 @@ const LessonScreen = ({ courseId, levelId, onComplete, onExit, lives, setLives, 
     if (status !== 'idle') return;
     setSelectedOption(opt.id);
     if (opt.text && (question.type === 'listen' || question.type === 'select')) {
-        // En preguntas de tipo 'listen', las opciones suelen estar en el idioma de la app (es), pero en este contexto educativo
-        // si es una palabra en el idioma que aprendes, la pronunciamos.
-        // Asumimos que si es texto simple en una lección, pronunciamos en el idioma del curso.
         sayWord(opt.text, courseId);
     }
   };
@@ -715,7 +756,7 @@ const GameApp = ({ user, onLogout }) => {
 
   const getLivesDisplay = () => { if (plan === 'premium') return <span className="text-purple-500">∞</span>; if (plan === 'student') return <span className="text-orange-500">∞</span>; return lives; };
   const getLivesColor = () => { if (plan === 'premium') return 'text-purple-500'; if (plan === 'student') return 'text-orange-500'; return lives === 0 ? 'text-gray-400' : 'text-red-500'; };
-
+  
   return (
     <div className="bg-white min-h-screen text-slate-700 font-sans">
       {showPlansModal && <PlansModal onClose={() => setShowPlansModal(false)} onSelectPlan={handleSelectPlan} currentPlan={plan} t={t} />}
