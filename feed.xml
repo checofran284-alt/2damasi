@@ -3,7 +3,7 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-12-06T19:32:51+01:00</updated>
+    <updated>2025-12-06T19:40:25+01:00</updated>
     <author>
         <name>Francisco Ferres</name>
     </author>
@@ -186,7 +186,6 @@
 <figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/FINAL-2.jpg" data-size="1153x2048"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/FINAL-2-thumbnail.jpg" alt="" width="720" height="1279"></a></figure>
 <figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/FINAL-3.jpg" data-size="2048x1153"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/19/gallery/FINAL-3-thumbnail.jpg" alt="" width="720" height="405"></a></figure>
 </div></div>
-<p> </p>
 <p>____________________________________________________________________________________________________________</p>
 <h5 class="align-left"><span style="text-decoration: underline;">3. CONCLUSIÓN</span></h5>
 <p class="align-center">Esta práctica ha servido para comprender el proceso completo de configuración inicial de la Jetson Nano, desde el montaje físico hasta la preparación del entorno de trabajo. La conexión de los cables alimentación<span style="color: var(--text-primary-color); font-family: var(--editor-font-family); font-size: inherit; font-weight: var(--font-weight-normal);">, el DisplayPort para el monitor, los USB para teclado y ratón, y red por Ethernet fue clave para garantizar una puesta en marcha estable y funcional.<br><br></span>Gracias a esta experiencia, he podido aprender a familiarizarme con los componentes esenciales del dispositivo, su sistema operativo y su potencial para proyectos de inteligencia artificial. La configuración física y lógica me ha permitido reforzar habilidades técnicas y entender mejor cómo se integran los elementos en un entorno de desarrollo. Además, se añadió la configuración de la unidad <em><span style="text-decoration: underline;">NVMe</span></em>, lo que permitió ampliar el almacenamiento y mejorar el rendimiento del sistema, dejándola plenamente operativa para proyectos más exigentes.</p>
