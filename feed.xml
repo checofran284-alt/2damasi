@@ -3,7 +3,7 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-12-06T19:40:25+01:00</updated>
+    <updated>2025-12-07T17:46:12+01:00</updated>
     <author>
         <name>Francisco Ferres</name>
     </author>
@@ -18,8 +18,35 @@
         <id>https://checofran284-alt.github.io/2damasi/comparativas-de-modelos/</id>
 
         <updated>2025-12-06T18:54:33+01:00</updated>
-            <summary></summary>
-        <content></content>
+            <summary>
+                <![CDATA[
+                    ____________________________________________________________________________________________________________ 1. Introducción 2. Enlace a documento del proyecto 3. Conclusión Para la semana del 27 de Noviembre se nos&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/21/a-sleek-and-modern-c.png" alt="" width="1024" height="1024" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/21/responsive/a-sleek-and-modern-c-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/21/responsive/a-sleek-and-modern-c-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/21/responsive/a-sleek-and-modern-c-md.png 768w"></figure>
+<p>____________________________________________________________________________________________________________</p>
+<h3>INDICE:</h3>
+<p>1. Introducción<br>2. Enlace a documento del proyecto<br>3. Conclusión</p>
+<h3>____________________________________________________________________________________________________________</h3>
+<h2><span style="text-decoration: underline;"><strong>1.Introducción <br><br></strong></span></h2>
+<p>Para la semana del 27 de Noviembre se nos fue asignada una actividad basada en el proceso en el estudio de la IA  y comparación de distintos modelos de Inteligencia Artificial ejecutados en local mediante la herramienta <em data-start="364" data-end="375">LM Studio</em>. El objetivo principal era analizar cómo se comportan varios modelos ligeros al enfrentarse a tareas de diferente complejidad, evaluando su rendimiento computacional, su coste temporal, su uso de recursos y su calidad en razonamiento.</p>
+<p data-start="612" data-end="1058">Además, la actividad requería desarrollar una web donde se presentaran los datos recopilados, junto con gráficas interactivas que permitiesen comparar los modelos en tiempo real según diversas métricas. Esta experiencia tenía como propósito comprender mejor las diferencias entre arquitecturas, observar cómo afectan al hardware del equipo (CPU, RAM y GPU), y valorar la eficiencia y estabilidad de cada modelo en escenarios reales de inferencia.</p>
+<p data-start="1060" data-end="1417">Para ello, seleccionamos tres modelos representativos: <strong data-start="1115" data-end="1135">Granite 4 H tiny</strong>, <strong data-start="1137" data-end="1152">Qwen3 VL 4B</strong>, y <strong data-start="1156" data-end="1172">Gemma 3n E4B</strong>, todos ellos compatibles con ejecución local y orientados a tareas de texto. A lo largo del estudio aplicamos distintos tipos de prompts —cortos, largos, razonamiento y carga sostenida— con el fin de obtener una comparativa completa y realista.</p>
+<p data-start="1419" data-end="1657">El resultado final es una plataforma que muestra las métricas obtenidas, gráficas comparativas dinámicas y un análisis crítico del comportamiento de cada modelo, permitiendo visualizar sus fortalezas, limitaciones y diferencias prácticas.</p>
+<p>____________________________________________________________________________________________________________</p>
+<h2><span style="text-decoration: underline;"><strong>2. Enlace a documento del proyecto<br><br></strong></span></h2>
+<p>A continuación el proceso de comparativa de IAs para su estudio y desarrollo: <a href="https://checofran284-alt.github.io/2damasi/comparativa.html" target="_blank" rel="noopener noreferrer">ver...</a> </p>
+<p>____________________________________________________________________________________________________________</p>
+<h2><span style="text-decoration: underline;">3. Conclusión<br><br></span></h2>
+<p data-start="126" data-end="548">Después de hacer todas las pruebas y comparar los tres modelos, he podido ver claramente que cada uno tiene puntos fuertes y débiles. <strong data-start="260" data-end="275">Qwen3 VL 4B</strong> es el que más sorprende al principio porque es muy rápido, pero al trabajar con acertijos y razonamientos largos se nota que pierde el control y genera demasiado texto, incluso entrando en bucles. Esto hace que, aunque tenga buenos números en velocidad, no sea tan fiable.</p>
+<p data-start="550" data-end="950">Por otro lado, <strong data-start="565" data-end="585">Granite 4 H-tiny</strong> me ha parecido el más equilibrado. No es el más rápido ni el más lento, pero mantiene un rendimiento muy estable en prácticamente todas las pruebas. Además, sus respuestas en los acertijos fueron correctas y sin extenderse de más. A nivel técnico también se nota que gestiona bien los recursos, tanto CPU como GPU, lo cual se agradece si vas a usarlo muchas veces.</p>
+<p data-start="952" data-end="1182"><strong data-start="952" data-end="968">Gemma 3n E4B</strong> es claramente el más pesado y el más lento, pero también genera las respuestas más largas y detalladas. Esto puede venir bien si se busca una explicación más elaborada, aunque el coste en tiempo es bastante mayor.</p>
+<p data-start="1184" data-end="1582" data-is-last-node="" data-is-only-node="">En general, si tuviera que elegir uno para usar en el día a día en clase o para proyectos de DAM, me quedaría con <strong data-start="1298" data-end="1309">Granite</strong>, porque es el más estable y el que mejor equilibrio ofrece entre calidad, rendimiento y uso de recursos. Esta práctica me ha ayudado a entender mejor cómo funcionan los modelos ejecutados en local y cómo el hardware influye directamente en la experiencia y el rendimiento.</p>
+<p> </p>
+            ]]>
+        </content>
     </entry>
     <entry>
         <title>&quot;Configuración inicial de la Jetson Nano&quot;</title>

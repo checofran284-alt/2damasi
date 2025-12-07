@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Comparativa de modelos (LM Studio)</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1, h2, h3 {
+      margin-top: 0.5rem;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    .card {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      border: 1px solid #e0e0e0;
+    }
+    .model-checkboxes label {
+      margin-right: 12px;
+      cursor: pointer;
+    }
+    .metric-select {
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .small {
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Comparativa de modelos con LM Studio</h1>
+    <p class="small">
+      Actividad comparativa de tres modelos: Granite 4 H-tiny, Qwen3 VL 4B y Gemma 3n E4B.
+      Las métricas se han obtenido con distintos prompts (rendimiento, coste, calidad y uso de GPU).
+    </p>
+
+    <!-- Controles -->
+    <div class="card">
+      <h2>Controles</h2>
+      <div class="controls">
+        <div class="model-checkboxes" id="modelCheckboxes"></div>
+
+        <div>
+          <label for="metricSelect"><strong>Métrica principal:</strong></label>
+          <select id="metricSelect" class="metric-select">
+            <option value="tk_s">tk/s medio</option>
+            <option value="ptk">Segundos por 1K tokens</option>
+            <option value="coste_prueba">Horas por 1M tokens</option>
+            <option value="calidad_acertijos">Calidad acertijos (0–10)</option>
+            <option value="vram">VRAM usada (GB)</option>
+            <option value="gpu_usage">Uso GPU (%)</option>
+            <option value="gpu_temp">Temperatura GPU (°C)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfica principal -->
+    <div class="card">
+      <h2>Gráfica 1 – Comparativa general por modelo</h2>
+      <div id="mainChart" style="width:100%;height:400px;"></div>
+      <p class="small">
+        Muestra la métrica seleccionada para los modelos marcados.
+        <br>
+        Nota: los “costes” están expresados en tiempo (segundos/horas), no en euros.
+      </p>
+    </div>
+
+    <!-- Gráfica secundaria: prompts/contexto -->
+    <div class="card">
+      <h2>Gráfica 2 – Prompt corto vs carga prolongada</h2>
+      <div class="controls">
+        <label for="singleModelSelect"><strong>Modelo:</strong></label>
+        <select id="singleModelSelect" class="metric-select"></select>
+      </div>
+      <div id="promptChart" style="width:100%;height:400px;"></div>
+      <p class="small">
+        Se compara el rendimiento en un prompt corto (“satélite GPS”) frente a la prueba de
+        60 segundos generando texto (carga sostenida). Las notas de calidad son orientativas
+        y deben ajustarse según la evaluación de las respuestas.
+      </p>
+    </div>
+
+    <!-- Manual / metodología -->
+    <div class="card">
+      <h2>Metodología resumida</h2>
+      <h3>Modelos evaluados</h3>
+      <ul>
+        <li>Granite 4 H-tiny</li>
+        <li>Qwen3 VL 4B</li>
+        <li>Gemma 3n E4B</li>
+      </ul>
+
+      <h3>Pruebas realizadas</h3>
+      <ol>
+        <li>
+          <strong>Rendimiento computacional (tk/s):</strong><br>
+          Prompt: “Genera una respuesta de exactamente 100 tokens a esta instrucción:
+          ‘Explica cómo funciona un satélite GPS’”.<br>
+          Se midieron RAM, CPU, tokens por segundo, tiempo al primer token y uso de GPU.
+        </li>
+        <li>
+          <strong>Coste temporal por hora de inferencia:</strong><br>
+          Prompt: generación repetida de textos de 100 tokens durante 60 segundos.<br>
+          Se estimó cuántos tokens por segundo produce cada modelo en carga sostenida y
+          cómo se comporta la GPU (VRAM, uso 3D, temperatura).
+        </li>
+        <li>
+          <strong>Coste por millón de tokens generados:</strong><br>
+          Prompt: “Genera un texto coherente de exactamente 2000 tokens sobre cualquier
+          tema científico, sin listas”.<br>
+          A partir de los tok/s se calcula el tiempo aproximado para generar 1M tokens y el impacto en la GPU.
+        </li>
+        <li>
+          <strong>Calidad (acertijos):</strong><br>
+          Se usaron tres acertijos clásicos (hotel, sombreros, lobo-cabra-repollo).<br>
+          Se evaluó si la respuesta es correcta, bien razonada y si respeta la consigna, así como el rendimiento físico del sistema durante errores o respuestas largas.
+        </li>
+      </ol>
+
+      <h3>Conclusiones (ejemplo a completar)</h3>
+      <ul>
+        <li>Qwen3 VL 4B es el modelo con mayor velocidad media (tk/s), pero en algunos acertijos se pasa mucho de longitud y su calidad baja.</li>
+        <li>Granite 4 H-tiny mantiene buen equilibrio entre velocidad, estabilidad y uso de GPU en los diferentes tests.</li>
+        <li>Gemma 3n E4B es el más lento, pero ofrece respuestas largas y detalladas, a costa de más tiempo y VRAM.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // ==================================================
+    // 1. Datos de modelos (CON VUESTROS VALORES + GPU)
+    // ==================================================
+    const modelData = [
+      {
+        nombre: "Granite 4 H-tiny",
+        // tk/s medio (promedio de todos los tests con datos)
+        tk_s: 71.10,
+        // Segundos aproximados para generar 1K tokens
+        ptk: 14.06,
+        // Horas aproximadas para generar 1M tokens
+        coste_prueba: 3.91,
+        // Nota media en acertijos (ajustable)
+        calidad_acertijos: 8,
+        // Métricas GPU (de la prueba típica)
+        vram: 5.2,       // GB
+        gpu_usage: 48,   // %
+        gpu_temp: 42,    // °C
+        // Prompt corto vs carga 60s
+        tps_prompt_corto: 67.79, // satélite GPS
+        tps_prompt_largo: 97.80, // test 2.1
+        // Notas de ejemplo: ajustad según cómo veáis la calidad
+        calidad_prompt_corto: 8,
+        calidad_prompt_largo: 7
+      },
+      {
+        nombre: "Qwen3 VL 4B",
+        tk_s: 73.64,
+        ptk: 13.58,
+        coste_prueba: 3.77,
+        // Penalizada por errores y exceso de tokens en acertijos
+        calidad_acertijos: 3,
+        vram: 4.5,
+        gpu_usage: 72,
+        gpu_temp: 48,
+        tps_prompt_corto: 97.97,
+        tps_prompt_largo: 67.75,
+        calidad_prompt_corto: 4,
+        calidad_prompt_largo: 3
+      },
+      {
+        nombre: "Gemma 3n E4B",
+        tk_s: 39.26,
+        ptk: 25.47,
+        coste_prueba: 7.07,
+        calidad_acertijos: 8,
+        vram: 9.1,
+        gpu_usage: 35,
+        gpu_temp: 40,
+        tps_prompt_corto: 39.60,
+        tps_prompt_largo: 39.28,
+        calidad_prompt_corto: 8,
+        calidad_prompt_largo: 7
+      }
+    ];
+
+    // ======================
+    // 2. UI: checkboxes modelos
+    // ======================
+    const modelCheckboxesDiv = document.getElementById("modelCheckboxes");
+    modelData.forEach((m, index) => {
+      const id = "modelCheckbox_" + index;
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = id;
+      checkbox.value = m.nombre;
+      checkbox.checked = true; // por defecto activados
+
+      checkbox.addEventListener("change", updateMainChart);
+
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(" " + m.nombre));
+      modelCheckboxesDiv.appendChild(label);
+    });
+
+    // ======================
+    // 3. Selector modelo único (gráfica prompts)
+    // ======================
+    const singleModelSelect = document.getElementById("singleModelSelect");
+    modelData.forEach((m) => {
+      const opt = document.createElement("option");
+      opt.value = m.nombre;
+      opt.textContent = m.nombre;
+      singleModelSelect.appendChild(opt);
+    });
+    singleModelSelect.addEventListener("change", updatePromptChart);
+
+    // ======================
+    // 4. Gráfica principal
+    // ======================
+    const metricSelect = document.getElementById("metricSelect");
+    metricSelect.addEventListener("change", updateMainChart);
+
+    function getSelectedModels() {
+      const selected = [];
+      modelData.forEach((m, index) => {
+        const cb = document.getElementById("modelCheckbox_" + index);
+        if (cb && cb.checked) {
+          selected.push(m);
+        }
+      });
+      return selected;
+    }
+
+    function updateMainChart() {
+      const metric = metricSelect.value;
+      const selectedModels = getSelectedModels();
+
+      const x = selectedModels.map(m => m.nombre);
+      const y = selectedModels.map(m => m[metric]);
+
+      const metricNames = {
+        tk_s: "tk/s medio",
+        ptk: "Segundos por 1K tokens",
+        coste_prueba: "Horas por 1M tokens",
+        calidad_acertijos: "Calidad acertijos (0–10)",
+        vram: "VRAM usada (GB)",
+        gpu_usage: "Uso GPU (%)",
+        gpu_temp: "Temperatura GPU (°C)"
+      };
+
+      const data = [{
+        x: x,
+        y: y,
+        type: "bar"
+      }];
+
+      const layout = {
+        title: metricNames[metric],
+        xaxis: { title: "Modelo" },
+        yaxis: { title: metricNames[metric] },
+        margin: { t: 40, l: 50, r: 20, b: 50 }
+      };
+
+      Plotly.react("mainChart", data, layout);
+    }
+
+    // ======================
+    // 5. Gráfica prompt corto vs carga prolongada
+    // ======================
+    function updatePromptChart() {
+      const modelName = singleModelSelect.value;
+      const model = modelData.find(m => m.nombre === modelName);
+      if (!model) return;
+
+      const x = ["Prompt corto", "Carga 60 s"];
+
+      const tpsTrace = {
+        x: x,
+        y: [model.tps_prompt_corto, model.tps_prompt_largo],
+        name: "tk/s",
+        type: "bar"
+      };
+
+      const calidadTrace = {
+        x: x,
+        y: [model.calidad_prompt_corto, model.calidad_prompt_largo],
+        name: "Calidad (0–10)",
+        type: "bar",
+        yaxis: "y2"
+      };
+
+      const data = [tpsTrace, calidadTrace];
+
+      const layout = {
+        barmode: "group",
+        title: "Prompt corto vs carga 60 s – " + model.nombre,
+        xaxis: { title: "" },
+        yaxis: { title: "tk/s" },
+        yaxis2: {
+          title: "Calidad",
+          overlaying: "y",
+          side: "right"
+        },
+        margin: { t: 40, l: 50, r: 50, b: 50 }
+      };
+
+      Plotly.react("promptChart", data, layout);
+    }
+
+    // ======================
+    // 6. Inicialización
+    // ======================
+    updateMainChart();
+    updatePromptChart();
+  </script>
+</body>
+</html>
