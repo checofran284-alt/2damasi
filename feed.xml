@@ -3,7 +3,7 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-12-07T17:46:12+01:00</updated>
+    <updated>2025-12-07T17:51:26+01:00</updated>
     <author>
         <name>Francisco Ferres</name>
     </author>
@@ -20,7 +20,7 @@
         <updated>2025-12-06T18:54:33+01:00</updated>
             <summary>
                 <![CDATA[
-                    ____________________________________________________________________________________________________________ 1. Introducción 2. Enlace a documento del proyecto 3. Conclusión Para la semana del 27 de Noviembre se nos&hellip;
+                    ____________________________________________________________________________________________________________ 1. Introducción 2. Enlace a documento del proyecto 3. Conclusión ____________________________________________________________________________________________________________ Para la semana del 27 de Noviembre se&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -29,7 +29,7 @@
 <p>____________________________________________________________________________________________________________</p>
 <h3>INDICE:</h3>
 <p>1. Introducción<br>2. Enlace a documento del proyecto<br>3. Conclusión</p>
-<h3>____________________________________________________________________________________________________________</h3>
+<p>____________________________________________________________________________________________________________</p>
 <h2><span style="text-decoration: underline;"><strong>1.Introducción <br><br></strong></span></h2>
 <p>Para la semana del 27 de Noviembre se nos fue asignada una actividad basada en el proceso en el estudio de la IA  y comparación de distintos modelos de Inteligencia Artificial ejecutados en local mediante la herramienta <em data-start="364" data-end="375">LM Studio</em>. El objetivo principal era analizar cómo se comportan varios modelos ligeros al enfrentarse a tareas de diferente complejidad, evaluando su rendimiento computacional, su coste temporal, su uso de recursos y su calidad en razonamiento.</p>
 <p data-start="612" data-end="1058">Además, la actividad requería desarrollar una web donde se presentaran los datos recopilados, junto con gráficas interactivas que permitiesen comparar los modelos en tiempo real según diversas métricas. Esta experiencia tenía como propósito comprender mejor las diferencias entre arquitecturas, observar cómo afectan al hardware del equipo (CPU, RAM y GPU), y valorar la eficiencia y estabilidad de cada modelo en escenarios reales de inferencia.</p>
@@ -44,6 +44,7 @@
 <p data-start="550" data-end="950">Por otro lado, <strong data-start="565" data-end="585">Granite 4 H-tiny</strong> me ha parecido el más equilibrado. No es el más rápido ni el más lento, pero mantiene un rendimiento muy estable en prácticamente todas las pruebas. Además, sus respuestas en los acertijos fueron correctas y sin extenderse de más. A nivel técnico también se nota que gestiona bien los recursos, tanto CPU como GPU, lo cual se agradece si vas a usarlo muchas veces.</p>
 <p data-start="952" data-end="1182"><strong data-start="952" data-end="968">Gemma 3n E4B</strong> es claramente el más pesado y el más lento, pero también genera las respuestas más largas y detalladas. Esto puede venir bien si se busca una explicación más elaborada, aunque el coste en tiempo es bastante mayor.</p>
 <p data-start="1184" data-end="1582" data-is-last-node="" data-is-only-node="">En general, si tuviera que elegir uno para usar en el día a día en clase o para proyectos de DAM, me quedaría con <strong data-start="1298" data-end="1309">Granite</strong>, porque es el más estable y el que mejor equilibrio ofrece entre calidad, rendimiento y uso de recursos. Esta práctica me ha ayudado a entender mejor cómo funcionan los modelos ejecutados en local y cómo el hardware influye directamente en la experiencia y el rendimiento.</p>
+<p class="align-right" data-start="1184" data-end="1582" data-is-last-node="" data-is-only-node="">- Gracias por leer -</p>
 <p> </p>
             ]]>
         </content>
