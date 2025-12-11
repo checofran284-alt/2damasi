@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuVisor - Vanilla JS + PDF</title>
+    <title>DocuVisor - Drag & Drop + Excel Support</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS con plugin Typography activado -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -17,9 +17,11 @@
     <!-- PDF.js (Librería de renderizado PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
-        // Configuración obligatoria del Worker de PDF.js
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
+
+    <!-- SheetJS (Librería para Excel) -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; }
@@ -30,14 +32,42 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Estilos específicos para el Canvas del PDF para evitar borrosidad */
         #the-canvas { direction: ltr; }
+
+        /* Estilos Syntax Highlighting JSON */
+        .json-key { color: #e11d48; font-weight: 600; }
+        .json-string { color: #15803d; }
+        .json-number { color: #2563eb; }
+        .json-boolean { color: #7c3aed; font-weight: bold; }
+        .json-null { color: #9ca3af; font-style: italic; }
+
+        /* Estilo para el Overlay de Drag & Drop */
+        #dropOverlay {
+            backdrop-filter: blur(4px);
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+
+        /* Estilos para Tablas Excel generadas */
+        .excel-table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        .excel-table-wrapper th { background-color: #f3f4f6; font-weight: 600; text-align: left; padding: 0.75rem; border: 1px solid #e5e7eb; }
+        .excel-table-wrapper td { padding: 0.75rem; border: 1px solid #e5e7eb; color: #374151; }
+        .excel-table-wrapper tr:nth-child(even) { background-color: #f9fafb; }
+        .excel-table-wrapper tr:hover { background-color: #f3f4f6; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 h-screen flex overflow-hidden">
+<body class="bg-gray-50 text-gray-900 h-screen flex overflow-hidden relative">
 
-    <!-- INPUT OCULTO ACTUALIZADO (Acepta PDF) -->
-    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.pdf" class="hidden">
+    <!-- INPUT OCULTO: Acepta .txt, .md, .pdf, .json y EXCEL -->
+    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.pdf,.json,.xlsx,.xls,.csv" class="hidden">
+
+    <!-- OVERLAY DRAG & DROP -->
+    <div id="dropOverlay" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center border-4 border-indigo-500 border-dashed m-4 rounded-xl bg-white/90 transition-all pointer-events-none">
+        <div class="bg-indigo-100 p-6 rounded-full mb-4 animate-bounce">
+            <i data-lucide="upload-cloud" class="w-16 h-16 text-indigo-600"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-indigo-700">Suelta el archivo aquí</h2>
+        <p class="text-gray-500 mt-2">Soporta Excel, PDF, JSON, Markdown y Texto</p>
+    </div>
 
     <!-- 1. SIDEBAR -->
     <aside id="sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col h-full fixed md:relative z-20 transition-all duration-300 transform md:translate-x-0 -translate-x-full shadow-lg md:shadow-none">
@@ -54,12 +84,12 @@
         <div class="p-4 shrink-0 space-y-3">
             <button id="createDocBtn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition-colors font-medium shadow-sm">
                 <i data-lucide="plus" class="w-4 h-4"></i>
-                Nuevo Markdown
+                Nuevo Documento
             </button>
             
             <button id="importDocBtn" class="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2 px-4 rounded-lg transition-colors font-medium text-sm">
                 <i data-lucide="upload" class="w-4 h-4"></i>
-                Importar (Txt / PDF)
+                Importar Archivo
             </button>
             
             <div class="relative pt-2">
@@ -80,11 +110,18 @@
             </button>
         </div>
 
-        <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-gray-400">
-            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                <i data-lucide="file-stack" class="w-10 h-10 text-gray-300"></i>
+        <!-- ESTADO VACÍO / DROP ZONE -->
+        <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
+            <div class="border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center hover:bg-gray-50 hover:border-indigo-300 transition-all cursor-default w-full max-w-lg">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-indigo-100">
+                    <i data-lucide="file-up" class="w-10 h-10 text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-2">Arrastra y suelta tu archivo</h3>
+                <p class="text-sm text-gray-500 text-center mb-6">Soporta Excel, PDF, JSON, MD, TXT</p>
+                <button onclick="document.getElementById('fileInput').click()" class="text-indigo-600 font-medium hover:underline cursor-pointer">
+                    O haz clic para buscar
+                </button>
             </div>
-            <p class="text-lg font-medium text-gray-500">Selecciona un documento</p>
         </div>
 
         <div id="contentArea" class="hidden flex-col h-full">
@@ -97,9 +134,11 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <!-- Acciones Generales -->
                     <div id="viewActions" class="flex gap-2">
-                        <!-- El botón Editar solo se mostrará para Markdown/Texto, no PDF -->
+                        <button id="downloadBtn" class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-md font-medium transition-all" title="Descargar">
+                            <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">Exportar</span>
+                        </button>
+
                         <button id="editBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-md font-medium transition-all">
                             <i data-lucide="edit-3" class="w-4 h-4"></i> <span class="hidden sm:inline">Editar</span>
                         </button>
@@ -108,7 +147,6 @@
                         </button>
                     </div>
                     
-                    <!-- Acciones Edición -->
                     <div id="editActions" class="hidden flex gap-2">
                         <button id="cancelBtn" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md font-medium">Cancelar</button>
                         <button id="saveBtn" class="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium shadow-sm">
@@ -132,47 +170,46 @@
                             </div>
                         </div>
 
-                        <!-- CONTENEDOR MARKDOWN (Texto) -->
-                        <div id="markdownContainer" class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-h-[200px]">
-                            <div id="viewBody" class="prose prose-indigo max-w-none text-gray-700 leading-relaxed"></div>
+                        <!-- 1. CONTENEDOR TEXTO/MARKDOWN -->
+                        <div id="markdownContainer" class="hidden bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-h-[200px]">
+                            <div id="viewBody" class="prose prose-indigo max-w-none text-gray-700 leading-relaxed prose-headings:font-bold prose-h1:text-gray-900 prose-a:text-indigo-600"></div>
                         </div>
 
-                        <!-- CONTENEDOR PDF (Nuevo) -->
+                        <!-- 2. CONTENEDOR PDF -->
                         <div id="pdfContainer" class="hidden flex-col items-center w-full bg-gray-200/50 rounded-xl border border-gray-200 p-4 shadow-inner min-h-[500px]">
-                            
-                            <!-- Barra de Herramientas PDF -->
                             <div class="flex flex-wrap items-center justify-center gap-3 bg-white p-2 rounded-lg shadow-sm mb-4 sticky top-0 z-10 border border-gray-200 w-full max-w-2xl">
-                                <button id="prevPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50">
-                                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
-                                </button>
-                                
-                                <span class="text-sm font-medium text-gray-700 min-w-[100px] text-center">
-                                    Pág <span id="pageNum">1</span> / <span id="pageCount">--</span>
-                                </span>
-                                
-                                <button id="nextPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50">
-                                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                                </button>
-                                
+                                <button id="prevPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <span class="text-sm font-medium text-gray-700 min-w-[100px] text-center">Pág <span id="pageNum">1</span> / <span id="pageCount">--</span></span>
+                                <button id="nextPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                                 <div class="w-px h-6 bg-gray-300 mx-2"></div>
-
-                                <button id="zoomOut" class="p-2 hover:bg-gray-100 rounded text-gray-600">
-                                    <i data-lucide="minus" class="w-4 h-4"></i>
-                                </button>
+                                <button id="zoomOut" class="p-2 hover:bg-gray-100 rounded text-gray-600"><i data-lucide="minus" class="w-4 h-4"></i></button>
                                 <span id="zoomLevel" class="text-sm text-gray-500 w-12 text-center">100%</span>
-                                <button id="zoomIn" class="p-2 hover:bg-gray-100 rounded text-gray-600">
-                                    <i data-lucide="plus" class="w-4 h-4"></i>
-                                </button>
+                                <button id="zoomIn" class="p-2 hover:bg-gray-100 rounded text-gray-600"><i data-lucide="plus" class="w-4 h-4"></i></button>
                             </div>
-
-                            <!-- Canvas donde se dibuja el PDF -->
                             <div class="overflow-auto w-full flex justify-center pb-10">
                                 <canvas id="the-canvas" class="shadow-lg border border-gray-300 bg-white"></canvas>
                             </div>
                         </div>
+
+                        <!-- 3. CONTENEDOR JSON -->
+                        <div id="jsonContainer" class="hidden bg-[#1e1e1e] p-6 rounded-xl shadow-lg border border-gray-700 text-gray-100 font-mono text-sm overflow-x-auto min-h-[200px]">
+                            <pre id="jsonContent" class="leading-relaxed"></pre>
+                        </div>
+
+                        <!-- 4. CONTENEDOR EXCEL (NUEVO) -->
+                        <div id="excelContainer" class="hidden bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[200px]">
+                            <div class="p-4 bg-green-50 border-b border-green-100 flex items-center justify-between">
+                                <span class="text-sm font-semibold text-green-800 flex items-center gap-2">
+                                    <i data-lucide="table" class="w-4 h-4"></i> Hoja de Cálculo
+                                </span>
+                            </div>
+                            <div id="excelContent" class="excel-table-wrapper overflow-x-auto">
+                                <!-- La tabla se inyectará aquí -->
+                            </div>
+                        </div>
                     </article>
 
-                    <!-- MODO EDICIÓN (Solo Texto) -->
+                    <!-- MODO EDICIÓN -->
                     <div id="editMode" class="hidden h-full flex flex-col fade-in bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                         <div class="mb-6 space-y-4">
                             <div>
@@ -185,54 +222,60 @@
                             </div>
                         </div>
                         <div class="flex-1 flex flex-col">
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Contenido (Markdown)</label>
-                            <textarea id="editContentInput" class="flex-1 w-full p-4 text-base font-mono bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-100 outline-none resize-none leading-relaxed"></textarea>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Contenido</label>
+                            <textarea id="editContentInput" class="flex-1 w-full p-4 text-base font-mono bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-100 outline-none resize-none leading-relaxed font-ligatures-none"></textarea>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // --- 1. ESTADO DE LA APLICACIÓN ---
+        // --- 1. CONFIGURACIÓN ---
+        marked.use({ breaks: true, gfm: true });
+
         const state = {
             docs: [],
             selectedId: null,
             isEditing: false,
             searchQuery: '',
-            // Estado PDF
-            pdf: {
-                doc: null,
-                pageNum: 1,
-                pageRendering: false,
-                pageNumPending: null,
-                scale: 1.2,
-                canvas: null,
-                ctx: null
-            }
+            pdf: { doc: null, pageNum: 1, pageRendering: false, pageNumPending: null, scale: 1.2, canvas: null, ctx: null }
         };
 
         const INITIAL_DOCS = [
             {
                 id: '1',
-                title: 'Bienvenido',
-                category: 'General',
-                type: 'text', // Nuevo campo: 'text' o 'pdf'
-                content: `# Hola\n\nPrueba a subir un **PDF** usando el botón de importar.`,
+                title: 'Nota de Texto',
+                category: 'Notas',
+                type: 'text',
+                content: `Esto es un archivo de texto simple (.txt).\n\nAhora puedes arrastrar archivos Excel, PDF, JSON o Texto directamente.`,
                 lastModified: new Date().toISOString()
             }
         ];
 
-        // --- 2. LÓGICA DE DATOS ---
+        // --- 2. UTILIDADES ---
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') json = JSON.stringify(json, undefined, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) cls = 'json-key';
+                    else cls = 'json-string';
+                } else if (/true|false/.test(match)) cls = 'json-boolean';
+                else if (/null/.test(match)) cls = 'json-null';
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // --- 3. LÓGICA DE DATOS ---
 
         function initApp() {
             try {
-                const saved = localStorage.getItem('docuvisor-pro');
+                const saved = localStorage.getItem('docuvisor-ultra');
                 state.docs = saved ? JSON.parse(saved) : INITIAL_DOCS;
             } catch (e) {
-                console.error("Error cargando datos", e);
                 state.docs = INITIAL_DOCS;
             }
 
@@ -241,141 +284,210 @@
 
             if (state.docs.length > 0) selectDoc(state.docs[0].id);
             else renderSidebar();
-            
             updateUI();
         }
 
         function saveToStorage() {
             try {
-                localStorage.setItem('docuvisor-pro', JSON.stringify(state.docs));
+                localStorage.setItem('docuvisor-ultra', JSON.stringify(state.docs));
             } catch (e) {
-                if (e.name === 'QuotaExceededError') {
-                    alert('⚠️ El archivo es demasiado grande para guardarse permanentemente en el navegador.\n\nEstará disponible hasta que recargues la página.');
-                } else {
-                    console.error("Error guardando", e);
-                }
+                if (e.name === 'QuotaExceededError') alert('⚠️ Memoria llena. No se guardará permanentemente.');
             }
         }
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
+        function downloadDoc() {
+            if (!state.selectedId) return;
+            const doc = state.docs.find(d => d.id === state.selectedId);
+            if (!doc) return;
+
+            // EXCEL y PDF (Base64)
+            if (doc.type === 'pdf' || doc.type === 'excel') {
+                const link = document.createElement('a');
+                link.href = doc.content; // Es Data URL
+                link.download = `${doc.title}.${doc.type === 'pdf' ? 'pdf' : 'xlsx'}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                return;
+            }
+
+            let mimeType = 'text/plain';
+            let extension = 'txt';
+
+            if (doc.type === 'json') { mimeType = 'application/json'; extension = 'json'; }
+            else if (doc.type === 'markdown') { mimeType = 'text/markdown'; extension = 'md'; }
+
+            const blob = new Blob([doc.content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${doc.title}.${extension}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- MANEJO DE ARCHIVOS (Unified File Processing) ---
+        
+        function processFile(file) {
             if (!file) return;
 
             const reader = new FileReader();
-            const isPdf = file.type === 'application/pdf';
+            const extension = file.name.split('.').pop().toLowerCase();
+            const isPdf = file.type === 'application/pdf' || extension === 'pdf';
+            const isJson = file.type === 'application/json' || extension === 'json';
+            const isMd = ['md', 'markdown'].includes(extension);
+            const isExcel = ['xlsx', 'xls', 'csv'].includes(extension);
+
+            // Manejo especial para lectura binaria (PDF y Excel)
+            if (isPdf || isExcel) {
+                reader.readAsDataURL(file); // Leer como Base64 para almacenar
+            } else {
+                reader.readAsText(file); // Texto plano
+            }
 
             reader.onload = function(e) {
-                const content = e.target.result; // Base64 si es PDF, Texto si es TXT/MD
+                let content = e.target.result;
                 const fileName = file.name.replace(/\.[^/.]+$/, "");
+                let docType = 'text';
+                
+                if (isJson) {
+                    try {
+                        content = JSON.stringify(JSON.parse(content), null, 2);
+                        docType = 'json';
+                    } catch (err) {
+                        alert('JSON inválido, se guardará como texto plano.');
+                        docType = 'text';
+                    }
+                } else if (isPdf) {
+                    docType = 'pdf';
+                } else if (isExcel) {
+                    docType = 'excel';
+                    // El contenido aquí ya es Base64 (DataURL) listo para guardar
+                } else if (isMd) {
+                    docType = 'markdown';
+                }
 
                 const newDoc = {
                     id: crypto.randomUUID(),
                     title: fileName.charAt(0).toUpperCase() + fileName.slice(1),
                     category: 'Importado',
-                    type: isPdf ? 'pdf' : 'text',
-                    content: content, // Aquí guardamos el String Base64 del PDF
+                    type: docType,
+                    content: content,
                     lastModified: new Date().toISOString()
                 };
 
                 state.docs.unshift(newDoc);
                 saveToStorage();
-                
-                event.target.value = ''; // Limpiar input
                 selectDoc(newDoc.id);
                 renderSidebar();
             };
-
-            if (isPdf) {
-                reader.readAsDataURL(file); // Leer PDF como Data URL (Base64)
-            } else {
-                reader.readAsText(file); // Leer resto como texto
-            }
         }
 
-        // --- 3. LÓGICA DE RENDERIZADO PDF ---
+        function handleFileUpload(event) {
+            processFile(event.target.files[0]);
+            event.target.value = ''; // Reset input
+        }
 
+        // --- 4. DRAG AND DROP EVENTS ---
+        
+        const dropOverlay = document.getElementById('dropOverlay');
+        let dragCounter = 0;
+
+        function initDragAndDrop() {
+            document.body.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                dragCounter++;
+                if (dragCounter === 1) dropOverlay.classList.remove('hidden');
+            });
+
+            document.body.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dragCounter--;
+                if (dragCounter <= 0) {
+                    dragCounter = 0;
+                    dropOverlay.classList.add('hidden');
+                }
+            });
+
+            document.body.addEventListener('dragover', (e) => {
+                e.preventDefault(); 
+            });
+
+            document.body.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dragCounter = 0;
+                dropOverlay.classList.add('hidden');
+                
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    processFile(e.dataTransfer.files[0]);
+                }
+            });
+        }
+
+        // --- 5. RENDERIZADO PDF Y EXCEL ---
         function renderPdfPage(num) {
             state.pdf.pageRendering = true;
-            
-            // Obtener página del objeto PDF cargado
             state.pdf.doc.getPage(num).then(function(page) {
                 const viewport = page.getViewport({scale: state.pdf.scale});
                 state.pdf.canvas.height = viewport.height;
                 state.pdf.canvas.width = viewport.width;
-
-                // Renderizar página en el contexto del canvas
-                const renderContext = {
-                    canvasContext: state.pdf.ctx,
-                    viewport: viewport
-                };
-                
-                const renderTask = page.render(renderContext);
-
-                // Esperar a que termine de renderizar
-                renderTask.promise.then(function() {
+                const renderContext = { canvasContext: state.pdf.ctx, viewport: viewport };
+                page.render(renderContext).promise.then(() => {
                     state.pdf.pageRendering = false;
-                    
-                    // Si había una página pendiente (el usuario pulsó Next rápido), renderizarla ahora
                     if (state.pdf.pageNumPending !== null) {
                         renderPdfPage(state.pdf.pageNumPending);
                         state.pdf.pageNumPending = null;
                     }
                 });
             });
-
-            // Actualizar contadores UI
             document.getElementById('pageNum').textContent = num;
         }
 
-        function queueRenderPage(num) {
-            if (state.pdf.pageRendering) {
-                state.pdf.pageNumPending = num;
-            } else {
-                renderPdfPage(num);
-            }
-        }
-
-        function onPrevPage() {
-            if (state.pdf.pageNum <= 1) return;
-            state.pdf.pageNum--;
-            queueRenderPage(state.pdf.pageNum);
-        }
-
-        function onNextPage() {
-            if (state.pdf.pageNum >= state.pdf.doc.numPages) return;
-            state.pdf.pageNum++;
-            queueRenderPage(state.pdf.pageNum);
-        }
-
-        function onZoom(delta) {
-            const newScale = state.pdf.scale + delta;
-            if (newScale > 0.5 && newScale < 3.0) {
-                state.pdf.scale = newScale;
-                document.getElementById('zoomLevel').textContent = Math.round(state.pdf.scale * 100) + '%';
-                queueRenderPage(state.pdf.pageNum);
-            }
+        function queueRenderPage(num) { state.pdf.pageRendering ? state.pdf.pageNumPending = num : renderPdfPage(num); }
+        function onPrevPage() { if (state.pdf.pageNum <= 1) return; state.pdf.pageNum--; queueRenderPage(state.pdf.pageNum); }
+        function onNextPage() { if (state.pdf.pageNum >= state.pdf.doc.numPages) return; state.pdf.pageNum++; queueRenderPage(state.pdf.pageNum); }
+        function onZoom(delta) { 
+            const newScale = state.pdf.scale + delta; 
+            if (newScale > 0.5 && newScale < 3.0) { state.pdf.scale = newScale; document.getElementById('zoomLevel').textContent = Math.round(state.pdf.scale * 100) + '%'; queueRenderPage(state.pdf.pageNum); } 
         }
 
         function loadPdfFromData(base64Data) {
-            // PDF.js espera datos binarios, eliminamos la cabecera DataURL si existe
-            // Pero getDocument acepta Data URLs directamente en versiones modernas, probemos directo:
-            const loadingTask = pdfjsLib.getDocument(base64Data);
-            
-            loadingTask.promise.then(function(pdfDoc_) {
+            pdfjsLib.getDocument(base64Data).promise.then(function(pdfDoc_) {
                 state.pdf.doc = pdfDoc_;
                 document.getElementById('pageCount').textContent = state.pdf.doc.numPages;
-                
-                // Reset a página 1
                 state.pdf.pageNum = 1;
-                renderPdfPage(state.pdf.pageNum);
-            }, function (reason) {
-                console.error('Error cargando PDF:', reason);
-                alert('Error al leer el formato del PDF.');
-            });
+                renderPdfPage(1);
+            }, function (reason) { console.error(reason); alert('Error PDF'); });
         }
 
-        // --- 4. GESTIÓN UI ---
+        // Nueva función para renderizar Excel
+        function loadExcelFromData(base64Data) {
+            try {
+                // SheetJS lee directamente desde el string base64 (quitando la cabecera data:...)
+                // A veces FileReader devuelve "data:application/vnd...;base64,....."
+                const cleanBase64 = base64Data.split(',')[1]; 
+                const workbook = XLSX.read(cleanBase64, {type: 'base64'});
+                
+                // Tomamos la primera hoja
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convertimos a HTML
+                const html = XLSX.utils.sheet_to_html(worksheet, { id: "excelTable", editable: false });
+                
+                document.getElementById('excelContent').innerHTML = html;
+                
+                // Añadimos estilos de Tailwind a la tabla generada (SheetJS no pone estilos)
+                // Esto se hace por CSS global, pero podemos retocar si hace falta
+            } catch (e) {
+                console.error(e);
+                document.getElementById('excelContent').innerHTML = `<p class="text-red-500 p-4">Error al leer el archivo Excel.</p>`;
+            }
+        }
 
+        // --- 6. GESTIÓN UI ---
         function selectDoc(id) {
             state.selectedId = id;
             state.isEditing = false;
@@ -383,13 +495,12 @@
             if (window.innerWidth < 768) toggleSidebar(false);
         }
 
-        // CRUD Básico (igual que antes)
         function createDoc() {
-            const newDoc = { id: crypto.randomUUID(), title: 'Nuevo Documento', category: 'Borrador', type: 'text', content: '# Título\n...', lastModified: new Date().toISOString() };
+            const newDoc = { id: crypto.randomUUID(), title: 'Nota Rápida', category: 'Borrador', type: 'text', content: 'Escribe aquí tu nota...', lastModified: new Date().toISOString() };
             state.docs.unshift(newDoc);
             saveToStorage();
             selectDoc(newDoc.id);
-            startEditing(); // Solo para texto
+            startEditing();
             renderSidebar();
         }
 
@@ -404,10 +515,7 @@
 
         function startEditing() { 
             const doc = state.docs.find(d => d.id === state.selectedId);
-            if (doc && doc.type === 'pdf') {
-                alert("No se pueden editar archivos PDF directamente.");
-                return;
-            }
+            if (doc && (doc.type === 'pdf' || doc.type === 'excel')) { alert("No se pueden editar archivos binarios (PDF/Excel)."); return; }
             state.isEditing = true; 
             updateUI(); 
         }
@@ -417,8 +525,14 @@
         function saveEditing() {
             const title = document.getElementById('editTitleInput').value;
             const category = document.getElementById('editCategoryInput').value;
-            const content = document.getElementById('editContentInput').value;
+            let content = document.getElementById('editContentInput').value;
+            const doc = state.docs.find(d => d.id === state.selectedId);
             
+            if (doc.type === 'json') {
+                try { content = JSON.stringify(JSON.parse(content), null, 2); } 
+                catch (e) { alert("⚠️ JSON inválido."); return; }
+            }
+
             const docIndex = state.docs.findIndex(d => d.id === state.selectedId);
             if (docIndex !== -1) {
                 state.docs[docIndex] = { ...state.docs[docIndex], title, category, content, lastModified: new Date().toISOString() };
@@ -440,7 +554,15 @@
 
             filtered.forEach(doc => {
                 const isActive = doc.id === state.selectedId;
-                const iconName = doc.type === 'pdf' ? 'file-text' : 'file-code'; // Diferenciar icono
+                let iconName = 'file-text';
+                let badge = 'TXT';
+                let badgeClass = "bg-gray-100 text-gray-600";
+                
+                if (doc.type === 'pdf') { iconName = 'file-text'; badge = 'PDF'; badgeClass = "bg-red-100 text-red-700"; }
+                else if (doc.type === 'excel') { iconName = 'table'; badge = 'XLS'; badgeClass = "bg-green-100 text-green-700"; }
+                else if (doc.type === 'json') { iconName = 'code-2'; badge = 'JSON'; badgeClass = "bg-yellow-100 text-yellow-700"; }
+                else if (doc.type === 'markdown') { iconName = 'file-code'; badge = 'MD'; badgeClass = "bg-blue-100 text-blue-700"; }
+
                 const item = document.createElement('div');
                 item.className = `group flex items-center justify-between p-3 rounded-md cursor-pointer transition-all ${isActive ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-100 text-gray-600'}`;
                 item.onclick = () => selectDoc(doc.id);
@@ -451,7 +573,7 @@
                         <div class="flex flex-col truncate">
                             <span class="font-medium truncate text-sm">${doc.title}</span>
                             <span class="text-xs text-gray-400 truncate flex items-center gap-1">
-                                ${doc.type === 'pdf' ? '<span class="bg-red-100 text-red-600 px-1 rounded text-[10px]">PDF</span>' : ''}
+                                <span class="${badgeClass} px-1.5 rounded text-[10px] font-bold min-w-[32px] text-center">${badge}</span>
                                 ${doc.category}
                             </span>
                         </div>
@@ -470,6 +592,8 @@
                 editMode: document.getElementById('editMode'),
                 mdContainer: document.getElementById('markdownContainer'),
                 pdfContainer: document.getElementById('pdfContainer'),
+                jsonContainer: document.getElementById('jsonContainer'),
+                excelContainer: document.getElementById('excelContainer'),
                 editBtn: document.getElementById('editBtn')
             };
 
@@ -485,10 +609,8 @@
             ui.empty.classList.add('hidden');
             ui.content.classList.remove('hidden');
             ui.content.classList.add('flex');
-            
             document.getElementById('headerTitle').textContent = doc.title;
 
-            // MODO EDICIÓN
             if (state.isEditing) {
                 ui.viewMode.classList.add('hidden');
                 ui.editMode.classList.remove('hidden');
@@ -499,7 +621,6 @@
                 document.getElementById('editCategoryInput').value = doc.category;
                 document.getElementById('editContentInput').value = doc.content;
             } 
-            // MODO LECTURA
             else {
                 ui.viewMode.classList.remove('hidden');
                 ui.editMode.classList.add('hidden');
@@ -510,21 +631,32 @@
                 document.getElementById('viewCategory').textContent = doc.category;
                 document.getElementById('viewDate').textContent = new Date(doc.lastModified).toLocaleDateString();
 
-                // Lógica de visualización por TIPO
+                // Ocultar todos
+                ui.mdContainer.classList.add('hidden');
+                ui.pdfContainer.classList.add('hidden');
+                ui.jsonContainer.classList.add('hidden');
+                ui.excelContainer.classList.add('hidden');
+                ui.pdfContainer.classList.remove('flex');
+
                 if (doc.type === 'pdf') {
-                    ui.mdContainer.classList.add('hidden');
                     ui.pdfContainer.classList.remove('hidden');
                     ui.pdfContainer.classList.add('flex');
-                    ui.editBtn.style.display = 'none'; // Ocultar botón editar para PDFs
-                    
-                    // Iniciar renderizado PDF
+                    ui.editBtn.style.display = 'none'; 
                     loadPdfFromData(doc.content);
-                } else {
-                    ui.mdContainer.classList.remove('hidden');
-                    ui.pdfContainer.classList.add('hidden');
-                    ui.pdfContainer.classList.remove('flex');
+                } 
+                else if (doc.type === 'excel') {
+                    ui.excelContainer.classList.remove('hidden');
+                    ui.editBtn.style.display = 'none';
+                    loadExcelFromData(doc.content);
+                }
+                else if (doc.type === 'json') {
+                    ui.jsonContainer.classList.remove('hidden');
                     ui.editBtn.style.display = 'flex';
-                    
+                    document.getElementById('jsonContent').innerHTML = syntaxHighlight(doc.content);
+                }
+                else {
+                    ui.mdContainer.classList.remove('hidden');
+                    ui.editBtn.style.display = 'flex';
                     document.getElementById('viewBody').innerHTML = marked.parse(doc.content);
                 }
             }
@@ -536,23 +668,21 @@
             show ? sidebar.classList.remove('-translate-x-full') : sidebar.classList.add('-translate-x-full');
         }
 
-        // --- 5. EVENT LISTENERS ---
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
+            initDragAndDrop(); 
 
-            // Botones Básicos
             document.getElementById('createDocBtn').addEventListener('click', createDoc);
             document.getElementById('editBtn').addEventListener('click', startEditing);
             document.getElementById('cancelBtn').addEventListener('click', cancelEditing);
             document.getElementById('saveBtn').addEventListener('click', saveEditing);
             document.getElementById('deleteBtn').addEventListener('click', deleteDoc);
+            document.getElementById('downloadBtn').addEventListener('click', downloadDoc);
             
-            // Upload
             const fileInput = document.getElementById('fileInput');
             document.getElementById('importDocBtn').addEventListener('click', () => fileInput.click());
             fileInput.addEventListener('change', handleFileUpload);
 
-            // Buscador y Sidebar
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 state.searchQuery = e.target.value;
                 renderSidebar();
@@ -560,7 +690,6 @@
             document.getElementById('openSidebarBtn').addEventListener('click', () => toggleSidebar(true));
             document.getElementById('closeSidebarBtn').addEventListener('click', () => toggleSidebar(false));
 
-            // CONTROLES PDF
             document.getElementById('prevPage').addEventListener('click', onPrevPage);
             document.getElementById('nextPage').addEventListener('click', onNextPage);
             document.getElementById('zoomIn').addEventListener('click', () => onZoom(0.2));
