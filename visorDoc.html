@@ -1,560 +1,573 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <title>Visor de Documentación</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg: #020617;
-      --panel: #020617;
-      --card: #020617;
-      --border: #1f2937;
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56,189,248,0.15);
-      --radius: 16px;
-      --shadow: 0 16px 40px rgba(15,23,42,0.9);
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-              "Segoe UI", Roboto, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuVisor - Vanilla JS + PDF</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Marked.js (Markdown) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    * { box-sizing: border-box; }
+    <!-- PDF.js (Librería de renderizado PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Configuración obligatoria del Worker de PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: var(--font);
-      background:
-        radial-gradient(900px 900px at -10% -10%, rgba(56,189,248,0.12), transparent),
-        radial-gradient(900px 900px at 110% 0%, rgba(129,140,248,0.16), transparent),
-        var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 12px 12px 16px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .brand-title {
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand-pill {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-      gap: 12px;
-    }
-
-    @media (max-width: 800px) {
-      main {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto;
-      }
-    }
-
-    .panel {
-      background: rgba(15,23,42,0.96);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      backdrop-filter: blur(14px);
-    }
-
-    .panel-title {
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .panel-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .dropzone {
-      border-radius: var(--radius);
-      border: 1px dashed var(--border);
-      padding: 14px;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background: rgba(15,23,42,0.9);
-      cursor: pointer;
-      transition: border-color .2s ease, background .2s ease, transform .07s ease;
-    }
-
-    .dropzone.dragover {
-      border-color: var(--accent);
-      background: rgba(15,23,42,1);
-      transform: translateY(-1px);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 11px;
-      cursor: pointer;
-      transition: all .18s ease;
-    }
-
-    .btn:hover {
-      box-shadow: 0 0 0 1px rgba(56,189,248,0.3);
-      transform: translateY(-1px);
-    }
-
-    .file-list {
-      margin-top: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      max-height: 260px;
-      overflow: auto;
-      background: rgba(15,23,42,0.9);
-    }
-
-    .file-item {
-      padding: 8px 10px;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      border-bottom: 1px solid rgba(31,41,55,0.7);
-      cursor: pointer;
-      transition: background .14s ease;
-    }
-
-    .file-item:last-child {
-      border-bottom: none;
-    }
-
-    .file-item:hover {
-      background: rgba(15,23,42,0.9);
-    }
-
-    .file-item.active {
-      background: rgba(15,23,42,1);
-      border-left: 2px solid var(--accent);
-    }
-
-    .file-name {
-      font-weight: 500;
-    }
-
-    .file-meta {
-      font-size: 10px;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .viewer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
-
-    .viewer-title {
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .viewer-tag {
-      font-size: 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      padding: 2px 8px;
-      color: var(--muted);
-    }
-
-    .viewer-meta {
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .viewer-body {
-      margin-top: 6px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(6,10,25,0.96);
-      flex: 1;
-      min-height: 220px;
-      overflow: auto;
-      padding: 10px;
-      font-size: 12px;
-    }
-
-    .viewer-empty {
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      text-align: center;
-    }
-
-    pre {
-      margin: 0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 11px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-
-    code {
-      font-family: inherit;
-      background: rgba(15,23,42,0.9);
-      padding: 1px 4px;
-      border-radius: 4px;
-      font-size: .9em;
-    }
-
-    .markdown h1,
-    .markdown h2,
-    .markdown h3 {
-      margin: 8px 0 4px;
-      font-weight: 600;
-    }
-
-    .markdown h1 { font-size: 16px; }
-    .markdown h2 { font-size: 14px; }
-    .markdown h3 { font-size: 13px; }
-
-    .markdown p {
-      margin: 4px 0;
-      line-height: 1.5;
-    }
-
-    .markdown ul {
-      padding-left: 18px;
-      margin: 4px 0;
-    }
-
-    .markdown li {
-      margin: 2px 0;
-    }
-
-    .viewer-body iframe {
-      border: none;
-      width: 100%;
-      height: 480px;
-      background: #111827;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0,0,0,0);
-      border: 0;
-    }
-  </style>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Estilos específicos para el Canvas del PDF para evitar borrosidad */
+        #the-canvas { direction: ltr; }
+    </style>
 </head>
-<body>
-<header>
-  <div class="brand">
-    <div class="brand-title">📄 LinkedVisor</div>
-    <div class="brand-pill">Sube y visualiza archivos: TXT · PDF · Markdown · JSON</div>
-  </div>
-</header>
+<body class="bg-gray-50 text-gray-900 h-screen flex overflow-hidden">
 
-<main>
-  <!-- Panel izquierdo: subida + lista -->
-  <section class="panel">
-    <div>
-      <div class="panel-title">Documentos</div>
-      <div class="panel-sub">Sube un archivo de tipo texto, PDF, Markdown o JSON.</div>
-    </div>
+    <!-- INPUT OCULTO ACTUALIZADO (Acepta PDF) -->
+    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.pdf" class="hidden">
 
-    <label id="dropzone" class="dropzone">
-      <span>Arrastra aquí un archivo o haz clic para seleccionarlo.</span>
-      <button class="btn" type="button">Seleccionar archivo…</button>
-      <input id="file-input" type="file" class="sr-only"
-             accept=".txt,.md,.markdown,.json,.pdf,text/plain,application/pdf,application/json" />
-    </label>
+    <!-- 1. SIDEBAR -->
+    <aside id="sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col h-full fixed md:relative z-20 transition-all duration-300 transform md:translate-x-0 -translate-x-full shadow-lg md:shadow-none">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2 text-indigo-600 font-bold text-lg">
+                <i data-lucide="layers"></i>
+                <span>DocuVisor Pro</span>
+            </div>
+            <button id="closeSidebarBtn" class="md:hidden text-gray-500 hover:text-gray-700">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
 
-    <div class="file-list" id="file-list"></div>
-  </section>
+        <div class="p-4 shrink-0 space-y-3">
+            <button id="createDocBtn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition-colors font-medium shadow-sm">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Nuevo Markdown
+            </button>
+            
+            <button id="importDocBtn" class="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2 px-4 rounded-lg transition-colors font-medium text-sm">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                Importar (Txt / PDF)
+            </button>
+            
+            <div class="relative pt-2">
+                <i data-lucide="search" class="absolute left-3 top-4 text-gray-400 w-4 h-4"></i>
+                <input type="text" id="searchInput" placeholder="Buscar..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-indigo-500 border rounded-lg text-sm outline-none transition-all">
+            </div>
+        </div>
 
-  <!-- Panel derecho: visor -->
-  <section class="panel">
-    <div class="viewer-header">
-      <div class="viewer-title">
-        <span id="viewer-icon">📁</span>
-        <span id="viewer-name">Ningún archivo seleccionado</span>
-      </div>
-      <div class="viewer-tag" id="viewer-type">—</div>
-    </div>
-    <div class="viewer-meta" id="viewer-meta">Sube un archivo para comenzar.</div>
+        <div id="docList" class="flex-1 overflow-y-auto px-2 pb-4 space-y-1"></div>
+    </aside>
 
-    <div class="viewer-body" id="viewer-body">
-      <div class="viewer-empty">
-        Aquí se mostrará el contenido del archivo (texto, JSON, Markdown o un visor PDF integrado).
-      </div>
-    </div>
-  </section>
-</main>
+    <!-- 2. MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden">
+        
+        <div class="absolute top-4 left-4 z-10 md:hidden">
+            <button id="openSidebarBtn" class="p-2 bg-white shadow-md rounded-md border text-gray-600">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
 
-<script>
-  // Referencias
-  const fileInput   = document.getElementById('file-input');
-  const dropzone    = document.getElementById('dropzone');
-  const fileListEl  = document.getElementById('file-list');
-  const viewerName  = document.getElementById('viewer-name');
-  const viewerType  = document.getElementById('viewer-type');
-  const viewerIcon  = document.getElementById('viewer-icon');
-  const viewerMeta  = document.getElementById('viewer-meta');
-  const viewerBody  = document.getElementById('viewer-body');
+        <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-gray-400">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="file-stack" class="w-10 h-10 text-gray-300"></i>
+            </div>
+            <p class="text-lg font-medium text-gray-500">Selecciona un documento</p>
+        </div>
 
-  // Estado en memoria (no hace falta IndexedDB aquí)
-  const filesState = [];
+        <div id="contentArea" class="hidden flex-col h-full">
+            <!-- Header -->
+            <header class="h-16 border-b border-gray-200 bg-white flex items-center justify-between px-6 shrink-0 z-10">
+                <div class="flex items-center gap-2 text-sm text-gray-500 ml-10 md:ml-0">
+                    <span class="hidden md:inline">Docs</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 hidden md:inline"></i>
+                    <span id="headerTitle" class="font-medium text-gray-800 truncate max-w-[150px] md:max-w-md">Titulo</span>
+                </div>
 
-  // Helpers de tipo
-  function getExtension(name) {
-    const parts = name.split('.');
-    return parts.length > 1 ? parts.pop().toLowerCase() : '';
-  }
+                <div class="flex items-center gap-2">
+                    <!-- Acciones Generales -->
+                    <div id="viewActions" class="flex gap-2">
+                        <!-- El botón Editar solo se mostrará para Markdown/Texto, no PDF -->
+                        <button id="editBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-md font-medium transition-all">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i> <span class="hidden sm:inline">Editar</span>
+                        </button>
+                        <button id="deleteBtn" class="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-md font-medium transition-all" title="Eliminar">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Acciones Edición -->
+                    <div id="editActions" class="hidden flex gap-2">
+                        <button id="cancelBtn" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md font-medium">Cancelar</button>
+                        <button id="saveBtn" class="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium shadow-sm">
+                            <i data-lucide="save" class="w-4 h-4"></i> Guardar
+                        </button>
+                    </div>
+                </div>
+            </header>
 
-  function detectKind(file) {
-    const ext = getExtension(file.name);
-    if (ext === 'pdf' || file.type === 'application/pdf') return 'pdf';
-    if (ext === 'md' || ext === 'markdown') return 'markdown';
-    if (ext === 'json' || file.type === 'application/json') return 'json';
-    return 'text'; // txt u otros
-  }
+            <!-- Contenido Scrollable -->
+            <div class="flex-1 overflow-y-auto bg-gray-50/50 p-6 md:p-8 relative" id="mainScroll">
+                <div class="max-w-5xl mx-auto h-full flex flex-col">
+                    
+                    <!-- MODO VISUALIZACIÓN -->
+                    <article id="viewMode" class="fade-in flex-1 flex flex-col">
+                        <div class="mb-6 flex items-start justify-between">
+                            <div>
+                                <span id="viewCategory" class="inline-block px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-md mb-2">Categoría</span>
+                                <h1 id="viewTitle" class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Título</h1>
+                                <p id="viewDate" class="text-gray-400 text-sm mt-1">Fecha</p>
+                            </div>
+                        </div>
 
-  function humanSize(bytes) {
-    if (bytes < 1024) return bytes + ' B';
-    const kb = bytes / 1024;
-    if (kb < 1024) return kb.toFixed(1) + ' KB';
-    const mb = kb / 1024;
-    return mb.toFixed(1) + ' MB';
-  }
+                        <!-- CONTENEDOR MARKDOWN (Texto) -->
+                        <div id="markdownContainer" class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-h-[200px]">
+                            <div id="viewBody" class="prose prose-indigo max-w-none text-gray-700 leading-relaxed"></div>
+                        </div>
 
-  // Eventos de subida
-  dropzone.addEventListener('click', () => fileInput.click());
+                        <!-- CONTENEDOR PDF (Nuevo) -->
+                        <div id="pdfContainer" class="hidden flex-col items-center w-full bg-gray-200/50 rounded-xl border border-gray-200 p-4 shadow-inner min-h-[500px]">
+                            
+                            <!-- Barra de Herramientas PDF -->
+                            <div class="flex flex-wrap items-center justify-center gap-3 bg-white p-2 rounded-lg shadow-sm mb-4 sticky top-0 z-10 border border-gray-200 w-full max-w-2xl">
+                                <button id="prevPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50">
+                                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                </button>
+                                
+                                <span class="text-sm font-medium text-gray-700 min-w-[100px] text-center">
+                                    Pág <span id="pageNum">1</span> / <span id="pageCount">--</span>
+                                </span>
+                                
+                                <button id="nextPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50">
+                                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                </button>
+                                
+                                <div class="w-px h-6 bg-gray-300 mx-2"></div>
 
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) handleFile(file);
-    e.target.value = '';
-  });
+                                <button id="zoomOut" class="p-2 hover:bg-gray-100 rounded text-gray-600">
+                                    <i data-lucide="minus" class="w-4 h-4"></i>
+                                </button>
+                                <span id="zoomLevel" class="text-sm text-gray-500 w-12 text-center">100%</span>
+                                <button id="zoomIn" class="p-2 hover:bg-gray-100 rounded text-gray-600">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
 
-  ['dragenter','dragover'].forEach(ev => {
-    dropzone.addEventListener(ev, (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'copy';
-      dropzone.classList.add('dragover');
-    });
-  });
+                            <!-- Canvas donde se dibuja el PDF -->
+                            <div class="overflow-auto w-full flex justify-center pb-10">
+                                <canvas id="the-canvas" class="shadow-lg border border-gray-300 bg-white"></canvas>
+                            </div>
+                        </div>
+                    </article>
 
-  ['dragleave','drop'].forEach(ev => {
-    dropzone.addEventListener(ev, (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('dragover');
-    });
-  });
+                    <!-- MODO EDICIÓN (Solo Texto) -->
+                    <div id="editMode" class="hidden h-full flex flex-col fade-in bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                        <div class="mb-6 space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Título</label>
+                                <input type="text" id="editTitleInput" class="w-full text-2xl font-bold text-gray-900 border-b-2 border-gray-200 focus:border-indigo-500 outline-none py-2 bg-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Categoría</label>
+                                <input type="text" id="editCategoryInput" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-100 outline-none">
+                            </div>
+                        </div>
+                        <div class="flex-1 flex flex-col">
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Contenido (Markdown)</label>
+                            <textarea id="editContentInput" class="flex-1 w-full p-4 text-base font-mono bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-100 outline-none resize-none leading-relaxed"></textarea>
+                        </div>
+                    </div>
 
-  dropzone.addEventListener('drop', (e) => {
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  });
+                </div>
+            </div>
+        </div>
+    </main>
 
-  // Manejo de nuevo archivo
-  function handleFile(file) {
-    const id = Date.now() + '-' + Math.random().toString(16).slice(2);
-    const kind = detectKind(file);
-    const entry = { id, file, kind };
-    filesState.push(entry);
-    renderFileList();
-    showFile(entry);
-  }
+    <script>
+        // --- 1. ESTADO DE LA APLICACIÓN ---
+        const state = {
+            docs: [],
+            selectedId: null,
+            isEditing: false,
+            searchQuery: '',
+            // Estado PDF
+            pdf: {
+                doc: null,
+                pageNum: 1,
+                pageRendering: false,
+                pageNumPending: null,
+                scale: 1.2,
+                canvas: null,
+                ctx: null
+            }
+        };
 
-  // Render lista lateral
-  function renderFileList() {
-    fileListEl.innerHTML = '';
-    if (!filesState.length) {
-      const msg = document.createElement('div');
-      msg.style.fontSize = '11px';
-      msg.style.color = 'var(--muted)';
-      msg.style.padding = '6px 8px';
-      msg.textContent = 'Aún no has subido ningún archivo.';
-      fileListEl.appendChild(msg);
-      return;
-    }
+        const INITIAL_DOCS = [
+            {
+                id: '1',
+                title: 'Bienvenido',
+                category: 'General',
+                type: 'text', // Nuevo campo: 'text' o 'pdf'
+                content: `# Hola\n\nPrueba a subir un **PDF** usando el botón de importar.`,
+                lastModified: new Date().toISOString()
+            }
+        ];
 
-    filesState.forEach((entry, idx) => {
-      const row = document.createElement('div');
-      row.className = 'file-item' + (idx === filesState.length - 1 ? ' active' : '');
-      row.dataset.id = entry.id;
+        // --- 2. LÓGICA DE DATOS ---
 
-      const name = document.createElement('div');
-      name.className = 'file-name';
-      name.textContent = entry.file.name;
-      row.appendChild(name);
+        function initApp() {
+            try {
+                const saved = localStorage.getItem('docuvisor-pro');
+                state.docs = saved ? JSON.parse(saved) : INITIAL_DOCS;
+            } catch (e) {
+                console.error("Error cargando datos", e);
+                state.docs = INITIAL_DOCS;
+            }
 
-      const meta = document.createElement('div');
-      meta.className = 'file-meta';
-      const ext = getExtension(entry.file.name).toUpperCase() || '—';
-      meta.innerHTML = `<span>${ext}</span><span>${humanSize(entry.file.size)}</span>`;
-      row.appendChild(meta);
+            state.pdf.canvas = document.getElementById('the-canvas');
+            state.pdf.ctx = state.pdf.canvas.getContext('2d');
 
-      row.addEventListener('click', () => {
-        document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
-        row.classList.add('active');
-        showFile(entry);
-      });
+            if (state.docs.length > 0) selectDoc(state.docs[0].id);
+            else renderSidebar();
+            
+            updateUI();
+        }
 
-      fileListEl.appendChild(row);
-    });
-  }
+        function saveToStorage() {
+            try {
+                localStorage.setItem('docuvisor-pro', JSON.stringify(state.docs));
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    alert('⚠️ El archivo es demasiado grande para guardarse permanentemente en el navegador.\n\nEstará disponible hasta que recargues la página.');
+                } else {
+                    console.error("Error guardando", e);
+                }
+            }
+        }
 
-  // Mostrar contenido según tipo
-  function showFile(entry) {
-    const { file, kind } = entry;
-    viewerName.textContent = file.name;
-    viewerType.textContent = kind.toUpperCase();
-    viewerMeta.textContent = `${kind.toUpperCase()} · ${humanSize(file.size)}`;
-    viewerBody.innerHTML = '';
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    const iconMap = {
-      pdf: '📑',
-      markdown: '✏️',
-      json: '🧩',
-      text: '📄'
-    };
-    viewerIcon.textContent = iconMap[kind] || '📁';
+            const reader = new FileReader();
+            const isPdf = file.type === 'application/pdf';
 
-    if (kind === 'pdf') {
-      const url = URL.createObjectURL(file);
-      const iframe = document.createElement('iframe');
-      iframe.src = url;
-      viewerBody.appendChild(iframe);
-      // Se puede revocar más tarde si se quiere
-      return;
-    }
+            reader.onload = function(e) {
+                const content = e.target.result; // Base64 si es PDF, Texto si es TXT/MD
+                const fileName = file.name.replace(/\.[^/.]+$/, "");
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = reader.result;
+                const newDoc = {
+                    id: crypto.randomUUID(),
+                    title: fileName.charAt(0).toUpperCase() + fileName.slice(1),
+                    category: 'Importado',
+                    type: isPdf ? 'pdf' : 'text',
+                    content: content, // Aquí guardamos el String Base64 del PDF
+                    lastModified: new Date().toISOString()
+                };
 
-      if (kind === 'json') {
-        renderJSON(text);
-      } else if (kind === 'markdown') {
-        renderMarkdown(text);
-      } else {
-        renderText(text);
-      }
-    };
-    reader.readAsText(file, 'utf-8');
-  }
+                state.docs.unshift(newDoc);
+                saveToStorage();
+                
+                event.target.value = ''; // Limpiar input
+                selectDoc(newDoc.id);
+                renderSidebar();
+            };
 
-  function renderText(text) {
-    const pre = document.createElement('pre');
-    pre.textContent = text;
-    viewerBody.appendChild(pre);
-  }
+            if (isPdf) {
+                reader.readAsDataURL(file); // Leer PDF como Data URL (Base64)
+            } else {
+                reader.readAsText(file); // Leer resto como texto
+            }
+        }
 
-  function renderJSON(text) {
-    try {
-      const obj = JSON.parse(text);
-      const pretty = JSON.stringify(obj, null, 2);
-      const pre = document.createElement('pre');
-      pre.textContent = pretty;
-      viewerBody.appendChild(pre);
-    } catch (e) {
-      const pre = document.createElement('pre');
-      pre.textContent = 'JSON inválido:\n\n' + text;
-      viewerBody.appendChild(pre);
-    }
-  }
+        // --- 3. LÓGICA DE RENDERIZADO PDF ---
 
-  // Markdown muy sencillo (no es perfecto, pero sirve para la práctica)
-  function renderMarkdown(raw) {
-    const container = document.createElement('div');
-    container.className = 'markdown';
+        function renderPdfPage(num) {
+            state.pdf.pageRendering = true;
+            
+            // Obtener página del objeto PDF cargado
+            state.pdf.doc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({scale: state.pdf.scale});
+                state.pdf.canvas.height = viewport.height;
+                state.pdf.canvas.width = viewport.width;
 
-    let html = raw;
+                // Renderizar página en el contexto del canvas
+                const renderContext = {
+                    canvasContext: state.pdf.ctx,
+                    viewport: viewport
+                };
+                
+                const renderTask = page.render(renderContext);
 
-    // Escapar cosas básicas
-    html = html.replace(/&/g, '&amp;')
-               .replace(/</g, '&lt;')
-               .replace(/>/g, '&gt;');
+                // Esperar a que termine de renderizar
+                renderTask.promise.then(function() {
+                    state.pdf.pageRendering = false;
+                    
+                    // Si había una página pendiente (el usuario pulsó Next rápido), renderizarla ahora
+                    if (state.pdf.pageNumPending !== null) {
+                        renderPdfPage(state.pdf.pageNumPending);
+                        state.pdf.pageNumPending = null;
+                    }
+                });
+            });
 
-    // Títulos
-    html = html.replace(/^### (.*)$/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.*)$/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.*)$/gm, '<h1>$1</h1>');
+            // Actualizar contadores UI
+            document.getElementById('pageNum').textContent = num;
+        }
 
-    // Negrita **
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    // Cursiva *
-    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    // Código inline
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        function queueRenderPage(num) {
+            if (state.pdf.pageRendering) {
+                state.pdf.pageNumPending = num;
+            } else {
+                renderPdfPage(num);
+            }
+        }
 
-    // Listas simples
-    html = html.replace(/^- (.*)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>[^<]+<\/li>\n?)+/gm, match => {
-      return '<ul>' + match.replace(/\n/g, '') + '</ul>';
-    });
+        function onPrevPage() {
+            if (state.pdf.pageNum <= 1) return;
+            state.pdf.pageNum--;
+            queueRenderPage(state.pdf.pageNum);
+        }
 
-    // Párrafos
-    html = html.replace(/^(?!<h[1-3]|<ul|<li|<p|<pre|<code)(.+)$/gm, '<p>$1</p>');
+        function onNextPage() {
+            if (state.pdf.pageNum >= state.pdf.doc.numPages) return;
+            state.pdf.pageNum++;
+            queueRenderPage(state.pdf.pageNum);
+        }
 
-    container.innerHTML = html;
-    viewerBody.appendChild(container);
-  }
-</script>
+        function onZoom(delta) {
+            const newScale = state.pdf.scale + delta;
+            if (newScale > 0.5 && newScale < 3.0) {
+                state.pdf.scale = newScale;
+                document.getElementById('zoomLevel').textContent = Math.round(state.pdf.scale * 100) + '%';
+                queueRenderPage(state.pdf.pageNum);
+            }
+        }
+
+        function loadPdfFromData(base64Data) {
+            // PDF.js espera datos binarios, eliminamos la cabecera DataURL si existe
+            // Pero getDocument acepta Data URLs directamente en versiones modernas, probemos directo:
+            const loadingTask = pdfjsLib.getDocument(base64Data);
+            
+            loadingTask.promise.then(function(pdfDoc_) {
+                state.pdf.doc = pdfDoc_;
+                document.getElementById('pageCount').textContent = state.pdf.doc.numPages;
+                
+                // Reset a página 1
+                state.pdf.pageNum = 1;
+                renderPdfPage(state.pdf.pageNum);
+            }, function (reason) {
+                console.error('Error cargando PDF:', reason);
+                alert('Error al leer el formato del PDF.');
+            });
+        }
+
+        // --- 4. GESTIÓN UI ---
+
+        function selectDoc(id) {
+            state.selectedId = id;
+            state.isEditing = false;
+            updateUI();
+            if (window.innerWidth < 768) toggleSidebar(false);
+        }
+
+        // CRUD Básico (igual que antes)
+        function createDoc() {
+            const newDoc = { id: crypto.randomUUID(), title: 'Nuevo Documento', category: 'Borrador', type: 'text', content: '# Título\n...', lastModified: new Date().toISOString() };
+            state.docs.unshift(newDoc);
+            saveToStorage();
+            selectDoc(newDoc.id);
+            startEditing(); // Solo para texto
+            renderSidebar();
+        }
+
+        function deleteDoc() {
+            if (!confirm('¿Eliminar documento?')) return;
+            state.docs = state.docs.filter(d => d.id !== state.selectedId);
+            saveToStorage();
+            state.docs.length > 0 ? selectDoc(state.docs[0].id) : (state.selectedId = null);
+            renderSidebar();
+            updateUI();
+        }
+
+        function startEditing() { 
+            const doc = state.docs.find(d => d.id === state.selectedId);
+            if (doc && doc.type === 'pdf') {
+                alert("No se pueden editar archivos PDF directamente.");
+                return;
+            }
+            state.isEditing = true; 
+            updateUI(); 
+        }
+        
+        function cancelEditing() { state.isEditing = false; updateUI(); }
+        
+        function saveEditing() {
+            const title = document.getElementById('editTitleInput').value;
+            const category = document.getElementById('editCategoryInput').value;
+            const content = document.getElementById('editContentInput').value;
+            
+            const docIndex = state.docs.findIndex(d => d.id === state.selectedId);
+            if (docIndex !== -1) {
+                state.docs[docIndex] = { ...state.docs[docIndex], title, category, content, lastModified: new Date().toISOString() };
+                saveToStorage();
+                renderSidebar();
+            }
+            state.isEditing = false;
+            updateUI();
+        }
+
+        function renderSidebar() {
+            const list = document.getElementById('docList');
+            list.innerHTML = '';
+            
+            const filtered = state.docs.filter(doc => 
+                doc.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                doc.category.toLowerCase().includes(state.searchQuery.toLowerCase())
+            );
+
+            filtered.forEach(doc => {
+                const isActive = doc.id === state.selectedId;
+                const iconName = doc.type === 'pdf' ? 'file-text' : 'file-code'; // Diferenciar icono
+                const item = document.createElement('div');
+                item.className = `group flex items-center justify-between p-3 rounded-md cursor-pointer transition-all ${isActive ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-100 text-gray-600'}`;
+                item.onclick = () => selectDoc(doc.id);
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <i data-lucide="${iconName}" class="w-4 h-4 ${isActive ? 'text-indigo-500' : 'text-gray-400'}"></i>
+                        <div class="flex flex-col truncate">
+                            <span class="font-medium truncate text-sm">${doc.title}</span>
+                            <span class="text-xs text-gray-400 truncate flex items-center gap-1">
+                                ${doc.type === 'pdf' ? '<span class="bg-red-100 text-red-600 px-1 rounded text-[10px]">PDF</span>' : ''}
+                                ${doc.category}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function updateUI() {
+            const ui = {
+                empty: document.getElementById('emptyState'),
+                content: document.getElementById('contentArea'),
+                viewMode: document.getElementById('viewMode'),
+                editMode: document.getElementById('editMode'),
+                mdContainer: document.getElementById('markdownContainer'),
+                pdfContainer: document.getElementById('pdfContainer'),
+                editBtn: document.getElementById('editBtn')
+            };
+
+            if (!state.selectedId) {
+                ui.empty.classList.remove('hidden');
+                ui.content.classList.add('hidden');
+                return;
+            }
+
+            const doc = state.docs.find(d => d.id === state.selectedId);
+            if (!doc) return;
+
+            ui.empty.classList.add('hidden');
+            ui.content.classList.remove('hidden');
+            ui.content.classList.add('flex');
+            
+            document.getElementById('headerTitle').textContent = doc.title;
+
+            // MODO EDICIÓN
+            if (state.isEditing) {
+                ui.viewMode.classList.add('hidden');
+                ui.editMode.classList.remove('hidden');
+                document.getElementById('viewActions').classList.add('hidden');
+                document.getElementById('editActions').classList.remove('hidden');
+
+                document.getElementById('editTitleInput').value = doc.title;
+                document.getElementById('editCategoryInput').value = doc.category;
+                document.getElementById('editContentInput').value = doc.content;
+            } 
+            // MODO LECTURA
+            else {
+                ui.viewMode.classList.remove('hidden');
+                ui.editMode.classList.add('hidden');
+                document.getElementById('viewActions').classList.remove('hidden');
+                document.getElementById('editActions').classList.add('hidden');
+
+                document.getElementById('viewTitle').textContent = doc.title;
+                document.getElementById('viewCategory').textContent = doc.category;
+                document.getElementById('viewDate').textContent = new Date(doc.lastModified).toLocaleDateString();
+
+                // Lógica de visualización por TIPO
+                if (doc.type === 'pdf') {
+                    ui.mdContainer.classList.add('hidden');
+                    ui.pdfContainer.classList.remove('hidden');
+                    ui.pdfContainer.classList.add('flex');
+                    ui.editBtn.style.display = 'none'; // Ocultar botón editar para PDFs
+                    
+                    // Iniciar renderizado PDF
+                    loadPdfFromData(doc.content);
+                } else {
+                    ui.mdContainer.classList.remove('hidden');
+                    ui.pdfContainer.classList.add('hidden');
+                    ui.pdfContainer.classList.remove('flex');
+                    ui.editBtn.style.display = 'flex';
+                    
+                    document.getElementById('viewBody').innerHTML = marked.parse(doc.content);
+                }
+            }
+            lucide.createIcons();
+        }
+
+        function toggleSidebar(show) {
+            const sidebar = document.getElementById('sidebar');
+            show ? sidebar.classList.remove('-translate-x-full') : sidebar.classList.add('-translate-x-full');
+        }
+
+        // --- 5. EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+
+            // Botones Básicos
+            document.getElementById('createDocBtn').addEventListener('click', createDoc);
+            document.getElementById('editBtn').addEventListener('click', startEditing);
+            document.getElementById('cancelBtn').addEventListener('click', cancelEditing);
+            document.getElementById('saveBtn').addEventListener('click', saveEditing);
+            document.getElementById('deleteBtn').addEventListener('click', deleteDoc);
+            
+            // Upload
+            const fileInput = document.getElementById('fileInput');
+            document.getElementById('importDocBtn').addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileUpload);
+
+            // Buscador y Sidebar
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                renderSidebar();
+            });
+            document.getElementById('openSidebarBtn').addEventListener('click', () => toggleSidebar(true));
+            document.getElementById('closeSidebarBtn').addEventListener('click', () => toggleSidebar(false));
+
+            // CONTROLES PDF
+            document.getElementById('prevPage').addEventListener('click', onPrevPage);
+            document.getElementById('nextPage').addEventListener('click', onNextPage);
+            document.getElementById('zoomIn').addEventListener('click', () => onZoom(0.2));
+            document.getElementById('zoomOut').addEventListener('click', () => onZoom(-0.2));
+            
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
