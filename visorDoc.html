@@ -1,440 +1,947 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="transition-colors duration-300">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuVisor - Drag & Drop + Excel Support</title>
+    <title>Linked Visor - Personalizable</title>
     
-    <!-- Tailwind CSS con plugin Typography activado -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Marked.js (Markdown) -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <!-- PDF.js (Librería de renderizado PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Configuración Dinámica de Tailwind -->
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Usamos variables CSS para el color primario (Personalización)
+                        primary: {
+                            50: 'var(--color-primary-50)',
+                            100: 'var(--color-primary-100)',
+                            500: 'var(--color-primary-500)',
+                            600: 'var(--color-primary-600)',
+                            700: 'var(--color-primary-700)',
+                        },
+                        slate: { 850: '#1e293b' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
     </script>
-
-    <!-- SheetJS (Librería para Excel) -->
+    
+    <!-- Librerías -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <!-- IMPLEMENTAMOS EL SUPABASE-->
+
 
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #the-canvas { direction: ltr; }
-
-        /* Estilos Syntax Highlighting JSON */
-        .json-key { color: #e11d48; font-weight: 600; }
-        .json-string { color: #15803d; }
-        .json-number { color: #2563eb; }
-        .json-boolean { color: #7c3aed; font-weight: bold; }
-        .json-null { color: #9ca3af; font-style: italic; }
-
-        /* Estilo para el Overlay de Drag & Drop */
-        #dropOverlay {
-            backdrop-filter: blur(4px);
-            background-color: rgba(79, 70, 229, 0.1);
+        /* --- VARIABLES DE TEMA --- */
+        :root {
+            /* Default: Indigo */
+            --color-primary-50: #eef2ff;
+            --color-primary-100: #e0e7ff;
+            --color-primary-500: #6366f1;
+            --color-primary-600: #4f46e5;
+            --color-primary-700: #4338ca;
         }
 
-        /* Estilos para Tablas Excel generadas */
-        .excel-table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        .excel-table-wrapper th { background-color: #f3f4f6; font-weight: 600; text-align: left; padding: 0.75rem; border: 1px solid #e5e7eb; }
-        .excel-table-wrapper td { padding: 0.75rem; border: 1px solid #e5e7eb; color: #374151; }
-        .excel-table-wrapper tr:nth-child(even) { background-color: #f9fafb; }
-        .excel-table-wrapper tr:hover { background-color: #f3f4f6; }
+        /* Temas Alternativos */
+        [data-accent="blue"] {
+            --color-primary-50: #eff6ff;
+            --color-primary-100: #dbeafe;
+            --color-primary-500: #3b82f6;
+            --color-primary-600: #2563eb;
+            --color-primary-700: #1d4ed8;
+        }
+        [data-accent="emerald"] {
+            --color-primary-50: #ecfdf5;
+            --color-primary-100: #d1fae5;
+            --color-primary-500: #10b981;
+            --color-primary-600: #059669;
+            --color-primary-700: #047857;
+        }
+        [data-accent="rose"] {
+            --color-primary-50: #fff1f2;
+            --color-primary-100: #ffe4e6;
+            --color-primary-500: #f43f5e;
+            --color-primary-600: #e11d48;
+            --color-primary-700: #be123c;
+        }
+        [data-accent="orange"] {
+            --color-primary-50: #fff7ed;
+            --color-primary-100: #ffedd5;
+            --color-primary-500: #f97316;
+            --color-primary-600: #ea580c;
+            --color-primary-700: #c2410c;
+        }
+
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Syntax & Table Styles */
+        .json-key { color: var(--color-primary-600); font-weight: 600; } .dark .json-key { color: var(--color-primary-500); }
+        .json-string { color: #15803d; } .dark .json-string { color: #4ade80; }
+        .json-number { color: #2563eb; } .dark .json-number { color: #60a5fa; }
+        
+        .excel-table-wrapper table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .excel-table-wrapper th { background-color: #f8fafc; text-align: left; padding: 0.75rem; border: 1px solid #e2e8f0; font-weight: 600; color: #475569; }
+        .excel-table-wrapper td { padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; color: #334155; }
+        .dark .excel-table-wrapper th { background-color: #1e293b; border-color: #334155; color: #cbd5e1; }
+        .dark .excel-table-wrapper td { border-color: #334155; color: #94a3b8; }
+
+        /* UI Components */
+        dialog::backdrop { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); }
+        #dropOverlay { backdrop-filter: blur(12px); background-color: rgba(255, 255, 255, 0.7); }
+        .dark #dropOverlay { background-color: rgba(15, 23, 42, 0.8); }
+        
+        .toast { transform: translateY(100%); opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 h-screen flex overflow-hidden relative">
 
-    <!-- INPUT OCULTO: Acepta .txt, .md, .pdf, .json y EXCEL -->
-    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.pdf,.json,.xlsx,.xls,.csv" class="hidden">
+<body class="bg-gray-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 h-screen flex overflow-hidden relative transition-colors duration-300 selection:bg-primary-100 selection:text-primary-700">
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- INPUTS OCULTOS -->
+    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.pdf,.json,.xlsx,.xls,.csv,.png,.jpg,.jpeg,.webp,.html,.htm,.css,.js,.xml" class="hidden">
+    <input type="file" id="importAllInput" accept="application/json" class="hidden">
+
+    <!-- MODAL AJUSTES (PERSONALIZACIÓN) -->
+    <dialog id="settingsModal" class="p-0 rounded-2xl shadow-2xl w-full max-w-sm bg-white dark:bg-slate-800 overflow-hidden backdrop:bg-gray-900/50">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="palette" class="w-5 h-5 text-primary-600"></i> Apariencia
+                </h3>
+                <button onclick="document.getElementById('settingsModal').close()" class="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
+                </button>
+            </div>
+
+            <!-- Selector de Tema -->
+            <div class="mb-6">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">Tema</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="setThemeMode('light')" class="flex items-center justify-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-600 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-slate-700 transition-all" id="btnThemeLight">
+                        <i data-lucide="sun" class="w-4 h-4"></i> Claro
+                    </button>
+                    <button onclick="setThemeMode('dark')" class="flex items-center justify-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-600 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-slate-700 transition-all" id="btnThemeDark">
+                        <i data-lucide="moon" class="w-4 h-4"></i> Oscuro
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector de Acento -->
+            <div class="mb-6">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">Color de Acento</label>
+                <div class="flex justify-between gap-2">
+                    <button onclick="setAccentColor('indigo')" class="w-10 h-10 rounded-full bg-indigo-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-offset-2 focus:ring-indigo-500"></button>
+                    <button onclick="setAccentColor('blue')" class="w-10 h-10 rounded-full bg-blue-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-offset-2 focus:ring-blue-500"></button>
+                    <button onclick="setAccentColor('emerald')" class="w-10 h-10 rounded-full bg-emerald-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-offset-2 focus:ring-emerald-500"></button>
+                    <button onclick="setAccentColor('rose')" class="w-10 h-10 rounded-full bg-rose-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-offset-2 focus:ring-rose-500"></button>
+                    <button onclick="setAccentColor('orange')" class="w-10 h-10 rounded-full bg-orange-500 hover:scale-110 transition-transform ring-2 ring-transparent focus:ring-offset-2 focus:ring-orange-500"></button>
+                </div>
+            </div>
+            
+            <div class="text-xs text-center text-gray-400 pt-4 border-t border-gray-100 dark:border-slate-700">
+                Linked Visor v3.2
+            </div>
+        </div>
+    </dialog>
+
+    <!-- MODAL NUEVO DOCUMENTO -->
+    <dialog id="newDocModal" class="p-0 rounded-2xl shadow-2xl w-full max-w-lg bg-white dark:bg-slate-800 overflow-hidden">
+        <form id="newDocForm" method="dialog" class="p-6">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Nuevo Archivo</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecciona el tipo de contenido.</p>
+            
+            <div class="mb-5">
+                <input type="text" id="newDocTitleInput" required class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder-gray-400 font-medium" placeholder="Nombre del documento...">
+            </div>
+
+            <!-- GRID DE OPCIONES RESTAURADA COMPLETA -->
+            <div class="mb-8 grid grid-cols-3 gap-3">
+                <label class="cursor-pointer group">
+                    <input type="radio" name="docType" value="markdown" class="peer hidden" checked>
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-slate-600 peer-checked:border-primary-500 peer-checked:bg-primary-50 dark:peer-checked:bg-primary-500/10 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 flex flex-col items-center gap-2 transition-all hover:bg-gray-50 dark:hover:bg-slate-700">
+                        <i data-lucide="file-text" class="w-6 h-6"></i>
+                        <span class="text-xs font-bold">Markdown</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer group">
+                    <input type="radio" name="docType" value="html" class="peer hidden">
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-slate-600 peer-checked:border-orange-500 peer-checked:bg-orange-50 dark:peer-checked:bg-orange-900/10 peer-checked:text-orange-600 dark:peer-checked:text-orange-400 flex flex-col items-center gap-2 transition-all hover:bg-gray-50 dark:hover:bg-slate-700">
+                        <i data-lucide="file-code" class="w-6 h-6"></i>
+                        <span class="text-xs font-bold">HTML</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer group">
+                    <input type="radio" name="docType" value="code" class="peer hidden">
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/10 peer-checked:text-blue-600 dark:peer-checked:text-blue-400 flex flex-col items-center gap-2 transition-all hover:bg-gray-50 dark:hover:bg-slate-700">
+                        <i data-lucide="code" class="w-6 h-6"></i>
+                        <span class="text-xs font-bold">Código</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer group">
+                    <input type="radio" name="docType" value="json" class="peer hidden">
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-slate-600 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 dark:peer-checked:bg-yellow-900/10 peer-checked:text-yellow-600 dark:peer-checked:text-yellow-400 flex flex-col items-center gap-2 transition-all hover:bg-gray-50 dark:hover:bg-slate-700">
+                        <i data-lucide="braces" class="w-6 h-6"></i>
+                        <span class="text-xs font-bold">JSON</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer group">
+                    <input type="radio" name="docType" value="excel" class="peer hidden">
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-slate-600 peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/10 peer-checked:text-green-600 dark:peer-checked:text-green-400 flex flex-col items-center gap-2 transition-all hover:bg-gray-50 dark:hover:bg-slate-700">
+                        <i data-lucide="table" class="w-6 h-6"></i>
+                        <span class="text-xs font-bold">Tabla</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer group">
+                    <input type="radio" name="docType" value="text" class="peer hidden">
+                    <div class="p-4 rounded-xl border border-gray-200 dark:border-slate-600 peer-checked:border-gray-500 peer-checked:bg-gray-100 dark:peer-checked:bg-gray-700 peer-checked:text-gray-700 dark:peer-checked:text-gray-300 flex flex-col items-center gap-2 transition-all hover:bg-gray-50 dark:hover:bg-slate-700">
+                        <i data-lucide="align-left" class="w-6 h-6"></i>
+                        <span class="text-xs font-bold">Texto</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex gap-3 justify-end">
+                <button type="button" onclick="document.getElementById('newDocModal').close()" class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">Cancelar</button>
+                <button type="submit" class="px-6 py-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-lg shadow-lg shadow-primary-500/30 transition-all transform hover:scale-105">Crear</button>
+            </div>
+        </form>
+    </dialog>
 
     <!-- OVERLAY DRAG & DROP -->
-    <div id="dropOverlay" class="hidden absolute inset-0 z-50 flex flex-col items-center justify-center border-4 border-indigo-500 border-dashed m-4 rounded-xl bg-white/90 transition-all pointer-events-none">
-        <div class="bg-indigo-100 p-6 rounded-full mb-4 animate-bounce">
-            <i data-lucide="upload-cloud" class="w-16 h-16 text-indigo-600"></i>
+    <div id="dropOverlay" class="hidden absolute inset-0 z-[100] flex flex-col items-center justify-center border-4 border-primary-500/30 border-dashed m-6 rounded-3xl transition-all pointer-events-none">
+        <div class="bg-primary-50 dark:bg-slate-800 p-8 rounded-full mb-6 animate-bounce shadow-2xl">
+            <i data-lucide="upload-cloud" class="w-24 h-24 text-primary-500"></i>
         </div>
-        <h2 class="text-3xl font-bold text-indigo-700">Suelta el archivo aquí</h2>
-        <p class="text-gray-500 mt-2">Soporta Excel, PDF, JSON, Markdown y Texto</p>
+        <h2 class="text-4xl font-black text-slate-800 dark:text-white">Suelta aquí</h2>
+        <p class="text-lg text-slate-500 dark:text-slate-400 mt-2 font-medium">Importación rápida activada</p>
     </div>
 
-    <!-- 1. SIDEBAR -->
-    <aside id="sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col h-full fixed md:relative z-20 transition-all duration-300 transform md:translate-x-0 -translate-x-full shadow-lg md:shadow-none">
-        <div class="p-4 border-b border-gray-100 flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-2 text-indigo-600 font-bold text-lg">
-                <i data-lucide="layers"></i>
-                <span>DocuVisor Pro</span>
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-80 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 flex flex-col h-full fixed md:relative z-20 transition-transform duration-300 transform md:translate-x-0 -translate-x-full shadow-2xl md:shadow-none">
+        
+        <!-- Header -->
+        <div class="p-6 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3 text-primary-600 dark:text-primary-500 font-black text-2xl tracking-tight">
+                <div class="bg-primary-100 dark:bg-primary-900/30 p-2 rounded-lg">
+                    <i data-lucide="link" class="w-6 h-6"></i>
+                </div>
+                <span>Linked</span>
             </div>
-            <button id="closeSidebarBtn" class="md:hidden text-gray-500 hover:text-gray-700">
+            <button id="closeSidebarBtn" class="md:hidden text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
                 <i data-lucide="x"></i>
             </button>
         </div>
 
-        <div class="p-4 shrink-0 space-y-3">
-            <button id="createDocBtn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition-colors font-medium shadow-sm">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                Nuevo Documento
-            </button>
+        <!-- Controls -->
+        <div class="px-6 pb-4 space-y-4">
+            <!-- Search -->
+            <div class="relative group">
+                <i data-lucide="search" class="absolute left-3 top-3 text-gray-400 group-focus-within:text-primary-500 w-4 h-4 transition-colors"></i>
+                <input type="text" id="searchInput" placeholder="Buscar..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-slate-700/50 border border-gray-200 dark:border-slate-600 focus:bg-white dark:focus:bg-slate-700 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900/30 rounded-xl text-sm outline-none transition-all dark:text-white font-medium">
+            </div>
             
-            <button id="importDocBtn" class="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2 px-4 rounded-lg transition-colors font-medium text-sm">
-                <i data-lucide="upload" class="w-4 h-4"></i>
-                Importar Archivo
-            </button>
-            
-            <div class="relative pt-2">
-                <i data-lucide="search" class="absolute left-3 top-4 text-gray-400 w-4 h-4"></i>
-                <input type="text" id="searchInput" placeholder="Buscar..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent focus:bg-white focus:border-indigo-500 border rounded-lg text-sm outline-none transition-all">
+            <!-- Actions -->
+            <div class="grid grid-cols-2 gap-3">
+                <button id="openNewDocModalBtn" class="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white py-2.5 px-3 rounded-xl transition-all font-bold text-sm shadow-lg shadow-primary-500/20 active:scale-95">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Nuevo
+                </button>
+                <button id="importDocBtn" class="flex items-center justify-center gap-2 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 border border-gray-200 dark:border-slate-600 py-2.5 px-3 rounded-xl transition-all font-bold text-sm hover:shadow-md active:scale-95">
+                    <i data-lucide="upload" class="w-4 h-4"></i> Importar
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x" id="filterChips">
+                <button data-filter="all" class="snap-start px-3 py-1.5 text-xs font-bold bg-slate-800 text-white rounded-lg whitespace-nowrap transition-colors shadow-sm">Todos</button>
+                <button data-filter="code" class="snap-start px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-slate-600 hover:shadow-sm rounded-lg whitespace-nowrap transition-all border border-transparent hover:border-gray-200">Dev</button>
+                <button data-filter="pdf" class="snap-start px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-slate-600 hover:shadow-sm rounded-lg whitespace-nowrap transition-all border border-transparent hover:border-gray-200">PDF</button>
+                <button data-filter="excel" class="snap-start px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-slate-600 hover:shadow-sm rounded-lg whitespace-nowrap transition-all border border-transparent hover:border-gray-200">Excel</button>
+                <button data-filter="image" class="snap-start px-3 py-1.5 text-xs font-bold bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-slate-600 hover:shadow-sm rounded-lg whitespace-nowrap transition-all border border-transparent hover:border-gray-200">Img</button>
             </div>
         </div>
 
-        <div id="docList" class="flex-1 overflow-y-auto px-2 pb-4 space-y-1"></div>
+        <!-- File List -->
+        <div class="px-6 pb-2 pt-2 border-t border-gray-100 dark:border-slate-700 flex-1 overflow-hidden flex flex-col">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Tus Archivos</p>
+            <div id="docList" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+        </div>
+
+        <!-- STORAGE STATS BAR (NUEVO) -->
+        <div class="p-4 bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Almacenamiento</span>
+                <span id="storageText" class="text-xs font-bold text-primary-600 dark:text-primary-400">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                <div id="storageBar" class="bg-primary-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between mt-3">
+                <button id="openSettingsBtn" class="text-xs font-bold text-gray-500 hover:text-primary-600 flex items-center gap-1 transition-colors">
+                    <i data-lucide="settings" class="w-3 h-3"></i> Ajustes
+                </button>
+            </div>
+        </div>
     </aside>
 
-    <!-- 2. MAIN CONTENT -->
-    <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden">
-        
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-full relative w-full overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+
         <div class="absolute top-4 left-4 z-10 md:hidden">
-            <button id="openSidebarBtn" class="p-2 bg-white shadow-md rounded-md border text-gray-600">
+            <button id="openSidebarBtn" class="p-2 bg-white dark:bg-slate-800 shadow-lg rounded-xl border border-gray-100 dark:border-slate-700 text-gray-600 dark:text-gray-300">
                 <i data-lucide="menu"></i>
             </button>
         </div>
 
-        <!-- ESTADO VACÍO / DROP ZONE -->
-        <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-gray-400 p-8">
-            <div class="border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center hover:bg-gray-50 hover:border-indigo-300 transition-all cursor-default w-full max-w-lg">
-                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-indigo-100">
-                    <i data-lucide="file-up" class="w-10 h-10 text-gray-400"></i>
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-gray-400 p-8 fade-in bg-gray-50/50 dark:bg-slate-900">
+            <div class="bg-white dark:bg-slate-800 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-3xl p-12 flex flex-col items-center justify-center hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-2xl transition-all cursor-pointer w-full max-w-lg group duration-300" onclick="document.getElementById('fileInput').click()">
+                <div class="w-24 h-24 bg-primary-50 dark:bg-slate-700 rounded-full flex items-center justify-center mb-6 text-primary-500 dark:text-primary-400 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-inner">
+                    <i data-lucide="sparkles" class="w-10 h-10"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-700 mb-2">Arrastra y suelta tu archivo</h3>
-                <p class="text-sm text-gray-500 text-center mb-6">Soporta Excel, PDF, JSON, MD, TXT</p>
-                <button onclick="document.getElementById('fileInput').click()" class="text-indigo-600 font-medium hover:underline cursor-pointer">
-                    O haz clic para buscar
+                <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Espacio de Trabajo</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-center mb-8 max-w-xs font-medium">Sube tus documentos para visualizar, editar y organizarlos.</p>
+                <button class="bg-slate-900 dark:bg-primary-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-slate-800 dark:hover:bg-primary-500 transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1">
+                    Explorar Archivos
                 </button>
             </div>
         </div>
 
+        <!-- Content Area -->
         <div id="contentArea" class="hidden flex-col h-full">
-            <!-- Header -->
-            <header class="h-16 border-b border-gray-200 bg-white flex items-center justify-between px-6 shrink-0 z-10">
-                <div class="flex items-center gap-2 text-sm text-gray-500 ml-10 md:ml-0">
-                    <span class="hidden md:inline">Docs</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 hidden md:inline"></i>
-                    <span id="headerTitle" class="font-medium text-gray-800 truncate max-w-[150px] md:max-w-md">Titulo</span>
+            <header class="h-16 border-b border-gray-100 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10 sticky top-0 transition-colors">
+                <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 ml-10 md:ml-0 overflow-hidden">
+                    <div id="headerIcon" class="p-2 bg-gray-100 dark:bg-slate-700 rounded-lg text-gray-600 dark:text-gray-300">
+                        <i data-lucide="file" class="w-4 h-4"></i>
+                    </div>
+                    <span id="headerTitle" class="font-bold text-slate-800 dark:text-white truncate max-w-[150px] md:max-w-md text-lg">Titulo</span>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <div id="viewActions" class="flex gap-2">
-                        <button id="downloadBtn" class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-md font-medium transition-all" title="Descargar">
-                            <i data-lucide="download" class="w-4 h-4"></i> <span class="hidden sm:inline">Exportar</span>
+                    <!-- Botón Menú Contextual -->
+                    <div class="relative">
+                        <button id="menuBtn" class="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                            <i data-lucide="more-vertical" class="w-5 h-5"></i>
                         </button>
+                        <!-- Dropdown (Reutiliza lógica anterior) -->
+                        <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-600 rounded-2xl shadow-2xl overflow-hidden z-50 p-1">
+                            <button data-action="exportDoc" class="w-full px-3 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl flex items-center gap-3 transition-colors font-medium">
+                                <i data-lucide="download" class="w-4 h-4"></i> Exportar
+                            </button>
+                            <button data-action="delete" class="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl flex items-center gap-3 transition-colors font-medium">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
+                            </button>
+                            <div class="h-px bg-gray-100 dark:bg-slate-700 my-1"></div>
+                            <button data-action="exportAll" class="w-full px-3 py-2 text-left text-sm text-slate-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl flex items-center gap-3 transition-colors">
+                                <i data-lucide="database" class="w-4 h-4"></i> Backup Total
+                            </button>
+                        </div>
+                    </div>
 
-                        <button id="editBtn" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 rounded-md font-medium transition-all">
-                            <i data-lucide="edit-3" class="w-4 h-4"></i> <span class="hidden sm:inline">Editar</span>
-                        </button>
-                        <button id="deleteBtn" class="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-md font-medium transition-all" title="Eliminar">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <div class="w-px h-6 bg-gray-200 dark:bg-slate-700 mx-2"></div>
+
+                    <!-- Acciones Primarias -->
+                    <div id="viewActions">
+                        <button id="editBtn" class="flex items-center gap-2 px-5 py-2 text-sm text-white bg-slate-900 dark:bg-primary-600 hover:bg-slate-800 dark:hover:bg-primary-500 rounded-xl font-bold shadow-lg transition-all active:scale-95">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
                         </button>
                     </div>
                     
                     <div id="editActions" class="hidden flex gap-2">
-                        <button id="cancelBtn" class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md font-medium">Cancelar</button>
-                        <button id="saveBtn" class="flex items-center gap-2 px-4 py-2 text-sm bg-indigo-600 text-white hover:bg-indigo-700 rounded-md font-medium shadow-sm">
+                        <button id="cancelBtn" class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-xl transition-colors">Cancelar</button>
+                        <button id="saveBtn" class="flex items-center gap-2 px-5 py-2 text-sm bg-primary-600 text-white hover:bg-primary-700 rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-all active:scale-95">
                             <i data-lucide="save" class="w-4 h-4"></i> Guardar
                         </button>
                     </div>
                 </div>
             </header>
 
-            <!-- Contenido Scrollable -->
-            <div class="flex-1 overflow-y-auto bg-gray-50/50 p-6 md:p-8 relative" id="mainScroll">
+            <div class="flex-1 overflow-y-auto p-6 md:p-10 relative scroll-smooth bg-gray-50/50 dark:bg-slate-900" id="mainScroll">
                 <div class="max-w-5xl mx-auto h-full flex flex-col">
                     
-                    <!-- MODO VISUALIZACIÓN -->
                     <article id="viewMode" class="fade-in flex-1 flex flex-col">
-                        <div class="mb-6 flex items-start justify-between">
-                            <div>
-                                <span id="viewCategory" class="inline-block px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-md mb-2">Categoría</span>
-                                <h1 id="viewTitle" class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Título</h1>
-                                <p id="viewDate" class="text-gray-400 text-sm mt-1">Fecha</p>
-                            </div>
+                        <div class="mb-8 flex items-center gap-3 opacity-75">
+                             <span id="viewCategory" class="px-3 py-1 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold uppercase tracking-wider rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm">General</span>
+                             <span id="viewDate" class="text-xs font-medium text-slate-400">Actualizado hoy</span>
                         </div>
 
-                        <!-- 1. CONTENEDOR TEXTO/MARKDOWN -->
-                        <div id="markdownContainer" class="hidden bg-white p-8 rounded-xl shadow-sm border border-gray-100 min-h-[200px]">
-                            <div id="viewBody" class="prose prose-indigo max-w-none text-gray-700 leading-relaxed prose-headings:font-bold prose-h1:text-gray-900 prose-a:text-indigo-600"></div>
+                        <!-- CONTAINERS (Views) -->
+                        <div id="markdownContainer" class="hidden bg-white dark:bg-slate-800 p-12 rounded-3xl shadow-sm border border-gray-100 dark:border-slate-700 min-h-[500px]">
+                            <div id="viewBody" class="prose prose-slate dark:prose-invert prose-lg max-w-none"></div>
                         </div>
 
-                        <!-- 2. CONTENEDOR PDF -->
-                        <div id="pdfContainer" class="hidden flex-col items-center w-full bg-gray-200/50 rounded-xl border border-gray-200 p-4 shadow-inner min-h-[500px]">
-                            <div class="flex flex-wrap items-center justify-center gap-3 bg-white p-2 rounded-lg shadow-sm mb-4 sticky top-0 z-10 border border-gray-200 w-full max-w-2xl">
-                                <button id="prevPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                                <span class="text-sm font-medium text-gray-700 min-w-[100px] text-center">Pág <span id="pageNum">1</span> / <span id="pageCount">--</span></span>
-                                <button id="nextPage" class="p-2 hover:bg-gray-100 rounded text-gray-600 disabled:opacity-50"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
-                                <div class="w-px h-6 bg-gray-300 mx-2"></div>
-                                <button id="zoomOut" class="p-2 hover:bg-gray-100 rounded text-gray-600"><i data-lucide="minus" class="w-4 h-4"></i></button>
-                                <span id="zoomLevel" class="text-sm text-gray-500 w-12 text-center">100%</span>
-                                <button id="zoomIn" class="p-2 hover:bg-gray-100 rounded text-gray-600"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                        <div id="pdfContainer" class="hidden flex-col items-center w-full bg-slate-100 dark:bg-slate-950 rounded-3xl border border-gray-200 dark:border-slate-700 p-8 shadow-inner min-h-[600px]">
+                            <div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-2xl shadow-xl mb-8 sticky top-0 z-20 border border-gray-100 dark:border-slate-600 ring-1 ring-black/5">
+                                <button id="prevPage" class="hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl dark:text-white transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                <span class="text-sm font-mono font-bold dark:text-white mx-3">Pág <span id="pageNum">1</span> / <span id="pageCount">-</span></span>
+                                <button id="nextPage" class="hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl dark:text-white transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                                <div class="w-px h-5 bg-gray-200 dark:bg-slate-600 mx-2"></div>
+                                <button id="zoomOut" class="hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl dark:text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                <button id="zoomIn" class="hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl dark:text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
                             </div>
-                            <div class="overflow-auto w-full flex justify-center pb-10">
-                                <canvas id="the-canvas" class="shadow-lg border border-gray-300 bg-white"></canvas>
-                            </div>
+                            <canvas id="the-canvas" class="shadow-2xl border border-gray-200 dark:border-slate-600 bg-white rounded-lg"></canvas>
                         </div>
 
-                        <!-- 3. CONTENEDOR JSON -->
-                        <div id="jsonContainer" class="hidden bg-[#1e1e1e] p-6 rounded-xl shadow-lg border border-gray-700 text-gray-100 font-mono text-sm overflow-x-auto min-h-[200px]">
+                        <div id="jsonContainer" class="hidden bg-[#0f172a] p-8 rounded-3xl shadow-2xl border border-slate-700 text-slate-300 font-mono text-sm overflow-x-auto min-h-[500px]">
                             <pre id="jsonContent" class="leading-relaxed"></pre>
                         </div>
 
-                        <!-- 4. CONTENEDOR EXCEL (NUEVO) -->
-                        <div id="excelContainer" class="hidden bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[200px]">
-                            <div class="p-4 bg-green-50 border-b border-green-100 flex items-center justify-between">
-                                <span class="text-sm font-semibold text-green-800 flex items-center gap-2">
-                                    <i data-lucide="table" class="w-4 h-4"></i> Hoja de Cálculo
+                        <div id="codeContainer" class="hidden bg-[#1e293b] p-8 rounded-3xl shadow-2xl border border-slate-700 text-blue-100 font-mono text-sm overflow-x-auto min-h-[500px]">
+                            <pre class="leading-relaxed whitespace-pre-wrap"></pre>
+                        </div>
+
+                        <div id="excelContainer" class="hidden bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden min-h-[500px]">
+                            <div class="px-8 py-4 bg-green-50 dark:bg-green-900/20 border-b border-green-100 dark:border-green-800/30 flex justify-between items-center">
+                                <span class="text-sm font-bold text-green-800 dark:text-green-400 flex items-center gap-2">
+                                    <div class="bg-green-100 dark:bg-green-800 p-1 rounded"><i data-lucide="sheet" class="w-4 h-4"></i></div>
+                                    Vista Previa de Datos
                                 </span>
                             </div>
-                            <div id="excelContent" class="excel-table-wrapper overflow-x-auto">
-                                <!-- La tabla se inyectará aquí -->
-                            </div>
+                            <div id="excelContent" class="excel-table-wrapper overflow-x-auto p-0 dark:text-gray-300"></div>
+                        </div>
+
+                        <div id="imageContainer" class="hidden flex-col items-center justify-center bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-gray-200 dark:border-slate-700 p-8 min-h-[500px]">
+                            <img id="imageViewer" src="" alt="Vista previa" class="max-w-full max-h-[70vh] rounded-xl shadow-2xl ring-1 ring-black/5 object-contain">
                         </div>
                     </article>
 
-                    <!-- MODO EDICIÓN -->
-                    <div id="editMode" class="hidden h-full flex flex-col fade-in bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                        <div class="mb-6 space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Título</label>
-                                <input type="text" id="editTitleInput" class="w-full text-2xl font-bold text-gray-900 border-b-2 border-gray-200 focus:border-indigo-500 outline-none py-2 bg-transparent">
+                    <!-- EDIT MODE -->
+                    <div id="editMode" class="hidden h-full flex flex-col fade-in bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-slate-700">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Título</label>
+                                <input type="text" id="editTitleInput" class="w-full text-2xl font-black text-slate-800 dark:text-white border-b-2 border-gray-100 dark:border-slate-600 focus:border-primary-500 outline-none py-2 bg-transparent transition-colors placeholder-gray-300">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Categoría</label>
-                                <input type="text" id="editCategoryInput" class="w-full text-sm text-gray-700 border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-100 outline-none">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Etiqueta</label>
+                                <input type="text" id="editCategoryInput" class="w-full text-sm font-bold text-slate-600 dark:text-slate-200 bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900 focus:border-primary-500 outline-none transition-all">
                             </div>
                         </div>
                         <div class="flex-1 flex flex-col">
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Contenido</label>
-                            <textarea id="editContentInput" class="flex-1 w-full p-4 text-base font-mono bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-100 outline-none resize-none leading-relaxed font-ligatures-none"></textarea>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contenido</label>
+                            <textarea id="editContentInput" class="flex-1 w-full p-6 text-base font-mono bg-gray-50 dark:bg-slate-700/30 border border-gray-200 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-primary-50 dark:focus:ring-primary-900 focus:border-primary-400 outline-none resize-none leading-relaxed text-slate-700 dark:text-slate-200 transition-all"></textarea>
                         </div>
                     </div>
+
                 </div>
             </div>
+
+            <!-- Footer Informativo -->
+            <footer class="h-10 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between px-8 text-[10px] uppercase font-bold text-gray-400 dark:text-slate-500 shrink-0 select-none">
+                <div id="footerLeft" class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span> Listo
+                </div>
+                <div class="flex gap-6">
+                    <span id="footerWords" class="hidden md:inline">0 Palabras</span>
+                    <span id="footerSize">0 KB</span>
+                </div>
+            </footer>
         </div>
     </main>
 
     <script>
-        // --- 1. CONFIGURACIÓN ---
         marked.use({ breaks: true, gfm: true });
+
+        const DOC_TYPES = { TEXT: 'text', MD: 'markdown', JSON: 'json', PDF: 'pdf', EXCEL: 'excel', IMAGE: 'image', HTML: 'html', CODE: 'code' };
 
         const state = {
             docs: [],
             selectedId: null,
             isEditing: false,
             searchQuery: '',
+            filterType: 'all',
             pdf: { doc: null, pageNum: 1, pageRendering: false, pageNumPending: null, scale: 1.2, canvas: null, ctx: null }
+        };
+
+        // =======================
+        // SUPABASE CONFIG
+        // =======================
+        const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+        const SUPABASE_ANON_KEY = "TU_ANON_KEY";
+
+        const { createClient } = supabase; // viene del CDN
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // :contentReference[oaicite:2]{index=2}
+
+        const SB_BUCKET = "docs";
+        const BIN_TYPES = new Set([DOC_TYPES.PDF, DOC_TYPES.EXCEL, DOC_TYPES.IMAGE]);
+
+        function isBinaryDoc(doc) {
+        return BIN_TYPES.has(doc.type);
+        }
+
+        function dataUrlToBlob(dataUrl) {
+        const [meta, b64] = dataUrl.split(",");
+        const mime = meta.match(/data:(.*?);base64/)?.[1] || "application/octet-stream";
+        const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+        return new Blob([bytes], { type: mime });
+        }
+
+        //PARTE #2
+        async function refreshAuthUI() {
+        const { data } = await sb.auth.getSession();
+        const logged = !!data.session;
+
+        document.getElementById("btnLogout").classList.toggle("hidden", !logged);
+        document.getElementById("btnAuth").textContent = logged ? "Sincronizar" : "Iniciar sesión";
+        }
+
+        async function signUp(email, password) {
+        const { data, error } = await sb.auth.signUp({ email, password }); // :contentReference[oaicite:3]{index=3}
+        if (error) throw error;
+        return data;
+        }
+
+        async function signIn(email, password) {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password }); // :contentReference[oaicite:4]{index=4}
+        if (error) throw error;
+        return data;
+        }
+
+        async function signOut() {
+        const { error } = await sb.auth.signOut();
+        if (error) throw error;
+        }
+
+
+        function safeCategory(cat) {
+        return (cat && cat.trim()) ? cat.trim() : "Sin categoría";
+        }
+
+        //PARTE #3
+        async function syncDownFromSupabase() {
+        const { data: sessionData } = await sb.auth.getSession();
+        const session = sessionData.session;
+        if (!session) {
+            Toast.show("Primero inicia sesión", "error");
+            return;
+        }
+
+        const { data, error } = await sb
+            .from("documents")
+            .select("*")
+            .order("updated_at", { ascending: false });
+
+        if (error) {
+            console.error(error);
+            Toast.show("Error bajando documentos", "error");
+            return;
+        }
+
+        // Convertimos filas a tu formato local
+        const docs = [];
+        for (const row of data) {
+            const doc = {
+            id: row.id,                 // OJO: aquí usamos el id de Supabase como id local (simple)
+            title: row.title,
+            category: safeCategory(row.category),
+            type: row.type,
+            content: row.content || "",
+            lastModified: row.updated_at || row.created_at,
+            size: row.size || 0
+            };
+
+            // Si es binario, generamos URL firmada para visualizar
+            if (row.storage_path) {
+            const { data: signed, error: sErr } = await sb
+                .storage
+                .from(SB_BUCKET)
+                .createSignedUrl(row.storage_path, 60 * 30); // 30 min :contentReference[oaicite:5]{index=5}
+
+            if (!sErr && signed?.signedUrl) {
+                doc.content = signed.signedUrl; // para tu viewer (img/pdf/etc)
+            }
+            }
+
+            docs.push(doc);
+        }
+
+        state.docs = docs;
+        saveToStorage();
+        renderSidebar();
+        if (state.docs[0]) selectDoc(state.docs[0].id);
+        Toast.show("Sincronizado ✓", "success");
+        updateStorageStats();
+        }
+
+        // ---------------------------------------------------------------------------------------------------
+        // PARTE #4
+        async function syncDownFromSupabase() {
+        const { data: sessionData } = await sb.auth.getSession();
+        const session = sessionData.session;
+        if (!session) {
+            Toast.show("Primero inicia sesión", "error");
+            return;
+        }
+
+        const { data, error } = await sb
+            .from("documents")
+            .select("*")
+            .order("updated_at", { ascending: false });
+
+        if (error) {
+            console.error(error);
+            Toast.show("Error bajando documentos", "error");
+            return;
+        }
+
+        // Convertimos filas a tu formato local
+        const docs = [];
+        for (const row of data) {
+            const doc = {
+            id: row.id,                 // OJO: aquí usamos el id de Supabase como id local (simple)
+            title: row.title,
+            category: safeCategory(row.category),
+            type: row.type,
+            content: row.content || "",
+            lastModified: row.updated_at || row.created_at,
+            size: row.size || 0
+            };
+
+            // Si es binario, generamos URL firmada para visualizar
+            if (row.storage_path) {
+            const { data: signed, error: sErr } = await sb
+                .storage
+                .from(SB_BUCKET)
+                .createSignedUrl(row.storage_path, 60 * 30); // 30 min :contentReference[oaicite:5]{index=5}
+
+            if (!sErr && signed?.signedUrl) {
+                doc.content = signed.signedUrl; // para tu viewer (img/pdf/etc)
+            }
+            }
+
+            docs.push(doc);
+        }
+
+        state.docs = docs;
+        saveToStorage();
+        renderSidebar();
+        if (state.docs[0]) selectDoc(state.docs[0].id);
+        Toast.show("Sincronizado ✓", "success");
+        updateStorageStats();
+        }
+
+        // ---------------------------------------------------------------------------------------------------
+        // PARTE #5
+        async function syncUpOneDoc(doc) {
+        const { data: sessionData } = await sb.auth.getSession();
+        const session = sessionData.session;
+        if (!session) return; // si no hay login, trabajas local
+
+        const baseRow = {
+            id: doc.id, // usaremos tu id local como PK en Supabase (uuid)
+            user_id: session.user.id,
+            title: doc.title,
+            category: safeCategory(doc.category),
+            type: doc.type,
+            mime_type: doc.mimeType || null,
+            size: doc.size || null,
+            updated_at: new Date().toISOString()
+        };
+
+        // Binarios -> Storage + guarda storage_path en tabla
+        if (isBinaryDoc(doc)) {
+            // Si doc.content ya es signedUrl, NO sirve para subir.
+            // Para subir, necesitamos DataURL base64 (como cuando importas).
+            // Recomendación: guarda también "rawDataUrl" al importar binarios.
+            const rawDataUrl = doc.rawDataUrl || null;
+            if (!rawDataUrl || !rawDataUrl.startsWith("data:")) {
+            // Si no lo tienes, no podemos re-subir sin volver a importar archivo
+            console.warn("No rawDataUrl para subir binario", doc);
+            } else {
+            const blob = dataUrlToBlob(rawDataUrl);
+            const path = `${session.user.id}/${doc.id}-${doc.title}`.replace(/\s+/g, "_");
+
+            const { error: upErr } = await sb
+                .storage
+                .from(SB_BUCKET)
+                .upload(path, blob, { upsert: true, contentType: blob.type }); // :contentReference[oaicite:6]{index=6}
+
+            if (upErr) throw upErr;
+
+            baseRow.storage_path = path;
+            baseRow.content = null;
+            }
+        } else {
+            // Textos
+            baseRow.content = doc.content;
+            baseRow.storage_path = null;
+        }
+
+        const { error } = await sb.from("documents").upsert(baseRow, { onConflict: "id" });
+        if (error) throw error;
+        }
+
+        // ---------------------------------------------------------------------------------------------------
+        // PARTE #6
+        async function syncDeleteDoc(id) {
+        const { data: sessionData } = await sb.auth.getSession();
+        if (!sessionData.session) return;
+
+        // intentamos recuperar storage_path para borrarlo también
+        const { data, error } = await sb.from("documents").select("storage_path").eq("id", id).maybeSingle();
+        if (!error && data?.storage_path) {
+            await sb.storage.from(SB_BUCKET).remove([data.storage_path]);
+        }
+
+        await sb.from("documents").delete().eq("id", id);
+        }
+
+
+
+
+        
+        // --- TOAST NOTIFICATIONS ---
+        const Toast = {
+            show(msg, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const el = document.createElement('div');
+                let icon = type === 'success' ? '<i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>' : 
+                           type === 'error' ? '<i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>' : 
+                           '<i data-lucide="info" class="w-5 h-5 text-blue-400"></i>';
+                
+                el.className = `toast px-5 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl shadow-2xl flex items-center gap-4 border border-slate-700/50 min-w-[300px] font-medium backdrop-blur-md`;
+                el.innerHTML = `${icon} <span>${msg}</span>`;
+                
+                container.appendChild(el);
+                lucide.createIcons();
+                el.offsetHeight; // Force reflow
+                el.classList.add('show');
+                setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, 3000);
+            }
+        };
+
+        // --- THEME & ACCENT LOGIC ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const savedAccent = localStorage.getItem('accent') || 'indigo';
+            
+            // Set Dark/Light
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            // Set Accent
+            document.documentElement.setAttribute('data-accent', savedAccent);
+        }
+
+        function setThemeMode(mode) {
+            if (mode === 'dark') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function setAccentColor(color) {
+            document.documentElement.setAttribute('data-accent', color);
+            localStorage.setItem('accent', color);
+            Toast.show(`Color cambiado a ${color}`, 'success');
+        }
+
+        // --- STORAGE STATS ---
+        function updateStorageStats() {
+            const totalBytes = new Blob([JSON.stringify(state.docs)]).size;
+            const maxBytes = 5 * 1024 * 1024; // 5MB approx limit
+            const percent = Math.min((totalBytes / maxBytes) * 100, 100).toFixed(1);
+            
+            document.getElementById('storageBar').style.width = `${percent}%`;
+            document.getElementById('storageText').textContent = `${(totalBytes/1024).toFixed(0)}KB / 5MB`;
+            
+            if(percent > 90) document.getElementById('storageBar').classList.add('bg-red-500');
+            else document.getElementById('storageBar').classList.remove('bg-red-500');
+        }
+
+        const DocRepo = {
+            add(doc) {
+                state.docs.unshift(doc);
+                saveToStorage();
+                Toast.show('Archivo creado con éxito', 'success');
+                updateStorageStats();
+            },
+            update(id, changes) {
+                const idx = state.docs.findIndex(d => d.id === id);
+                if (idx === -1) return;
+                state.docs[idx] = { ...state.docs[idx], ...changes, lastModified: new Date().toISOString() };
+                saveToStorage();
+                Toast.show('Cambios guardados', 'success');
+                updateStorageStats();
+            },
+            remove(id) {
+                state.docs = state.docs.filter(d => d.id !== id);
+                saveToStorage();
+                Toast.show('Documento eliminado', 'info');
+                updateStorageStats();
+            }
         };
 
         const INITIAL_DOCS = [
             {
                 id: '1',
-                title: 'Nota de Texto',
-                category: 'Notas',
-                type: 'text',
-                content: `Esto es un archivo de texto simple (.txt).\n\nAhora puedes arrastrar archivos Excel, PDF, JSON o Texto directamente.`,
-                lastModified: new Date().toISOString()
+                title: 'Bienvenido a Linked Visor',
+                category: 'Inicio',
+                type: DOC_TYPES.MD,
+                content: `# 🎉 Versión 3.0\n\nBienvenido a la experiencia definitiva.\n\n### Novedades:\n- 🎨 **Personalización Total**: Cambia colores y temas.\n- 📊 **Estadísticas**: Controla tu almacenamiento local.\n- 💎 **Interfaz Premium**: Nuevo diseño visual Glassmorphism.\n\nVe a **Ajustes** (abajo a la izquierda) para probar los colores.`,
+                lastModified: new Date().toISOString(),
+                size: 1024
             }
         ];
 
-        // --- 2. UTILIDADES ---
-        function syntaxHighlight(json) {
-            if (typeof json !== 'string') json = JSON.stringify(json, undefined, 2);
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                var cls = 'json-number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) cls = 'json-key';
-                    else cls = 'json-string';
-                } else if (/true|false/.test(match)) cls = 'json-boolean';
-                else if (/null/.test(match)) cls = 'json-null';
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
-        }
-
-        // --- 3. LÓGICA DE DATOS ---
-
         function initApp() {
+            initTheme();
             try {
-                const saved = localStorage.getItem('docuvisor-ultra');
+                const saved = localStorage.getItem('linked-visor-db');
                 state.docs = saved ? JSON.parse(saved) : INITIAL_DOCS;
             } catch (e) {
                 state.docs = INITIAL_DOCS;
             }
-
+            
             state.pdf.canvas = document.getElementById('the-canvas');
             state.pdf.ctx = state.pdf.canvas.getContext('2d');
 
             if (state.docs.length > 0) selectDoc(state.docs[0].id);
             else renderSidebar();
+            
             updateUI();
+            updateStorageStats();
         }
 
         function saveToStorage() {
             try {
-                localStorage.setItem('docuvisor-ultra', JSON.stringify(state.docs));
+                localStorage.setItem('linked-visor-db', JSON.stringify(state.docs));
             } catch (e) {
-                if (e.name === 'QuotaExceededError') alert('⚠️ Memoria llena. No se guardará permanentemente.');
+                if (e.name === 'QuotaExceededError') Toast.show('⚠️ Espacio lleno. Borra archivos.', 'error');
             }
         }
 
-        function downloadDoc() {
-            if (!state.selectedId) return;
-            const doc = state.docs.find(d => d.id === state.selectedId);
-            if (!doc) return;
-
-            // EXCEL y PDF (Base64)
-            if (doc.type === 'pdf' || doc.type === 'excel') {
-                const link = document.createElement('a');
-                link.href = doc.content; // Es Data URL
-                link.download = `${doc.title}.${doc.type === 'pdf' ? 'pdf' : 'xlsx'}`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                return;
-            }
-
-            let mimeType = 'text/plain';
-            let extension = 'txt';
-
-            if (doc.type === 'json') { mimeType = 'application/json'; extension = 'json'; }
-            else if (doc.type === 'markdown') { mimeType = 'text/markdown'; extension = 'md'; }
-
-            const blob = new Blob([doc.content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${doc.title}.${extension}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        // --- MANEJO DE ARCHIVOS (Unified File Processing) ---
-        
+        // --- FILE PROCESSING ---
         function processFile(file) {
             if (!file) return;
-
             const reader = new FileReader();
-            const extension = file.name.split('.').pop().toLowerCase();
-            const isPdf = file.type === 'application/pdf' || extension === 'pdf';
-            const isJson = file.type === 'application/json' || extension === 'json';
-            const isMd = ['md', 'markdown'].includes(extension);
-            const isExcel = ['xlsx', 'xls', 'csv'].includes(extension);
+            const ext = file.name.split('.').pop().toLowerCase();
+            const mime = file.type || '';
+            
+            const isPdf = mime.includes('pdf') || ext === 'pdf';
+            const isJson = mime.includes('json') || ext === 'json';
+            const isExcel = ['xlsx', 'xls', 'csv'].includes(ext) || mime.includes('sheet') || mime.includes('csv');
+            const isImage = mime.startsWith('image/') || ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(ext);
+            const isMd = ['md', 'markdown'].includes(ext);
+            const isHtml = ['html', 'htm'].includes(ext);
+            const isCode = ['css', 'js', 'xml', 'ts'].includes(ext);
 
-            // Manejo especial para lectura binaria (PDF y Excel)
-            if (isPdf || isExcel) {
-                reader.readAsDataURL(file); // Leer como Base64 para almacenar
-            } else {
-                reader.readAsText(file); // Texto plano
-            }
+            if (isPdf || isExcel || isImage) reader.readAsDataURL(file);
+            else reader.readAsText(file);
 
             reader.onload = function(e) {
                 let content = e.target.result;
-                const fileName = file.name.replace(/\.[^/.]+$/, "");
-                let docType = 'text';
-                
+                const baseName = file.name.replace(/\.[^/.]+$/, "");
+                let docType = DOC_TYPES.TEXT;
+
                 if (isJson) {
-                    try {
-                        content = JSON.stringify(JSON.parse(content), null, 2);
-                        docType = 'json';
-                    } catch (err) {
-                        alert('JSON inválido, se guardará como texto plano.');
-                        docType = 'text';
-                    }
-                } else if (isPdf) {
-                    docType = 'pdf';
-                } else if (isExcel) {
-                    docType = 'excel';
-                    // El contenido aquí ya es Base64 (DataURL) listo para guardar
-                } else if (isMd) {
-                    docType = 'markdown';
-                }
+                    try { content = JSON.stringify(JSON.parse(content), null, 2); docType = DOC_TYPES.JSON; }
+                    catch (err) { docType = DOC_TYPES.TEXT; }
+                } else if (isPdf) docType = DOC_TYPES.PDF;
+                else if (isExcel) docType = DOC_TYPES.EXCEL;
+                else if (isImage) docType = DOC_TYPES.IMAGE;
+                else if (isHtml) docType = DOC_TYPES.HTML;
+                else if (isCode) docType = DOC_TYPES.CODE;
+                else if (isMd) docType = DOC_TYPES.MD;
 
                 const newDoc = {
                     id: crypto.randomUUID(),
-                    title: fileName.charAt(0).toUpperCase() + fileName.slice(1),
+                    title: baseName.charAt(0).toUpperCase() + baseName.slice(1),
                     category: 'Importado',
                     type: docType,
                     content: content,
-                    lastModified: new Date().toISOString()
+                    lastModified: new Date().toISOString(),
+                    size: file.size
                 };
-
-                state.docs.unshift(newDoc);
-                saveToStorage();
+                DocRepo.add(newDoc);
                 selectDoc(newDoc.id);
                 renderSidebar();
             };
         }
 
-        function handleFileUpload(event) {
-            processFile(event.target.files[0]);
-            event.target.value = ''; // Reset input
+        // --- DOWNLOAD & EXPORT ---
+        function downloadDoc() {
+             const doc = state.docs.find(d => d.id === state.selectedId);
+             if(!doc) return;
+             const link = document.createElement('a');
+             let ext = '.txt';
+             if(doc.type === DOC_TYPES.HTML) ext = '.html';
+             if(doc.type === DOC_TYPES.CODE) ext = '.js';
+             if(doc.type === DOC_TYPES.MD) ext = '.md';
+             
+             if(doc.type===DOC_TYPES.PDF || doc.type===DOC_TYPES.EXCEL || doc.type===DOC_TYPES.IMAGE) link.href = doc.content;
+             else link.href = URL.createObjectURL(new Blob([doc.content], {type: doc.type===DOC_TYPES.JSON?'application/json':(doc.type===DOC_TYPES.HTML?'text/html':'text/plain')}));
+             
+             link.download = doc.title + (doc.type === DOC_TYPES.IMAGE ? '.png' : (doc.type === DOC_TYPES.EXCEL ? '.csv' : ext));
+             link.click();
         }
 
-        // --- 4. DRAG AND DROP EVENTS ---
-        
-        const dropOverlay = document.getElementById('dropOverlay');
-        let dragCounter = 0;
-
-        function initDragAndDrop() {
-            document.body.addEventListener('dragenter', (e) => {
-                e.preventDefault();
-                dragCounter++;
-                if (dragCounter === 1) dropOverlay.classList.remove('hidden');
-            });
-
-            document.body.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dragCounter--;
-                if (dragCounter <= 0) {
-                    dragCounter = 0;
-                    dropOverlay.classList.add('hidden');
-                }
-            });
-
-            document.body.addEventListener('dragover', (e) => {
-                e.preventDefault(); 
-            });
-
-            document.body.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dragCounter = 0;
-                dropOverlay.classList.add('hidden');
-                
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    processFile(e.dataTransfer.files[0]);
-                }
+        // --- RENDERERS ---
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') json = JSON.stringify(json, undefined, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+                let cls = 'json-number';
+                if (/^"/.test(match)) cls = /:$/.test(match) ? 'json-key' : 'json-string';
+                else if (/true|false/.test(match)) cls = 'json-boolean';
+                else if (/null/.test(match)) cls = 'json-null';
+                return `<span class="${cls}">${match}</span>`;
             });
         }
 
-        // --- 5. RENDERIZADO PDF Y EXCEL ---
+        function loadExcelFromData(content) {
+            try {
+                let workbook;
+                if (content.startsWith('data:')) {
+                     const cleanBase64 = content.split(',')[1];
+                     workbook = XLSX.read(cleanBase64, {type: 'base64'});
+                } else {
+                     workbook = XLSX.read(content, {type: 'string'});
+                }
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const html = XLSX.utils.sheet_to_html(worksheet, { id: "excelTable", editable: false });
+                document.getElementById('excelContent').innerHTML = html;
+            } catch (e) {
+                document.getElementById('excelContent').innerHTML = `<p class="text-red-500 p-4">Error al leer Excel.</p>`;
+            }
+        }
+
         function renderPdfPage(num) {
             state.pdf.pageRendering = true;
-            state.pdf.doc.getPage(num).then(function(page) {
+            state.pdf.doc.getPage(num).then(page => {
                 const viewport = page.getViewport({scale: state.pdf.scale});
                 state.pdf.canvas.height = viewport.height;
                 state.pdf.canvas.width = viewport.width;
-                const renderContext = { canvasContext: state.pdf.ctx, viewport: viewport };
-                page.render(renderContext).promise.then(() => {
+                page.render({ canvasContext: state.pdf.ctx, viewport }).promise.then(() => {
                     state.pdf.pageRendering = false;
                     if (state.pdf.pageNumPending !== null) {
                         renderPdfPage(state.pdf.pageNumPending);
@@ -444,102 +951,85 @@
             });
             document.getElementById('pageNum').textContent = num;
         }
-
-        function queueRenderPage(num) { state.pdf.pageRendering ? state.pdf.pageNumPending = num : renderPdfPage(num); }
-        function onPrevPage() { if (state.pdf.pageNum <= 1) return; state.pdf.pageNum--; queueRenderPage(state.pdf.pageNum); }
-        function onNextPage() { if (state.pdf.pageNum >= state.pdf.doc.numPages) return; state.pdf.pageNum++; queueRenderPage(state.pdf.pageNum); }
-        function onZoom(delta) { 
-            const newScale = state.pdf.scale + delta; 
-            if (newScale > 0.5 && newScale < 3.0) { state.pdf.scale = newScale; document.getElementById('zoomLevel').textContent = Math.round(state.pdf.scale * 100) + '%'; queueRenderPage(state.pdf.pageNum); } 
-        }
-
-        function loadPdfFromData(base64Data) {
-            pdfjsLib.getDocument(base64Data).promise.then(function(pdfDoc_) {
-                state.pdf.doc = pdfDoc_;
-                document.getElementById('pageCount').textContent = state.pdf.doc.numPages;
-                state.pdf.pageNum = 1;
+        function loadPdfFromData(data) {
+            pdfjsLib.getDocument(data).promise.then(pdf => {
+                state.pdf.doc = pdf;
+                document.getElementById('pageCount').textContent = pdf.numPages;
                 renderPdfPage(1);
-            }, function (reason) { console.error(reason); alert('Error PDF'); });
+            });
         }
+        function queueRenderPage(num) { state.pdf.pageRendering ? state.pdf.pageNumPending = num : renderPdfPage(num); }
+        document.getElementById('prevPage').onclick = () => state.pdf.pageNum > 1 && queueRenderPage(--state.pdf.pageNum);
+        document.getElementById('nextPage').onclick = () => state.pdf.pageNum < state.pdf.doc.numPages && queueRenderPage(++state.pdf.pageNum);
+        document.getElementById('zoomIn').onclick = () => { if (state.pdf.scale < 3) { state.pdf.scale += 0.2; queueRenderPage(state.pdf.pageNum); document.getElementById('zoomLevel').textContent = Math.round(state.pdf.scale*100)+'%'; }};
+        document.getElementById('zoomOut').onclick = () => { if (state.pdf.scale > 0.5) { state.pdf.scale -= 0.2; queueRenderPage(state.pdf.pageNum); document.getElementById('zoomLevel').textContent = Math.round(state.pdf.scale*100)+'%'; }};
 
-        // Nueva función para renderizar Excel
-        function loadExcelFromData(base64Data) {
-            try {
-                // SheetJS lee directamente desde el string base64 (quitando la cabecera data:...)
-                // A veces FileReader devuelve "data:application/vnd...;base64,....."
-                const cleanBase64 = base64Data.split(',')[1]; 
-                const workbook = XLSX.read(cleanBase64, {type: 'base64'});
-                
-                // Tomamos la primera hoja
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                // Convertimos a HTML
-                const html = XLSX.utils.sheet_to_html(worksheet, { id: "excelTable", editable: false });
-                
-                document.getElementById('excelContent').innerHTML = html;
-                
-                // Añadimos estilos de Tailwind a la tabla generada (SheetJS no pone estilos)
-                // Esto se hace por CSS global, pero podemos retocar si hace falta
-            } catch (e) {
-                console.error(e);
-                document.getElementById('excelContent').innerHTML = `<p class="text-red-500 p-4">Error al leer el archivo Excel.</p>`;
-            }
-        }
-
-        // --- 6. GESTIÓN UI ---
         function selectDoc(id) {
             state.selectedId = id;
             state.isEditing = false;
             updateUI();
-            if (window.innerWidth < 768) toggleSidebar(false);
+            if (window.innerWidth < 768) document.getElementById('sidebar').classList.add('-translate-x-full');
         }
 
-        function createDoc() {
-            const newDoc = { id: crypto.randomUUID(), title: 'Nota Rápida', category: 'Borrador', type: 'text', content: 'Escribe aquí tu nota...', lastModified: new Date().toISOString() };
-            state.docs.unshift(newDoc);
-            saveToStorage();
+        // --- NEW DOC LOGIC ---
+        function createNewDocFromModal(e) {
+            e.preventDefault();
+            const title = document.getElementById('newDocTitleInput').value || 'Sin Título';
+            const type = document.querySelector('input[name="docType"]:checked').value;
+            const nowIso = new Date().toISOString();
+            
+            let content = '';
+            let docType = DOC_TYPES.TEXT;
+
+            if (type === 'markdown') { content = `# ${title}\n`; docType = DOC_TYPES.MD; }
+            else if (type === 'html') { content = `<h1>${title}</h1>`; docType = DOC_TYPES.HTML; }
+            else if (type === 'code') { content = `// Código`; docType = DOC_TYPES.CODE; }
+            else if (type === 'json') { content = `{\n  "id": "${crypto.randomUUID()}"\n}`; docType = DOC_TYPES.JSON; }
+            else if (type === 'excel') { content = `Data1,Data2\nVal1,Val2`; docType = DOC_TYPES.EXCEL; }
+
+            const newDoc = {
+                id: crypto.randomUUID(),
+                title: title,
+                category: 'Borrador',
+                type: docType,
+                content: content,
+                lastModified: nowIso,
+                size: content.length
+            };
+
+            DocRepo.add(newDoc);
             selectDoc(newDoc.id);
-            startEditing();
+            state.isEditing = true;
+            updateUI();
             renderSidebar();
+            document.getElementById('newDocModal').close();
+            document.getElementById('newDocForm').reset();
         }
 
         function deleteDoc() {
-            if (!confirm('¿Eliminar documento?')) return;
-            state.docs = state.docs.filter(d => d.id !== state.selectedId);
-            saveToStorage();
-            state.docs.length > 0 ? selectDoc(state.docs[0].id) : (state.selectedId = null);
+            if (!confirm('¿Eliminar documento definitivamente?')) return;
+            DocRepo.remove(state.selectedId);
+            state.selectedId = state.docs.length > 0 ? state.docs[0].id : null;
             renderSidebar();
             updateUI();
         }
 
-        function startEditing() { 
+        function updateDoc() {
             const doc = state.docs.find(d => d.id === state.selectedId);
-            if (doc && (doc.type === 'pdf' || doc.type === 'excel')) { alert("No se pueden editar archivos binarios (PDF/Excel)."); return; }
-            state.isEditing = true; 
-            updateUI(); 
-        }
-        
-        function cancelEditing() { state.isEditing = false; updateUI(); }
-        
-        function saveEditing() {
+            if (!doc) return;
+            
             const title = document.getElementById('editTitleInput').value;
             const category = document.getElementById('editCategoryInput').value;
             let content = document.getElementById('editContentInput').value;
-            const doc = state.docs.find(d => d.id === state.selectedId);
-            
-            if (doc.type === 'json') {
-                try { content = JSON.stringify(JSON.parse(content), null, 2); } 
-                catch (e) { alert("⚠️ JSON inválido."); return; }
-            }
 
-            const docIndex = state.docs.findIndex(d => d.id === state.selectedId);
-            if (docIndex !== -1) {
-                state.docs[docIndex] = { ...state.docs[docIndex], title, category, content, lastModified: new Date().toISOString() };
-                saveToStorage();
-                renderSidebar();
+            if (doc.type === DOC_TYPES.JSON) {
+                try { content = JSON.stringify(JSON.parse(content), null, 2); }
+                catch(e) { return Toast.show("JSON Inválido", 'error'); }
             }
+            
+            DocRepo.update(state.selectedId, { title, category, content });
             state.isEditing = false;
+            renderSidebar();
             updateUI();
         }
 
@@ -547,154 +1037,190 @@
             const list = document.getElementById('docList');
             list.innerHTML = '';
             
-            const filtered = state.docs.filter(doc => 
-                doc.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
-                doc.category.toLowerCase().includes(state.searchQuery.toLowerCase())
-            );
+            const filtered = state.docs.filter(doc => {
+                const matchesSearch = (doc.title+doc.category).toLowerCase().includes(state.searchQuery.toLowerCase());
+                if (state.filterType === 'all') return matchesSearch;
+                if (state.filterType === 'code') return matchesSearch && (doc.type === DOC_TYPES.HTML || doc.type === DOC_TYPES.CODE || doc.type === DOC_TYPES.JSON);
+                return matchesSearch && doc.type === state.filterType;
+            });
 
             filtered.forEach(doc => {
-                const isActive = doc.id === state.selectedId;
-                let iconName = 'file-text';
-                let badge = 'TXT';
-                let badgeClass = "bg-gray-100 text-gray-600";
-                
-                if (doc.type === 'pdf') { iconName = 'file-text'; badge = 'PDF'; badgeClass = "bg-red-100 text-red-700"; }
-                else if (doc.type === 'excel') { iconName = 'table'; badge = 'XLS'; badgeClass = "bg-green-100 text-green-700"; }
-                else if (doc.type === 'json') { iconName = 'code-2'; badge = 'JSON'; badgeClass = "bg-yellow-100 text-yellow-700"; }
-                else if (doc.type === 'markdown') { iconName = 'file-code'; badge = 'MD'; badgeClass = "bg-blue-100 text-blue-700"; }
+                const active = doc.id === state.selectedId;
+                let icon = 'file-text';
 
-                const item = document.createElement('div');
-                item.className = `group flex items-center justify-between p-3 rounded-md cursor-pointer transition-all ${isActive ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-100 text-gray-600'}`;
-                item.onclick = () => selectDoc(doc.id);
-                
-                item.innerHTML = `
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <i data-lucide="${iconName}" class="w-4 h-4 ${isActive ? 'text-indigo-500' : 'text-gray-400'}"></i>
-                        <div class="flex flex-col truncate">
-                            <span class="font-medium truncate text-sm">${doc.title}</span>
-                            <span class="text-xs text-gray-400 truncate flex items-center gap-1">
-                                <span class="${badgeClass} px-1.5 rounded text-[10px] font-bold min-w-[32px] text-center">${badge}</span>
-                                ${doc.category}
-                            </span>
+                if (doc.type === DOC_TYPES.PDF) icon = 'file';
+                else if (doc.type === DOC_TYPES.EXCEL) icon = 'sheet';
+                else if (doc.type === DOC_TYPES.JSON) icon = 'code-2';
+                else if (doc.type === DOC_TYPES.MD) icon = 'file-code';
+                else if (doc.type === DOC_TYPES.IMAGE) icon = 'image';
+                else if (doc.type === DOC_TYPES.HTML) icon = 'file-code';
+                else if (doc.type === DOC_TYPES.CODE) icon = 'code';
+
+                const el = document.createElement('div');
+                // Uso de clases de tema para sidebar items
+                el.className = `flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all mb-1 border ${active ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-100 dark:border-primary-800 shadow-sm' : 'hover:bg-gray-50 dark:hover:bg-slate-700/50 border-transparent'}`;
+                el.onclick = () => selectDoc(doc.id);
+                el.innerHTML = `
+                    <div class="${active ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'} transition-colors"><i data-lucide="${icon}" class="w-5 h-5"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-bold text-sm text-slate-700 dark:text-slate-200 truncate ${active ? 'text-primary-900 dark:text-primary-100' : ''}">${doc.title}</div>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-xs text-gray-400 dark:text-gray-500 truncate">${doc.category}</span>
                         </div>
                     </div>
                 `;
-                list.appendChild(item);
+                list.appendChild(el);
             });
             lucide.createIcons();
         }
 
         function updateUI() {
-            const ui = {
+            const doc = state.docs.find(d => d.id === state.selectedId);
+            const els = {
                 empty: document.getElementById('emptyState'),
                 content: document.getElementById('contentArea'),
+                header: document.getElementById('headerTitle'),
                 viewMode: document.getElementById('viewMode'),
                 editMode: document.getElementById('editMode'),
-                mdContainer: document.getElementById('markdownContainer'),
-                pdfContainer: document.getElementById('pdfContainer'),
-                jsonContainer: document.getElementById('jsonContainer'),
-                excelContainer: document.getElementById('excelContainer'),
-                editBtn: document.getElementById('editBtn')
+                editActions: document.getElementById('editActions'),
+                viewActions: document.getElementById('viewActions'),
+                footerLeft: document.getElementById('footerLeft'),
+                footerWords: document.getElementById('footerWords'),
+                footerSize: document.getElementById('footerSize'),
+                containers: [
+                    document.getElementById('markdownContainer'),
+                    document.getElementById('pdfContainer'),
+                    document.getElementById('jsonContainer'),
+                    document.getElementById('excelContainer'),
+                    document.getElementById('imageContainer'),
+                    document.getElementById('codeContainer')
+                ]
             };
 
-            if (!state.selectedId) {
-                ui.empty.classList.remove('hidden');
-                ui.content.classList.add('hidden');
+            if (!doc) {
+                els.empty.classList.remove('hidden');
+                els.content.classList.add('hidden');
                 return;
             }
 
-            const doc = state.docs.find(d => d.id === state.selectedId);
-            if (!doc) return;
+            els.empty.classList.add('hidden');
+            els.content.classList.remove('hidden');
+            els.content.classList.add('flex');
+            els.header.textContent = doc.title;
 
-            ui.empty.classList.add('hidden');
-            ui.content.classList.remove('hidden');
-            ui.content.classList.add('flex');
-            document.getElementById('headerTitle').textContent = doc.title;
+            // Footer info
+            els.footerSize.textContent = doc.size ? (doc.size / 1024).toFixed(1) + ' KB' : '0 KB';
+            if ([DOC_TYPES.TEXT, DOC_TYPES.MD, DOC_TYPES.HTML, DOC_TYPES.CODE].includes(doc.type)) {
+                els.footerWords.textContent = (doc.content.match(/\S+/g) || []).length + ' Palabras';
+            } else {
+                els.footerWords.textContent = '';
+            }
 
             if (state.isEditing) {
-                ui.viewMode.classList.add('hidden');
-                ui.editMode.classList.remove('hidden');
-                document.getElementById('viewActions').classList.add('hidden');
-                document.getElementById('editActions').classList.remove('hidden');
-
+                els.viewMode.classList.add('hidden');
+                els.editMode.classList.remove('hidden');
+                els.viewActions.classList.add('hidden');
+                els.editActions.classList.remove('hidden');
+                
                 document.getElementById('editTitleInput').value = doc.title;
                 document.getElementById('editCategoryInput').value = doc.category;
                 document.getElementById('editContentInput').value = doc.content;
-            } 
-            else {
-                ui.viewMode.classList.remove('hidden');
-                ui.editMode.classList.add('hidden');
-                document.getElementById('viewActions').classList.remove('hidden');
-                document.getElementById('editActions').classList.add('hidden');
+            } else {
+                els.viewMode.classList.remove('hidden');
+                els.editMode.classList.add('hidden');
+                els.viewActions.classList.remove('hidden');
+                els.editActions.classList.add('hidden');
 
-                document.getElementById('viewTitle').textContent = doc.title;
                 document.getElementById('viewCategory').textContent = doc.category;
                 document.getElementById('viewDate').textContent = new Date(doc.lastModified).toLocaleDateString();
 
-                // Ocultar todos
-                ui.mdContainer.classList.add('hidden');
-                ui.pdfContainer.classList.add('hidden');
-                ui.jsonContainer.classList.add('hidden');
-                ui.excelContainer.classList.add('hidden');
-                ui.pdfContainer.classList.remove('flex');
+                els.containers.forEach(c => { c.classList.add('hidden'); c.classList.remove('flex'); });
 
-                if (doc.type === 'pdf') {
-                    ui.pdfContainer.classList.remove('hidden');
-                    ui.pdfContainer.classList.add('flex');
-                    ui.editBtn.style.display = 'none'; 
+                const editBtn = document.getElementById('editBtn');
+                
+                if (doc.type === DOC_TYPES.PDF) {
+                    els.containers[1].classList.remove('hidden');
+                    els.containers[1].classList.add('flex');
+                    editBtn.style.display = 'none';
                     loadPdfFromData(doc.content);
-                } 
-                else if (doc.type === 'excel') {
-                    ui.excelContainer.classList.remove('hidden');
-                    ui.editBtn.style.display = 'none';
+                } else if (doc.type === DOC_TYPES.EXCEL) {
+                    els.containers[3].classList.remove('hidden');
+                    editBtn.style.display = 'flex'; 
                     loadExcelFromData(doc.content);
-                }
-                else if (doc.type === 'json') {
-                    ui.jsonContainer.classList.remove('hidden');
-                    ui.editBtn.style.display = 'flex';
+                } else if (doc.type === DOC_TYPES.IMAGE) {
+                    els.containers[4].classList.remove('hidden');
+                    els.containers[4].classList.add('flex');
+                    editBtn.style.display = 'none';
+                    document.getElementById('imageViewer').src = doc.content;
+                } else if (doc.type === DOC_TYPES.JSON) {
+                    els.containers[2].classList.remove('hidden');
+                    editBtn.style.display = 'flex';
                     document.getElementById('jsonContent').innerHTML = syntaxHighlight(doc.content);
-                }
-                else {
-                    ui.mdContainer.classList.remove('hidden');
-                    ui.editBtn.style.display = 'flex';
+                } else if (doc.type === DOC_TYPES.HTML || doc.type === DOC_TYPES.CODE) {
+                    els.containers[5].classList.remove('hidden');
+                    editBtn.style.display = 'flex';
+                    document.querySelector('#codeContainer pre').textContent = doc.content;
+                } else {
+                    els.containers[0].classList.remove('hidden');
+                    editBtn.style.display = 'flex';
                     document.getElementById('viewBody').innerHTML = marked.parse(doc.content);
                 }
             }
             lucide.createIcons();
         }
 
-        function toggleSidebar(show) {
-            const sidebar = document.getElementById('sidebar');
-            show ? sidebar.classList.remove('-translate-x-full') : sidebar.classList.add('-translate-x-full');
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
-            initDragAndDrop(); 
 
-            document.getElementById('createDocBtn').addEventListener('click', createDoc);
-            document.getElementById('editBtn').addEventListener('click', startEditing);
-            document.getElementById('cancelBtn').addEventListener('click', cancelEditing);
-            document.getElementById('saveBtn').addEventListener('click', saveEditing);
-            document.getElementById('deleteBtn').addEventListener('click', deleteDoc);
-            document.getElementById('downloadBtn').addEventListener('click', downloadDoc);
+            // Event Listeners
+            document.getElementById('openSettingsBtn').onclick = () => document.getElementById('settingsModal').showModal();
             
-            const fileInput = document.getElementById('fileInput');
-            document.getElementById('importDocBtn').addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', handleFileUpload);
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                state.searchQuery = e.target.value;
-                renderSidebar();
+            document.getElementById('filterChips').addEventListener('click', (e) => {
+                if(e.target.tagName === 'BUTTON') {
+                    // Update Active State Visuals (Simplificado para no extender demasiado el código)
+                    state.filterType = e.target.dataset.filter;
+                    renderSidebar();
+                }
             });
-            document.getElementById('openSidebarBtn').addEventListener('click', () => toggleSidebar(true));
-            document.getElementById('closeSidebarBtn').addEventListener('click', () => toggleSidebar(false));
 
-            document.getElementById('prevPage').addEventListener('click', onPrevPage);
-            document.getElementById('nextPage').addEventListener('click', onNextPage);
-            document.getElementById('zoomIn').addEventListener('click', () => onZoom(0.2));
-            document.getElementById('zoomOut').addEventListener('click', () => onZoom(-0.2));
+            // Drag & Drop
+            const overlay = document.getElementById('dropOverlay');
+            let dragCount = 0;
+            document.body.addEventListener('dragenter', (e) => { e.preventDefault(); dragCount++; if(dragCount===1) overlay.classList.remove('hidden'); });
+            document.body.addEventListener('dragleave', (e) => { e.preventDefault(); dragCount--; if(dragCount<=0) { dragCount=0; overlay.classList.add('hidden'); } });
+            document.body.addEventListener('dragover', e => e.preventDefault());
+            document.body.addEventListener('drop', e => { e.preventDefault(); dragCount=0; overlay.classList.add('hidden'); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+
+            document.getElementById('fileInput').onchange = (e) => { processFile(e.target.files[0]); e.target.value=''; };
             
+            // New Doc Modal
+            document.getElementById('openNewDocModalBtn').onclick = () => document.getElementById('newDocModal').showModal();
+            document.getElementById('newDocForm').onsubmit = createNewDocFromModal;
+
+            document.getElementById('importDocBtn').onclick = () => document.getElementById('fileInput').click();
+            document.getElementById('saveBtn').onclick = updateDoc;
+            document.getElementById('editBtn').onclick = () => { state.isEditing=true; updateUI(); };
+            document.getElementById('cancelBtn').onclick = () => { state.isEditing=false; updateUI(); };
+            
+            document.getElementById('searchInput').oninput = (e) => { state.searchQuery=e.target.value; renderSidebar(); };
+            document.getElementById('openSidebarBtn').onclick = () => document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('closeSidebarBtn').onclick = () => document.getElementById('sidebar').classList.add('-translate-x-full');
+
+            const menuBtn = document.getElementById('menuBtn');
+            const menuDropdown = document.getElementById('menuDropdown');
+            menuBtn.addEventListener('click', (e) => { e.stopPropagation(); menuDropdown.classList.toggle('hidden'); });
+            document.addEventListener('click', () => { menuDropdown.classList.add('hidden'); });
+            menuDropdown.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn) return;
+                const action = btn.dataset.action;
+                if (action === 'exportDoc') downloadDoc();
+                else if (action === 'exportAll') exportAllDocs();
+                else if (action === 'importAll') document.getElementById('importAllInput').click();
+                else if (action === 'delete') deleteDoc();
+                menuDropdown.classList.add('hidden');
+            });
+
             lucide.createIcons();
         });
     </script>
