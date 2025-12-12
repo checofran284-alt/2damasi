@@ -231,6 +231,39 @@
         </form>
     </dialog>
 
+    <!-- MODAL AUTH (SUPABASE) -->
+    <dialog id="authModal" class="p-0 rounded-2xl shadow-2xl w-full max-w-sm bg-white dark:bg-slate-800 overflow-hidden">
+    <form id="authForm" method="dialog" class="p-6 space-y-4">
+        <div class="flex items-center justify-between">
+        <h3 class="text-lg font-black text-slate-800 dark:text-white">Supabase</h3>
+        <button type="button" onclick="document.getElementById('authModal').close()"
+            class="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full transition-colors">
+            <i data-lucide="x" class="w-5 h-5 text-gray-500"></i>
+        </button>
+        </div>
+
+        <input id="authEmail" type="email" required placeholder="Email"
+        class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 dark:text-white outline-none">
+
+        <input id="authPass" type="password" required placeholder="Contraseña"
+        class="w-full p-3 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 dark:text-white outline-none">
+
+        <div class="grid grid-cols-2 gap-3 pt-2">
+        <button id="btnSignIn" type="button"
+            class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-primary-600 text-white font-bold">
+            Login
+        </button>
+        <button id="btnSignUp" type="button"
+            class="px-4 py-2 rounded-xl bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 font-bold text-slate-700 dark:text-slate-200">
+            Registro
+        </button>
+        </div>
+
+        <p class="text-xs text-gray-400">Al iniciar sesión se sincronizan tus documentos.</p>
+    </form>
+    </dialog>
+
+
     <!-- OVERLAY DRAG & DROP -->
     <div id="dropOverlay" class="hidden absolute inset-0 z-[100] flex flex-col items-center justify-center border-4 border-primary-500/30 border-dashed m-6 rounded-3xl transition-all pointer-events-none">
         <div class="bg-primary-50 dark:bg-slate-800 p-8 rounded-full mb-6 animate-bounce shadow-2xl">
@@ -295,14 +328,24 @@
             <div class="flex justify-between items-center mb-2">
                 <span class="text-xs font-bold text-gray-500 dark:text-gray-400">Almacenamiento</span>
                 <span id="storageText" class="text-xs font-bold text-primary-600 dark:text-primary-400">0%</span>
-            </div>
-            <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                <div id="storageBar" class="bg-primary-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-            <div class="flex justify-between mt-3">
-                <button id="openSettingsBtn" class="text-xs font-bold text-gray-500 hover:text-primary-600 flex items-center gap-1 transition-colors">
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                    <div id="storageBar" class="bg-primary-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between mt-3 items-center">
+                    <button id="openSettingsBtn" class="text-xs font-bold text-gray-500 hover:text-primary-600 flex items-center gap-1 transition-colors">
                     <i data-lucide="settings" class="w-3 h-3"></i> Ajustes
-                </button>
+                    </button>
+
+                    <div class="flex items-center gap-2">
+                        <button id="btnAuth" class="text-xs font-bold text-gray-500 hover:text-primary-600 transition-colors">
+                        Iniciar sesión
+                        </button>
+                        <button id="btnLogout" class="hidden text-xs font-bold text-red-500 hover:text-red-600 transition-colors">
+                        Salir
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </aside>
@@ -475,243 +518,6 @@
             filterType: 'all',
             pdf: { doc: null, pageNum: 1, pageRendering: false, pageNumPending: null, scale: 1.2, canvas: null, ctx: null }
         };
-
-        // =======================
-        // SUPABASE CONFIG
-        // =======================
-        const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
-        const SUPABASE_ANON_KEY = "TU_ANON_KEY";
-
-        const { createClient } = supabase; // viene del CDN
-        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // :contentReference[oaicite:2]{index=2}
-
-        const SB_BUCKET = "docs";
-        const BIN_TYPES = new Set([DOC_TYPES.PDF, DOC_TYPES.EXCEL, DOC_TYPES.IMAGE]);
-
-        function isBinaryDoc(doc) {
-        return BIN_TYPES.has(doc.type);
-        }
-
-        function dataUrlToBlob(dataUrl) {
-        const [meta, b64] = dataUrl.split(",");
-        const mime = meta.match(/data:(.*?);base64/)?.[1] || "application/octet-stream";
-        const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-        return new Blob([bytes], { type: mime });
-        }
-
-        //PARTE #2
-        async function refreshAuthUI() {
-        const { data } = await sb.auth.getSession();
-        const logged = !!data.session;
-
-        document.getElementById("btnLogout").classList.toggle("hidden", !logged);
-        document.getElementById("btnAuth").textContent = logged ? "Sincronizar" : "Iniciar sesión";
-        }
-
-        async function signUp(email, password) {
-        const { data, error } = await sb.auth.signUp({ email, password }); // :contentReference[oaicite:3]{index=3}
-        if (error) throw error;
-        return data;
-        }
-
-        async function signIn(email, password) {
-        const { data, error } = await sb.auth.signInWithPassword({ email, password }); // :contentReference[oaicite:4]{index=4}
-        if (error) throw error;
-        return data;
-        }
-
-        async function signOut() {
-        const { error } = await sb.auth.signOut();
-        if (error) throw error;
-        }
-
-
-        function safeCategory(cat) {
-        return (cat && cat.trim()) ? cat.trim() : "Sin categoría";
-        }
-
-        //PARTE #3
-        async function syncDownFromSupabase() {
-        const { data: sessionData } = await sb.auth.getSession();
-        const session = sessionData.session;
-        if (!session) {
-            Toast.show("Primero inicia sesión", "error");
-            return;
-        }
-
-        const { data, error } = await sb
-            .from("documents")
-            .select("*")
-            .order("updated_at", { ascending: false });
-
-        if (error) {
-            console.error(error);
-            Toast.show("Error bajando documentos", "error");
-            return;
-        }
-
-        // Convertimos filas a tu formato local
-        const docs = [];
-        for (const row of data) {
-            const doc = {
-            id: row.id,                 // OJO: aquí usamos el id de Supabase como id local (simple)
-            title: row.title,
-            category: safeCategory(row.category),
-            type: row.type,
-            content: row.content || "",
-            lastModified: row.updated_at || row.created_at,
-            size: row.size || 0
-            };
-
-            // Si es binario, generamos URL firmada para visualizar
-            if (row.storage_path) {
-            const { data: signed, error: sErr } = await sb
-                .storage
-                .from(SB_BUCKET)
-                .createSignedUrl(row.storage_path, 60 * 30); // 30 min :contentReference[oaicite:5]{index=5}
-
-            if (!sErr && signed?.signedUrl) {
-                doc.content = signed.signedUrl; // para tu viewer (img/pdf/etc)
-            }
-            }
-
-            docs.push(doc);
-        }
-
-        state.docs = docs;
-        saveToStorage();
-        renderSidebar();
-        if (state.docs[0]) selectDoc(state.docs[0].id);
-        Toast.show("Sincronizado ✓", "success");
-        updateStorageStats();
-        }
-
-        // ---------------------------------------------------------------------------------------------------
-        // PARTE #4
-        async function syncDownFromSupabase() {
-        const { data: sessionData } = await sb.auth.getSession();
-        const session = sessionData.session;
-        if (!session) {
-            Toast.show("Primero inicia sesión", "error");
-            return;
-        }
-
-        const { data, error } = await sb
-            .from("documents")
-            .select("*")
-            .order("updated_at", { ascending: false });
-
-        if (error) {
-            console.error(error);
-            Toast.show("Error bajando documentos", "error");
-            return;
-        }
-
-        // Convertimos filas a tu formato local
-        const docs = [];
-        for (const row of data) {
-            const doc = {
-            id: row.id,                 // OJO: aquí usamos el id de Supabase como id local (simple)
-            title: row.title,
-            category: safeCategory(row.category),
-            type: row.type,
-            content: row.content || "",
-            lastModified: row.updated_at || row.created_at,
-            size: row.size || 0
-            };
-
-            // Si es binario, generamos URL firmada para visualizar
-            if (row.storage_path) {
-            const { data: signed, error: sErr } = await sb
-                .storage
-                .from(SB_BUCKET)
-                .createSignedUrl(row.storage_path, 60 * 30); // 30 min :contentReference[oaicite:5]{index=5}
-
-            if (!sErr && signed?.signedUrl) {
-                doc.content = signed.signedUrl; // para tu viewer (img/pdf/etc)
-            }
-            }
-
-            docs.push(doc);
-        }
-
-        state.docs = docs;
-        saveToStorage();
-        renderSidebar();
-        if (state.docs[0]) selectDoc(state.docs[0].id);
-        Toast.show("Sincronizado ✓", "success");
-        updateStorageStats();
-        }
-
-        // ---------------------------------------------------------------------------------------------------
-        // PARTE #5
-        async function syncUpOneDoc(doc) {
-        const { data: sessionData } = await sb.auth.getSession();
-        const session = sessionData.session;
-        if (!session) return; // si no hay login, trabajas local
-
-        const baseRow = {
-            id: doc.id, // usaremos tu id local como PK en Supabase (uuid)
-            user_id: session.user.id,
-            title: doc.title,
-            category: safeCategory(doc.category),
-            type: doc.type,
-            mime_type: doc.mimeType || null,
-            size: doc.size || null,
-            updated_at: new Date().toISOString()
-        };
-
-        // Binarios -> Storage + guarda storage_path en tabla
-        if (isBinaryDoc(doc)) {
-            // Si doc.content ya es signedUrl, NO sirve para subir.
-            // Para subir, necesitamos DataURL base64 (como cuando importas).
-            // Recomendación: guarda también "rawDataUrl" al importar binarios.
-            const rawDataUrl = doc.rawDataUrl || null;
-            if (!rawDataUrl || !rawDataUrl.startsWith("data:")) {
-            // Si no lo tienes, no podemos re-subir sin volver a importar archivo
-            console.warn("No rawDataUrl para subir binario", doc);
-            } else {
-            const blob = dataUrlToBlob(rawDataUrl);
-            const path = `${session.user.id}/${doc.id}-${doc.title}`.replace(/\s+/g, "_");
-
-            const { error: upErr } = await sb
-                .storage
-                .from(SB_BUCKET)
-                .upload(path, blob, { upsert: true, contentType: blob.type }); // :contentReference[oaicite:6]{index=6}
-
-            if (upErr) throw upErr;
-
-            baseRow.storage_path = path;
-            baseRow.content = null;
-            }
-        } else {
-            // Textos
-            baseRow.content = doc.content;
-            baseRow.storage_path = null;
-        }
-
-        const { error } = await sb.from("documents").upsert(baseRow, { onConflict: "id" });
-        if (error) throw error;
-        }
-
-        // ---------------------------------------------------------------------------------------------------
-        // PARTE #6
-        async function syncDeleteDoc(id) {
-        const { data: sessionData } = await sb.auth.getSession();
-        if (!sessionData.session) return;
-
-        // intentamos recuperar storage_path para borrarlo también
-        const { data, error } = await sb.from("documents").select("storage_path").eq("id", id).maybeSingle();
-        if (!error && data?.storage_path) {
-            await sb.storage.from(SB_BUCKET).remove([data.storage_path]);
-        }
-
-        await sb.from("documents").delete().eq("id", id);
-        }
-
-
-
-
         
         // --- TOAST NOTIFICATIONS ---
         const Toast = {
@@ -879,6 +685,7 @@
                     category: 'Importado',
                     type: docType,
                     content: content,
+                    rawDataUrl: (isPdf || isExcel || isImage) ? content : null, // 👈 nuevo
                     lastModified: new Date().toISOString(),
                     size: file.size
                 };
@@ -918,22 +725,37 @@
             });
         }
 
-        function loadExcelFromData(content) {
-            try {
-                let workbook;
-                if (content.startsWith('data:')) {
-                     const cleanBase64 = content.split(',')[1];
-                     workbook = XLSX.read(cleanBase64, {type: 'base64'});
-                } else {
-                     workbook = XLSX.read(content, {type: 'string'});
-                }
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const html = XLSX.utils.sheet_to_html(worksheet, { id: "excelTable", editable: false });
-                document.getElementById('excelContent').innerHTML = html;
-            } catch (e) {
-                document.getElementById('excelContent').innerHTML = `<p class="text-red-500 p-4">Error al leer Excel.</p>`;
+        async function loadExcelFromData(content) {
+        try {
+            let workbook;
+
+            // Caso 1: DataURL base64 (local)
+            if (typeof content === "string" && content.startsWith("data:")) {
+            const cleanBase64 = content.split(",")[1];
+            workbook = XLSX.read(cleanBase64, { type: "base64" });
             }
+            // Caso 2: URL (Supabase signed URL)
+            else if (typeof content === "string" && /^https?:\/\//.test(content)) {
+            const res = await fetch(content);
+            if (!res.ok) throw new Error("No se pudo descargar el Excel desde Supabase");
+            const buf = await res.arrayBuffer();
+            workbook = XLSX.read(buf, { type: "array" });
+            }
+            // Caso 3: texto csv plano u otro
+            else {
+            workbook = XLSX.read(content, { type: "string" });
+            }
+
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const html = XLSX.utils.sheet_to_html(worksheet, { id: "excelTable", editable: false });
+            document.getElementById("excelContent").innerHTML = html;
+        } catch (e) {
+            console.error(e);
+            document.getElementById("excelContent").innerHTML =
+            `<p class="text-red-500 p-4">Error al leer Excel.</p>`;
         }
+        }
+
 
         function renderPdfPage(num) {
             state.pdf.pageRendering = true;
@@ -1223,6 +1045,283 @@
 
             lucide.createIcons();
         });
+
+/* =========================
+   SUPABASE (AUTH + STORAGE + DB + SYNC)
+   ========================= */
+
+const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+const SUPABASE_ANON_KEY = "TU_ANON_KEY";
+const SUPABASE_BUCKET = "docs";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let sbUser = null;
+
+/* ---------- Utils ---------- */
+function isDataUrl(v){ return typeof v === "string" && v.startsWith("data:"); }
+
+function dataUrlToBlob(dataUrl){
+  const [header, base64] = dataUrl.split(",");
+  const mime = header.match(/data:(.*?);base64/)?.[1] || "application/octet-stream";
+  const bytes = atob(base64);
+  const arr = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+
+function extFromDoc(doc){
+  const t = doc?.type;
+  if (t === "pdf") return "pdf";
+  if (t === "excel") return "xlsx";
+  if (t === "image") return "png";
+  if (t === "json") return "json";
+  if (t === "markdown") return "md";
+  if (t === "html") return "html";
+  if (t === "code") return "txt";
+  return "txt";
+}
+
+function isBinaryDoc(doc){
+  return isDataUrl(doc?.content) && (doc.type === "pdf" || doc.type === "excel" || doc.type === "image");
+}
+
+function setAuthUI(logged){
+  const btnAuth = document.getElementById("btnAuth");
+  const btnLogout = document.getElementById("btnLogout");
+  if (!btnAuth || !btnLogout) return;
+
+  if (logged) {
+    btnAuth.innerHTML = `<i data-lucide="user" class="w-3 h-3"></i> Cuenta`;
+    btnLogout.classList.remove("hidden");
+  } else {
+    btnAuth.innerHTML = `<i data-lucide="log-in" class="w-3 h-3"></i> Iniciar sesión`;
+    btnLogout.classList.add("hidden");
+  }
+  lucide.createIcons();
+}
+
+/* ---------- Storage ---------- */
+async function uploadBinaryToStorage(doc){
+  const blob = dataUrlToBlob(doc.content);
+  const path = `${sbUser.id}/${doc.id}.${extFromDoc(doc)}`;
+
+  const { error } = await sb.storage.from(SUPABASE_BUCKET).upload(path, blob, {
+    upsert: true,
+    contentType: blob.type
+  });
+  if (error) throw error;
+  return path;
+}
+
+async function removeBinaryFromStorage(storagePath){
+  if (!storagePath) return;
+  const { error } = await sb.storage.from(SUPABASE_BUCKET).remove([storagePath]);
+  if (error) console.warn("Storage remove:", error.message);
+}
+
+async function signedUrl(storagePath, seconds = 3600){
+  const { data, error } = await sb.storage.from(SUPABASE_BUCKET).createSignedUrl(storagePath, seconds);
+  if (error) throw error;
+  return data.signedUrl;
+}
+
+/* ---------- DB ---------- */
+async function upsertDocToDB(doc){
+  if (!sbUser) return;
+
+  let content = doc.content ?? "";
+  let storage_path = doc.storage_path || null;
+
+  // Binarios (pdf/excel/img) => Storage
+  if (isBinaryDoc(doc)) {
+    storage_path = await uploadBinaryToStorage(doc);
+    content = null;
+  }
+
+  const payload = {
+    id: doc.id,
+    user_id: sbUser.id,
+    title: doc.title || "Sin título",
+    category: doc.category || "General",
+    type: doc.type,
+    content,
+    storage_path,
+    size: doc.size || (typeof doc.content === "string" ? doc.content.length : 0),
+    last_modified: doc.lastModified || new Date().toISOString()
+  };
+
+  const { error } = await sb.from("documents").upsert(payload, { onConflict: "id" });
+  if (error) throw error;
+
+  if (storage_path && doc.storage_path !== storage_path) {
+    // guardar storage_path en local
+    const idx = state.docs.findIndex(d => d.id === doc.id);
+    if (idx !== -1) state.docs[idx].storage_path = storage_path;
+    saveToStorage();
+  }
+}
+
+async function deleteDocFromDB(doc){
+  if (!sbUser || !doc) return;
+
+  if (doc.storage_path) await removeBinaryFromStorage(doc.storage_path);
+
+  const { error } = await sb
+    .from("documents")
+    .delete()
+    .eq("id", doc.id)
+    .eq("user_id", sbUser.id);
+
+  if (error) throw error;
+}
+
+async function fetchAllDocsFromDB(){
+  const { data, error } = await sb
+    .from("documents")
+    .select("*")
+    .eq("user_id", sbUser.id)
+    .order("last_modified", { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+/* ---------- Sync Down ---------- */
+async function syncDown(){
+  if (!sbUser) return;
+
+  Toast.show("Sincronizando con Supabase…", "info");
+
+  const rows = await fetchAllDocsFromDB();
+  const mapped = [];
+
+  for (const r of rows) {
+    let content = r.content ?? "";
+
+    // si está en storage => url firmada
+    if (r.storage_path) {
+      content = await signedUrl(r.storage_path, 3600);
+    }
+
+    mapped.push({
+      id: r.id,
+      title: r.title,
+      category: r.category,
+      type: r.type,
+      content,
+      storage_path: r.storage_path,
+      lastModified: r.last_modified,
+      size: r.size || 0
+    });
+  }
+
+  state.docs = mapped;
+  saveToStorage();
+  renderSidebar();
+  if (state.docs[0]) selectDoc(state.docs[0].id);
+  updateUI();
+
+  Toast.show("Sincronización lista ✅", "success");
+}
+
+/* ---------- Patch DocRepo (sube cambios) ---------- */
+(function patchDocRepo(){
+  if (!window.DocRepo) return;
+
+  const _add = DocRepo.add.bind(DocRepo);
+  const _update = DocRepo.update.bind(DocRepo);
+  const _remove = DocRepo.remove.bind(DocRepo);
+
+  DocRepo.add = function(doc){
+    _add(doc);
+    if (sbUser) upsertDocToDB(doc).catch(e => Toast.show(e.message || "Error subiendo", "error"));
+  };
+
+  DocRepo.update = function(id, changes){
+    _update(id, changes);
+    const doc = state.docs.find(d => d.id === id);
+    if (sbUser && doc) upsertDocToDB(doc).catch(e => Toast.show(e.message || "Error actualizando", "error"));
+  };
+
+  DocRepo.remove = function(id){
+    const doc = state.docs.find(d => d.id === id);
+    _remove(id);
+    if (sbUser && doc) deleteDocFromDB(doc).catch(e => Toast.show(e.message || "Error eliminando", "error"));
+  };
+})();
+
+/* ---------- Auth ---------- */
+async function refreshSession(){
+  const { data } = await sb.auth.getSession();
+  sbUser = data.session?.user || null;
+  setAuthUI(!!sbUser);
+  return sbUser;
+}
+
+async function signIn(email, pass){
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) throw error;
+  await refreshSession();
+  await syncDown();
+}
+
+async function signUp(email, pass){
+  const { error } = await sb.auth.signUp({ email, password: pass });
+  if (error) throw error;
+  Toast.show("Registro OK. Si pide confirmación, mira tu email.", "info");
+  await refreshSession();
+  if (sbUser) await syncDown();
+}
+
+async function signOut(){
+  await sb.auth.signOut();
+  sbUser = null;
+  setAuthUI(false);
+  Toast.show("Sesión cerrada", "info");
+}
+
+/* ---------- Bind UI ---------- */
+document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("btnAuth")?.addEventListener("click", () => {
+    document.getElementById("authModal")?.showModal();
+  });
+  document.getElementById("btnLogout")?.addEventListener("click", () => signOut());
+
+  const getCreds = () => ({
+    email: (document.getElementById("authEmail")?.value || "").trim(),
+    pass: document.getElementById("authPass")?.value || ""
+  });
+
+  document.getElementById("btnSignIn")?.addEventListener("click", async () => {
+    try {
+      const { email, pass } = getCreds();
+      await signIn(email, pass);
+      document.getElementById("authModal")?.close();
+      Toast.show("Sesión iniciada ✅", "success");
+    } catch (e) {
+      Toast.show(e?.message || "Error login", "error");
+    }
+  });
+
+  document.getElementById("btnSignUp")?.addEventListener("click", async () => {
+    try {
+      const { email, pass } = getCreds();
+      await signUp(email, pass);
+      document.getElementById("authModal")?.close();
+    } catch (e) {
+      Toast.show(e?.message || "Error registro", "error");
+    }
+  });
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    sbUser = session?.user || null;
+    setAuthUI(!!sbUser);
+  });
+
+  await refreshSession();
+  if (sbUser) await syncDown();
+});
+
     </script>
 </body>
 </html>
