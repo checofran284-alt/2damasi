@@ -444,6 +444,7 @@
                                 <div class="w-px h-5 bg-gray-200 dark:bg-slate-600 mx-2"></div>
                                 <button id="zoomOut" class="hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl dark:text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button>
                                 <button id="zoomIn" class="hover:bg-gray-100 dark:hover:bg-slate-700 p-2 rounded-xl dark:text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                <span id="zoomLevel" class="text-xs font-mono font-bold text-slate-500 dark:text-slate-300 ml-2">120%</span>
                             </div>
                             <canvas id="the-canvas" class="shadow-2xl border border-gray-200 dark:border-slate-600 bg-white rounded-lg"></canvas>
                         </div>
@@ -606,6 +607,8 @@
                 updateStorageStats();
             }
         };
+
+        window.DocRepo = DocRepo;
 
         const INITIAL_DOCS = [
             {
@@ -991,63 +994,45 @@
             lucide.createIcons();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initApp();
+        function exportAllDocs() {
+        const payload = {
+            exportedAt: new Date().toISOString(),
+            docs: state.docs
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `linked-visor-backup-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        }
 
-            // Event Listeners
-            document.getElementById('openSettingsBtn').onclick = () => document.getElementById('settingsModal').showModal();
-            
-            document.getElementById('filterChips').addEventListener('click', (e) => {
-                if(e.target.tagName === 'BUTTON') {
-                    // Update Active State Visuals (Simplificado para no extender demasiado el código)
-                    state.filterType = e.target.dataset.filter;
-                    renderSidebar();
-                }
-            });
+        function importAllDocs(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+            const json = JSON.parse(e.target.result);
+            const docs = Array.isArray(json?.docs) ? json.docs : (Array.isArray(json) ? json : null);
+            if (!docs) throw new Error("Formato de backup inválido");
 
-            // Drag & Drop
-            const overlay = document.getElementById('dropOverlay');
-            let dragCount = 0;
-            document.body.addEventListener('dragenter', (e) => { e.preventDefault(); dragCount++; if(dragCount===1) overlay.classList.remove('hidden'); });
-            document.body.addEventListener('dragleave', (e) => { e.preventDefault(); dragCount--; if(dragCount<=0) { dragCount=0; overlay.classList.add('hidden'); } });
-            document.body.addEventListener('dragover', e => e.preventDefault());
-            document.body.addEventListener('drop', e => { e.preventDefault(); dragCount=0; overlay.classList.add('hidden'); if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+            state.docs = docs;
+            saveToStorage();
+            renderSidebar();
+            if (state.docs[0]) selectDoc(state.docs[0].id);
+            updateUI();
+            updateStorageStats();
+            Toast.show("Backup importado ✅", "success");
+            } catch (err) {
+            Toast.show(err.message || "Error importando backup", "error");
+            }
+        };
+        reader.readAsText(file);
+        }
 
-            document.getElementById('fileInput').onchange = (e) => { processFile(e.target.files[0]); e.target.value=''; };
-            
-            // New Doc Modal
-            document.getElementById('openNewDocModalBtn').onclick = () => document.getElementById('newDocModal').showModal();
-            document.getElementById('newDocForm').onsubmit = createNewDocFromModal;
 
-            document.getElementById('importDocBtn').onclick = () => document.getElementById('fileInput').click();
-            document.getElementById('saveBtn').onclick = updateDoc;
-            document.getElementById('editBtn').onclick = () => { state.isEditing=true; updateUI(); };
-            document.getElementById('cancelBtn').onclick = () => { state.isEditing=false; updateUI(); };
-            
-            document.getElementById('searchInput').oninput = (e) => { state.searchQuery=e.target.value; renderSidebar(); };
-            document.getElementById('openSidebarBtn').onclick = () => document.getElementById('sidebar').classList.remove('-translate-x-full');
-            document.getElementById('closeSidebarBtn').onclick = () => document.getElementById('sidebar').classList.add('-translate-x-full');
-
-            const menuBtn = document.getElementById('menuBtn');
-            const menuDropdown = document.getElementById('menuDropdown');
-            menuBtn.addEventListener('click', (e) => { e.stopPropagation(); menuDropdown.classList.toggle('hidden'); });
-            document.addEventListener('click', () => { menuDropdown.classList.add('hidden'); });
-            menuDropdown.addEventListener('click', (e) => {
-                const btn = e.target.closest('button[data-action]');
-                if (!btn) return;
-                const action = btn.dataset.action;
-                if (action === 'exportDoc') downloadDoc();
-                else if (action === 'exportAll') exportAllDocs();
-                else if (action === 'importAll') document.getElementById('importAllInput').click();
-                else if (action === 'delete') deleteDoc();
-                menuDropdown.classList.add('hidden');
-            });
-
-            lucide.createIcons();
-        });
-
-/* =========================
-   SUPABASE (AUTH + STORAGE + DB + SYNC)
+        /* =========================
+   SUPABASE (AUTH + STORAGE + DB + SYNC) - FINAL
    ========================= */
 
 const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
@@ -1081,8 +1066,12 @@ function extFromDoc(doc){
   return "txt";
 }
 
+function isBinaryType(doc){
+  return doc?.type === "pdf" || doc?.type === "excel" || doc?.type === "image";
+}
+
 function isBinaryDoc(doc){
-  return isDataUrl(doc?.content) && (doc.type === "pdf" || doc.type === "excel" || doc.type === "image");
+  return isDataUrl(doc?.content) && isBinaryType(doc);
 }
 
 function setAuthUI(logged){
@@ -1091,10 +1080,10 @@ function setAuthUI(logged){
   if (!btnAuth || !btnLogout) return;
 
   if (logged) {
-    btnAuth.innerHTML = `<i data-lucide="user" class="w-3 h-3"></i> Cuenta`;
+    btnAuth.innerHTML = `<span class="inline-flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> Cuenta</span>`;
     btnLogout.classList.remove("hidden");
   } else {
-    btnAuth.innerHTML = `<i data-lucide="log-in" class="w-3 h-3"></i> Iniciar sesión`;
+    btnAuth.innerHTML = `<span class="inline-flex items-center gap-1"><i data-lucide="log-in" class="w-3 h-3"></i> Iniciar sesión</span>`;
     btnLogout.classList.add("hidden");
   }
   lucide.createIcons();
@@ -1132,9 +1121,12 @@ async function upsertDocToDB(doc){
   let content = doc.content ?? "";
   let storage_path = doc.storage_path || null;
 
-  // Binarios (pdf/excel/img) => Storage
   if (isBinaryDoc(doc)) {
     storage_path = await uploadBinaryToStorage(doc);
+    content = null;
+  }
+
+  if (isBinaryType(doc) && storage_path && !isDataUrl(doc.content)) {
     content = null;
   }
 
@@ -1147,14 +1139,13 @@ async function upsertDocToDB(doc){
     content,
     storage_path,
     size: doc.size || (typeof doc.content === "string" ? doc.content.length : 0),
-    last_modified: doc.lastModified || new Date().toISOString()
+    updated_at: doc.lastModified || new Date().toISOString()
   };
 
   const { error } = await sb.from("documents").upsert(payload, { onConflict: "id" });
   if (error) throw error;
 
   if (storage_path && doc.storage_path !== storage_path) {
-    // guardar storage_path en local
     const idx = state.docs.findIndex(d => d.id === doc.id);
     if (idx !== -1) state.docs[idx].storage_path = storage_path;
     saveToStorage();
@@ -1180,7 +1171,7 @@ async function fetchAllDocsFromDB(){
     .from("documents")
     .select("*")
     .eq("user_id", sbUser.id)
-    .order("last_modified", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   if (error) throw error;
   return data || [];
@@ -1197,11 +1188,7 @@ async function syncDown(){
 
   for (const r of rows) {
     let content = r.content ?? "";
-
-    // si está en storage => url firmada
-    if (r.storage_path) {
-      content = await signedUrl(r.storage_path, 3600);
-    }
+    if (r.storage_path) content = await signedUrl(r.storage_path, 3600);
 
     mapped.push({
       id: r.id,
@@ -1210,7 +1197,7 @@ async function syncDown(){
       type: r.type,
       content,
       storage_path: r.storage_path,
-      lastModified: r.last_modified,
+      lastModified: r.updated_at,
       size: r.size || 0
     });
   }
@@ -1220,11 +1207,12 @@ async function syncDown(){
   renderSidebar();
   if (state.docs[0]) selectDoc(state.docs[0].id);
   updateUI();
+  updateStorageStats();
 
   Toast.show("Sincronización lista ✅", "success");
 }
 
-/* ---------- Patch DocRepo (sube cambios) ---------- */
+/* ---------- Patch DocRepo ---------- */
 (function patchDocRepo(){
   if (!window.DocRepo) return;
 
@@ -1280,36 +1268,172 @@ async function signOut(){
   Toast.show("Sesión cerrada", "info");
 }
 
-/* ---------- Bind UI ---------- */
+/* ======================
+   DOMContentLoaded (ÚNICO) — AL FINAL
+   ====================== */
 document.addEventListener("DOMContentLoaded", async () => {
+  initApp();
+
+  // ... (TU BLOQUE DE LISTENERS TAL CUAL)
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    sbUser = session?.user || null;
+    setAuthUI(!!sbUser);
+  });
+
+  await refreshSession();
+  if (sbUser) await syncDown();
+
+  lucide.createIcons();
+});
+
+    document.addEventListener("DOMContentLoaded", async () => {
+  /* ======================
+     INIT APP
+  ====================== */
+  initApp();
+
+  /* ======================
+     UI – AJUSTES / FILTROS
+  ====================== */
+  document.getElementById('openSettingsBtn').onclick = () =>
+    document.getElementById('settingsModal').showModal();
+
+  document.getElementById('filterChips').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-filter]');
+    if (!btn) return;
+    state.filterType = btn.dataset.filter;
+    renderSidebar();
+  });
+
+  /* ======================
+     BACKUP IMPORT / EXPORT
+  ====================== */
+  document.getElementById('importAllInput').onchange = (e) => {
+    const f = e.target.files?.[0];
+    if (f) importAllDocs(f);
+    e.target.value = '';
+  };
+
+  /* ======================
+     DRAG & DROP
+  ====================== */
+  const overlay = document.getElementById('dropOverlay');
+  let dragCount = 0;
+
+  document.body.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    dragCount++;
+    if (dragCount === 1) overlay.classList.remove('hidden');
+  });
+
+  document.body.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dragCount--;
+    if (dragCount <= 0) {
+      dragCount = 0;
+      overlay.classList.add('hidden');
+    }
+  });
+
+  document.body.addEventListener('dragover', e => e.preventDefault());
+
+  document.body.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragCount = 0;
+    overlay.classList.add('hidden');
+    if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+  });
+
+  document.getElementById('fileInput').onchange = (e) => {
+    processFile(e.target.files[0]);
+    e.target.value = '';
+  };
+
+  /* ======================
+     NUEVO DOC / EDICIÓN
+  ====================== */
+  document.getElementById('openNewDocModalBtn').onclick = () =>
+    document.getElementById('newDocModal').showModal();
+
+  document.getElementById('newDocForm').onsubmit = createNewDocFromModal;
+
+  document.getElementById('importDocBtn').onclick = () =>
+    document.getElementById('fileInput').click();
+
+  document.getElementById('saveBtn').onclick = updateDoc;
+  document.getElementById('editBtn').onclick = () => { state.isEditing = true; updateUI(); };
+  document.getElementById('cancelBtn').onclick = () => { state.isEditing = false; updateUI(); };
+
+  /* ======================
+     SEARCH / SIDEBAR
+  ====================== */
+  document.getElementById('searchInput').oninput = (e) => {
+    state.searchQuery = e.target.value;
+    renderSidebar();
+  };
+
+  document.getElementById('openSidebarBtn').onclick = () =>
+    document.getElementById('sidebar').classList.remove('-translate-x-full');
+
+  document.getElementById('closeSidebarBtn').onclick = () =>
+    document.getElementById('sidebar').classList.add('-translate-x-full');
+
+  /* ======================
+     MENU CONTEXTUAL
+  ====================== */
+  const menuBtn = document.getElementById('menuBtn');
+  const menuDropdown = document.getElementById('menuDropdown');
+
+  menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menuDropdown.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', () => menuDropdown.classList.add('hidden'));
+
+  menuDropdown.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    if (action === 'exportDoc') downloadDoc();
+    else if (action === 'exportAll') exportAllDocs();
+    else if (action === 'importAll') document.getElementById('importAllInput').click();
+    else if (action === 'delete') deleteDoc();
+
+    menuDropdown.classList.add('hidden');
+  });
+
+  /* ======================
+     SUPABASE – AUTH
+  ====================== */
   document.getElementById("btnAuth")?.addEventListener("click", () => {
     document.getElementById("authModal")?.showModal();
   });
-  document.getElementById("btnLogout")?.addEventListener("click", () => signOut());
 
-  const getCreds = () => ({
-    email: (document.getElementById("authEmail")?.value || "").trim(),
-    pass: document.getElementById("authPass")?.value || ""
-  });
+  document.getElementById("btnLogout")?.addEventListener("click", () => signOut());
 
   document.getElementById("btnSignIn")?.addEventListener("click", async () => {
     try {
-      const { email, pass } = getCreds();
+      const email = document.getElementById("authEmail").value.trim();
+      const pass = document.getElementById("authPass").value;
       await signIn(email, pass);
-      document.getElementById("authModal")?.close();
+      document.getElementById("authModal").close();
       Toast.show("Sesión iniciada ✅", "success");
     } catch (e) {
-      Toast.show(e?.message || "Error login", "error");
+      Toast.show(e.message || "Error login", "error");
     }
   });
 
   document.getElementById("btnSignUp")?.addEventListener("click", async () => {
     try {
-      const { email, pass } = getCreds();
+      const email = document.getElementById("authEmail").value.trim();
+      const pass = document.getElementById("authPass").value;
       await signUp(email, pass);
-      document.getElementById("authModal")?.close();
+      document.getElementById("authModal").close();
     } catch (e) {
-      Toast.show(e?.message || "Error registro", "error");
+      Toast.show(e.message || "Error registro", "error");
     }
   });
 
@@ -1320,6 +1444,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await refreshSession();
   if (sbUser) await syncDown();
+
+  lucide.createIcons();
 });
 
     </script>
