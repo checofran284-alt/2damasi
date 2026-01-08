@@ -2,19 +2,34 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Callisto: Protocolo Hierro Negro - Edición Definitiva</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Callisto: Protocolo Hierro Negro - UI Holográfica</title>
+
+    <!-- Cinematic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Oswald:wght@300;400&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
-            --comic-border: 4px solid #111;
-            --accent: #00ffcc;
-            --danger: #ff3300;
-            --bg-dark: #020202;
-            --panel-bg: #0a0a0a;
-            --text: #e0e0e0;
-            --font-main: 'Segoe UI', 'Roboto', sans-serif;
-            --hud-glow: 0 0 15px rgba(0, 255, 204, 0.4);
+            /* THEME: HOLOGRAPHIC PRISON UI */
+            --bg-color: #050505;
+            --holo-blue: #00f0ff;
+            --holo-orange: #ff4d00;
+            --holo-green: #0aff0a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #9aa0a6;
+
+            --font-header: 'Orbitron', sans-serif;
+            --font-ui: 'Rajdhani', sans-serif;
+            --font-narrative: 'Rajdhani', sans-serif;
+            /* Cleaner than monospace for this style */
+
+            --glass-bg: rgba(10, 15, 20, 0.85);
+            --border-glow: 0 0 10px rgba(0, 240, 255, 0.2);
         }
 
         * {
@@ -24,16 +39,17 @@
         }
 
         body {
-            background-color: #050505;
+            background-color: var(--bg-color);
+            /* THEME: CALLISTO MAIN MENU - Dark, foggy, prison structure */
             background-image:
-                linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)),
-                url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1920&auto=format&fit=crop');
-            /* Dark Sci-Fi Texture */
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+                url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1920&auto=format&fit=crop');
+            /* More industrial/foggy */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            font-family: var(--font-main);
-            color: var(--text);
+            font-family: var(--font-ui);
+            color: var(--text-primary);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -42,7 +58,7 @@
             position: relative;
         }
 
-        /* Efecto Scanlines Global */
+        /* Scanlines & Vignette */
         body::before {
             content: "";
             position: fixed;
@@ -50,46 +66,51 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            /* Thicker scanlines */
             pointer-events: none;
-            z-index: 100;
+            z-index: 90;
+            opacity: 0.4;
         }
 
-        /* Viñeta para oscurecer bordes */
         body::after {
             content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, transparent 50%, black 100%);
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, #000 100%);
             pointer-events: none;
-            z-index: 90;
+            z-index: 89;
         }
 
         #app {
             width: 95%;
-            max-width: 1000px;
-            background: rgba(10, 12, 12, 0.95);
-            border: 1px solid #444;
-            padding: 25px;
+            max-width: 1100px;
+            background: rgba(5, 8, 10, 0.85);
+            /* Darker glass */
+            border: 1px solid rgba(255, 255, 255, 0.08);
             position: relative;
-            box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
             margin: 20px;
             overflow: hidden;
-            backdrop-filter: blur(5px);
-            z-index: 10;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            min-height: 650px;
+            /* Taller for presence */
         }
 
-        /* Pantallas */
         .screen {
             display: none;
             flex-direction: column;
-            align-items: center;
-            animation: fadeIn 0.8s ease-in;
             width: 100%;
+            height: 100%;
+            padding: 40px;
+            animation: fadeIn 0.8s ease-out;
+            flex: 1;
+            align-items: center;
+            /* FORCED SYMMETRY */
         }
 
         .screen.active {
@@ -97,73 +118,134 @@
         }
 
         h1 {
-            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            font-family: var(--font-header);
+            font-size: clamp(2rem, 5vw, 4rem);
             text-transform: uppercase;
             color: #fff;
-            letter-spacing: 8px;
-            margin-bottom: 20px;
+            letter-spacing: 4px;
+            margin-bottom: 30px;
             text-align: center;
-            border-left: 5px solid var(--danger);
-            padding-left: 20px;
+            text-shadow: 0 0 8px var(--holo-blue);
         }
 
-        /* Selección de Personajes (Mejorada sin espacios) */
+        h2 {
+            font-family: var(--font-header);
+            color: var(--holo-orange);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        /* HOLOGRAPHIC BUTTONS */
+        button {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Full border for symmetry */
+            color: var(--text-secondary);
+            padding: 15px 25px;
+            font-family: var(--font-header);
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-align: center;
+            /* CENTER TEXT */
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            position: relative;
+            margin-bottom: 12px;
+            width: 100%;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            /* Tech shape */
+        }
+
+        button:hover:not(:disabled) {
+            color: #000;
+            /* High contrast hover */
+            background: var(--holo-blue);
+            box-shadow: 0 0 20px var(--holo-blue);
+            border-color: var(--holo-blue);
+            padding-left: 25px;
+            /* No shift */
+            text-shadow: none;
+        }
+
+        button:active:not(:disabled) {
+            transform: scale(0.99);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-left-color: #333;
+        }
+
+        button.unlocked-btn {
+            border-left-color: #ffd700;
+            color: #ffd700;
+        }
+
+        button.unlocked-btn:hover {
+            text-shadow: 0 0 8px #ffd700;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+        }
+
+        /* CHARACTER SELECTION */
         .carousel {
             display: flex;
             gap: 20px;
             justify-content: center;
-            /* Centrado para evitar espacios vacíos */
             flex-wrap: wrap;
-            padding: 20px 0;
             width: 100%;
         }
 
         .char-card {
             flex: 0 1 300px;
-            background: #111;
-            border: 4px solid #000;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
             cursor: pointer;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            transition: all 0.3s ease;
             position: relative;
-            box-shadow: 8px 8px 0px #222;
         }
 
         .char-card:hover {
-            border-color: #fff;
-            transform: translate(-4px, -4px);
-            box-shadow: 12px 12px 0px var(--accent);
+            border-color: var(--holo-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            transform: translateY(-5px);
         }
 
         .char-card.selected {
-            border-color: var(--accent);
-            background: #001a1a;
-            box-shadow: 12px 12px 0px var(--accent);
+            border-color: var(--holo-orange);
+            box-shadow: 0 0 20px rgba(255, 77, 0, 0.2);
+            background: rgba(255, 77, 0, 0.05);
         }
 
         .char-img-container {
             width: 100%;
-            height: 220px;
-            background: #000;
-            border-bottom: 1px solid #333;
+            height: 250px;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Overlay on images to make them fit the theme */
+        .char-img-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #000, transparent 40%);
         }
 
         .char-img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: url('#comic-filter') contrast(110%);
+            filter: grayscale(80%) contrast(1.2);
+            /* Desaturated sci-fi look */
             transition: all 0.5s ease;
-            mix-blend-mode: normal;
         }
 
-        .char-card:hover .char-img {
-            transform: scale(1.05);
-            filter: none;
-            /* Al pasar el mouse, mostrar a color real */
+        .char-card:hover .char-img,
+        .char-card.selected .char-img {
+            filter: grayscale(20%) contrast(1.1);
         }
 
         .char-info {
@@ -171,44 +253,157 @@
         }
 
         .char-name {
-            font-size: 1.6rem;
-            color: var(--accent);
-            font-weight: bold;
-            text-transform: uppercase;
+            font-family: var(--font-header);
+            font-size: 1.4rem;
+            color: var(--holo-blue);
             margin-bottom: 5px;
         }
 
-        /* Marco del Cómic */
+        .char-card.selected .char-name {
+            color: var(--holo-orange);
+        }
+
+        /* GAME SCREEN - HOLOGRAPHIC FRAME */
         .comic-frame {
+            /* Renamed visually but keeping class for JS compatibility */
             width: 100%;
-            border: 3px solid #000;
+            display: grid;
+            gap: 20px;
+        }
+
+        .panels-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        @media (min-width: 860px) {
+            .panels-grid.cols-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .panels-grid.cols-3 {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .panel {
+            border: 1px solid rgba(255, 255, 255, 0.15);
             background: #000;
             position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
         }
 
-        .image-container {
-            width: 100%;
-            height: clamp(300px, 55vh, 480px);
-            position: relative;
-            background: #050505;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Corner markers for tech feel */
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            border-top: 2px solid var(--holo-blue);
+            border-left: 2px solid var(--holo-blue);
+            z-index: 10;
         }
 
-        #sceneImg {
+        .panel::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            border-bottom: 2px solid var(--holo-blue);
+            border-right: 2px solid var(--holo-blue);
+            z-index: 10;
+        }
+
+        .panel-img {
             width: 100%;
-            height: 100%;
+            height: clamp(220px, 40vh, 400px);
             object-fit: cover;
-            transition: opacity 1.2s ease-in-out;
-            filter: url('#comic-filter') contrast(120%);
+            opacity: 0.9;
+            filter: brightness(0.9) contrast(1.1);
+            /* Slightly dark tech look */
+            display: block;
         }
 
+        .panel-sfx {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-family: var(--font-header);
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--holo-orange);
+            text-shadow: 0 0 5px rgba(255, 77, 0, 0.8);
+            letter-spacing: 2px;
+            /* Less comic bubble, more HUD warning */
+            text-transform: uppercase;
+        }
+
+        .narrative-panel {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 3px solid var(--holo-orange);
+            padding: 20px;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            line-height: 1.5;
+            min-height: 100px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .char-label {
+            display: inline-block;
+            background: var(--holo-blue);
+            color: #000;
+            padding: 2px 8px;
+            font-family: var(--font-header);
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .choices-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-controls button {
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            /* Reset heavy left border */
+            width: auto;
+            flex: 1;
+        }
+
+        .nav-controls button:hover {
+            padding-left: 25px;
+            /* Less shift than main buttons */
+            border-color: var(--holo-blue);
+        }
+
+        /* UTILS */
         .loading-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: #000;
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -223,101 +418,11 @@
         .scanline {
             width: 100%;
             height: 2px;
-            background: var(--accent);
-            opacity: 0.3;
+            background: var(--holo-blue);
+            opacity: 0.5;
             position: absolute;
             top: 0;
             animation: scan 2s linear infinite;
-        }
-
-        .narrative-panel {
-            background: #0f0f0f;
-            padding: 25px;
-            border: 3px solid #eee;
-            border-top: none;
-            font-size: 1.25rem;
-            line-height: 1.6;
-            color: #000;
-            min-height: 130px;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            background-image: linear-gradient(#fff 2px, transparent 2px), linear-gradient(90deg, #fff 2px, transparent 2px);
-            background-size: 100% 3px, 3px 100%;
-            background-color: #e0e0e0;
-            /* Papel sucio */
-            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .char-label {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: var(--danger);
-            color: #fff;
-            padding: 5px 15px;
-            font-size: 1rem;
-            font-weight: 900;
-            border: 3px solid #000;
-            transform: rotate(-2deg);
-            z-index: 10;
-            box-shadow: 3px 3px 0 #000;
-        }
-
-        .choices-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 15px;
-            background: #050505;
-        }
-
-        /* Globals para Comic Style */
-        .comic-border {
-            border: 4px solid #111;
-            box-shadow: 5px 5px 0px #222;
-        }
-
-        button {
-            background: #111;
-            color: #fff;
-            border: 2px solid #ccc;
-            padding: 14px;
-            font-size: 0.95rem;
-            font-weight: 800;
-            /* Extra bold */
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
-            letter-spacing: 1px;
-            font-family: 'Courier New', monospace;
-            /* Fuente más técnica/comic */
-            box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.2);
-        }
-
-        button:hover:not(:disabled) {
-            background: #fff;
-            border-color: #000;
-            color: #000;
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px var(--danger);
-        }
-
-        button.unlocked-btn {
-            border-color: #ffd700;
-            color: #ffd700;
-            animation: pulse-gold 2s infinite;
-        }
-
-        button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .nav-controls {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            gap: 10px;
         }
 
         @keyframes scan {
@@ -340,27 +445,20 @@
             }
         }
 
-        @keyframes pulse-gold {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
-            }
+        #end-screen {
+            justify-content: center;
+            text-align: center;
+        }
 
-            70% {
-                box-shadow: 0 0 0 15px rgba(255, 215, 0, 0);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
-            }
+        #endTitle {
+            font-size: 3rem;
+            color: var(--holo-orange);
+            text-shadow: 0 0 10px var(--holo-orange);
         }
 
         @media (max-width: 600px) {
-            .choices-grid {
-                grid-template-columns: 1fr;
-            }
-
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
 
             .char-card {
@@ -373,333 +471,487 @@
 <body>
 
     <div id="app">
-        <!-- SVG FILTERS DEFINITION -->
+        <!-- SVG Filter reserved but not used aggressively in this style -->
         <svg style="display: none;">
             <defs>
                 <filter id="comic-filter">
-                    <!-- 1. Ajuste de Color y Contraste suave -->
-                    <feColorMatrix type="matrix" values="
-                        1.2 0   0   0   -0.1
-                        0   1.1 0   0   -0.1
-                        0   0   1.3 0   -0.1
-                        0   0   0   1   0 " />
-
-                    <!-- 2. Desaturación parcial (No total) -->
-                    <feColorMatrix type="saturate" values="0.2" />
-
-                    <!-- 3. Enfoque / Nitidez (Simular trazo) -->
-                    <feConvolveMatrix order="3,3" kernelMatrix="
-                        0 -1 0
-                        -1 5 -1
-                        0 -1 0" />
+                    <!-- Simplified filter for consistency if JS calls it, but CSS uses mostly grayscale/contrast -->
+                    <feColorMatrix type="saturate" values="0.5" />
                 </filter>
             </defs>
         </svg>
 
-        <!-- Pantalla Inicio -->
         <section id="menu-screen" class="screen active">
             <h1 id="menuTitle">CALLISTO: BLACK IRON</h1>
             <p id="menuIntro"
-                style="max-width: 650px; text-align: center; margin-bottom: 30px; font-size: 1.1rem; color: #888;"></p>
+                style="max-width: 650px; text-align: center; margin-bottom: 30px; font-size: 1.2rem; color: var(--text-secondary);">
+            </p>
+
             <div id="statsInfo"
-                style="color: var(--danger); margin-bottom: 20px; font-weight: bold; letter-spacing: 2px;"></div>
-            <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 400px;">
-                <button id="btnNew" style="border-color: var(--danger);">INICIAR TRANSMISIÓN</button>
+                style="font-family: var(--font-header); color: var(--holo-blue); margin-bottom: 30px; letter-spacing: 2px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; width: 100%; max-width: 450px;">
+                <button id="btnNew">INICIAR TRANSMISIÓN</button>
                 <button id="btnResume" style="display: none;">CONTINUAR PROTOCOLO</button>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button id="btnExport" style="flex: 1; font-size: 0.8rem; padding: 10px;">EXPORTAR DATOS</button>
-                    <button id="btnImport" style="flex: 1; font-size: 0.8rem; padding: 10px;">IMPORTAR DATOS</button>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <button id="btnExport" style="margin:0; font-size: 0.9rem;">EXPORTAR DATOS</button>
+                    <button id="btnImport" style="margin:0; font-size: 0.9rem;">IMPORTAR DATOS</button>
                 </div>
-                <input type="file" id="importFile" style="display: none;" accept=".json">
-                <button id="btnSecretPath" class="unlocked-btn" style="display: none;">[BLOQUEADO] PROTOCOLO DANI:
-                    SUPERVIVENCIA</button>
+
+                <input type="file" id="importFile" style="display: none;" accept=".json" />
+                <button id="btnSecretPath" class="unlocked-btn" style="display: none;">[BLOQUEADO] PROTOCOLO
+                    DANI</button>
             </div>
         </section>
 
-        <!-- Selección de Prisionero -->
         <section id="char-screen" class="screen">
-            <h2 style="color: var(--accent); margin-bottom: 20px; letter-spacing: 4px;">ESTADO DEL SUJETO</h2>
+            <h2>SELECCIÓN DE SUJETO</h2>
             <div class="carousel" id="charList"></div>
-            <button id="btnConfirmChar" style="margin-top: 20px; width: 100%; max-width: 300px;" disabled>ACEPTAR
-                PROTOCOLO</button>
+            <button id="btnConfirmChar" style="margin-top: 30px; max-width: 400px; text-align: center;"
+                disabled>CONFIRMAR BIOMETRÍA</button>
         </section>
 
-        <!-- Juego -->
         <section id="game-screen" class="screen">
             <div class="comic-frame">
-                <div class="char-label" id="charTag">IDENTIFICANDO...</div>
-                <div class="image-container">
+                <!-- Panels Area -->
+                <div style="position:relative;">
                     <div class="loading-overlay" id="imgLoading">
                         <div class="scanline"></div>
-                        <p style="color: var(--accent); font-family: monospace;">SINCRONIZANDO NÚCLEO...</p>
+                        <p style="color: var(--holo-blue); font-family: var(--font-header);">CARGANDO SIMULACIÓN...</p>
                     </div>
-                    <img id="sceneImg" src="" alt="Cargando visuales...">
+                    <div id="panelsGrid" class="panels-grid"></div>
                 </div>
-                <div class="narrative-panel" id="sceneText"></div>
+
+                <!-- Text Area -->
+                <div style="margin-top: 15px;">
+                    <span class="char-label" id="charTag">SUJETO DESCONOCIDO</span>
+                    <div class="narrative-panel" id="sceneText"></div>
+                </div>
+
+                <!-- Choices -->
                 <div class="choices-grid" id="choiceBox"></div>
             </div>
+
             <div class="nav-controls">
-                <button id="btnBack" style="flex: 1;">REBOBINAR</button>
-                <button id="btnRestart" style="flex: 1;">REINICIAR</button>
+                <button id="btnBack">REBOBINAR</button>
+                <button id="btnRestart">REINICIAR</button>
             </div>
         </section>
 
-        <!-- Pantalla de Final -->
         <section id="end-screen" class="screen">
             <div
-                style="border: 2px solid var(--danger); padding: 40px; background: rgba(255, 51, 0, 0.05); text-align: center;">
-                <h2 id="endTitle" style="color: var(--danger); font-size: 2.5rem; margin-bottom: 20px;"></h2>
-                <p id="endDesc" style="margin-bottom: 30px; font-size: 1.2rem;"></p>
-                <button id="btnMenu">REGRESAR AL NÚCLEO</button>
+                style="border: 1px solid var(--holo-orange); padding: 40px; background: rgba(50, 10, 0, 0.4); max-width: 700px;">
+                <h2 id="endTitle"></h2>
+                <div style="width: 100%; height: 2px; background: var(--holo-orange); margin: 20px 0;"></div>
+                <p id="endDesc" style="margin-bottom: 40px; font-size: 1.3rem;"></p>
+                <button id="btnMenu" style="text-align: center;">REGRESAR AL NÚCLEO</button>
             </div>
         </section>
     </div>
 
+    <!-- MAIN ENGINE SCRIPT -->
     <script>
-        const apiKey = "";
-
         const story = {
             es: {
                 menu: {
                     title: "CALLISTO: BLACK IRON",
-                    intro: "Luna de Júpiter, 2320. La Prisión de Hierro Negro ha caído. Una infección biófaga transforma a los prisioneros en horrores orgánicos. Escapar es tu único protocolo.",
-                    new: "INICIAR TRANSMISIÓN",
-                    resume: "CONTINUAR PROTOCOLO",
-                    unlocked: "REGISTROS RECUPERADOS: "
+                    intro: "Luna de Júpiter, 2320. La Prisión de Hierro Negro. Un faro de orden en el caos del espacio muerto. Pero algo ha despertado bajo la superficie. La Corporación (UJC) ha perdido el control.",
+                    new: "INICIAR SIMULACIÓN",
+                    resume: "REESTABLECER ENLACE",
+                    unlocked: "ARCHIVOS DESBLOQUEADOS: "
                 },
                 chars: [
-                    { id: "jacob", name: "Jacob Lee", role: "Prisionero 532-521", desc: "Piloto de carga. Atrapado en el lugar equivocado. Hará lo que sea por sobrevivir.", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400&auto=format&fit=crop" }, // Intense male portrait
-                    { id: "dani", name: "Dani Nakamura", role: "Líder Resistencia", desc: "Terrorista para unos, salvadora para otros. Conoce los secretos de la UJC.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" } // Intense female portrait
+                    { id: "jacob", name: "Jacob Lee", role: "Piloto de Carga", desc: "Transportista del Charon. Contrabandista accidental. Víctima de las circunstancias.", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400&auto=format&fit=crop" },
+                    { id: "dani", name: "Dani Nakamura", role: "Líder de The Outer Way", desc: "Terrorista buscada. Busca la verdad sobre los experimentos de Kallipolis.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" }
                 ],
                 scenes: {
-                    // --- CAMINO DE JACOB ---
-                    "jacob_start": {
-                        text: "Tu celda se abre tras una explosión. Jacob se asoma al pasillo, cubierto de una sustancia viscosa. Escuchas el desgarro de carne a lo lejos. Tienes que moverte.",
-                        visual: "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=800&auto=format&fit=crop", // Dark corridor
+                    // --- PRÓLOGO / LORE ---
+                    "intro_context": {
+                        text: "REGISTRO UJC: AÑO 2320. LUNA MUERTA CALLISTO.\n\nLa Prisión de Hierro Negro opera al 100% de eficiencia. Los rumores sobre 'fugas biológicas' son infundados. El Alcaide Cole garantiza la seguridad. Sin embargo, la nave 'Charon' se aproxima con carga no declarada...",
+                        panels: [
+                            { visual: "planet Callisto in space, dark and foreboding, jupiter background, sci-fi cinematic", sfx: "SISTEMA ONLINE" },
+                            { visual: "Black Iron Prison exterior, massive snowy structure, brutalist architecture, spotlight towers", sfx: "SEGURIDAD MÁXIMA" }
+                        ],
+                        choices: [
+                            { text: "INICIAR SECUENCIA DE MEMORIA", target: "START_CHAR_LOGIC" }
+                        ]
+                    },
+
+                    // --- RUTA JACOB: EXPANDIDA ---
+                    "jacob_crash": {
+                        text: "MEMORIA 01: EL ACCIDENTE.\n\nLa nave 'Charon' es abordada. Pierdes el control. La gravedad de Callisto te atrapa. El impacto es inminente sobre el permafrost.",
+                        panels: [
+                            { visual: "spaceship cockpit shaking violently, alarms red, planet surface aproaching fast", sfx: "MAYDAY" },
+                            { visual: "Spaceship crashing into snowy ice surface, debris flying, massive impact crater", sfx: "IMPACTO" }
+                        ],
+                        choices: [
+                            { text: "Salir de los restos", target: "jacob_intro_prison" }
+                        ]
+                    },
+                    "jacob_intro_prison": {
+                        text: "Sobrevives al choque, pero la seguridad de Black Iron te rodea. Robots de seguridad te arrastran. Sin juicio. Sin abogado. Te implantan el CORE en el cuello.",
+                        panels: [
+                            { visual: "security robots dragging a man through snow, bright searchlights, pov style", sfx: "DETENCIÓN" },
+                            { visual: "medical robotic arm injecting a chip into a neck, painful expression, green hud overlay", sfx: "PROCESADO" }
+                        ],
+                        choices: [
+                            { text: "Despertar en la celda", target: "jacob_cell_awaken" }
+                        ]
+                    },
+                    "jacob_cell_awaken": { // Antes "jacob_start"
+                        text: "Horas... o días después. Tu celda se abre tras una explosión. El caos reina. Jacob se asoma al pasillo. Gritos y fuego.",
+                        panels: [
+                            { visual: "prison cell door exploring open, smoke, red emergency lights, prisoner looking out", sfx: "ERROR SISTEMA" }
+                        ],
                         choices: [
                             { text: "Buscar un arma en el puesto de guardia", target: "jacob_guard_post" },
                             { text: "Ir a los conductos de ventilación", target: "jacob_vents" }
                         ]
                     },
                     "jacob_guard_post": {
-                        text: "Llegas al puesto. No hay guardias vivos, solo sangre. Encuentras una porra de aturdimiento pesada. De repente, un biófago cae del techo.",
-                        visual: "Jacob Lee picking up a stun baton, a mutated monster lunging from the ceiling in a dark security room",
+                        text: "El puesto de guardia es una carnicería. Consigues una porra aturdidora. Un guardia muere frente a ti, destrozado por 'algo'.",
+                        panels: [
+                            { visual: "dead prison guard on floor, blood smear, stun baton on table, flickering lights", sfx: "..." }
+                        ],
                         choices: [
-                            { text: "Esquivar y contraatacar", target: "jacob_melee" },
-                            { text: "Correr hacia la puerta cerrada", target: "jacob_death_guard" }
+                            { text: "Avanzar hacia la Unidad SHU", target: "jacob_shu" },
+                            { text: "Huir hacia el pabellón general", target: "jacob_death_guard" }
                         ]
                     },
                     "jacob_death_guard": {
                         ending: true,
-                        title: "FIN DE LA TRANSMISIÓN",
-                        desc: "Jacob intentó huir sin mirar atrás. El biófago lo alcanzó en segundos, desgarrando su cuello antes de que pudiera tocar el panel de la puerta. Callisto no perdona la indecisión.",
-                        visual: "Jacob Lee being attacked from behind by a monster in a dark corridor, blood splatter, death screen style"
+                        title: "PRESA FÁCIL",
+                        desc: "Intentaste correr en lugar de luchar. Los 'Infectados' son más rápidos que tú.",
+                        panels: [{ visual: "monster tackling prisoner from behind, blurred motion, horror", sfx: "CRUNCH" }]
+                    },
+                    "jacob_shu": {
+                        text: "Unidad de Alojamiento Solitario (SHU). La maquinaria pesada tritura todo lo que cae. Un infectado 'Big Mouth' bloquea el puente.",
+                        panels: [
+                            { visual: "massive industrial grinders gears turning, dark metallic room, scary mutant blocking path", sfx: "GRIND" }
+                        ],
+                        choices: [
+                            { text: "Empujarlo a la maquinaria", target: "jacob_melee" },
+                            { text: "Intentar esquivarlo", target: "jacob_death_shu" }
+                        ]
+                    },
+                    "jacob_death_shu": {
+                        ending: true,
+                        title: "TRITURADO",
+                        desc: "Fallaste al esquivar. La maquinaria de la SHU no distingue entre carne infectada y sana.",
+                        panels: [{ visual: "industrial fan blade spinning with blood spray, gruesome screen", sfx: "SPLAT" }]
                     },
                     "jacob_melee": {
-                        text: "La pelea es visceral. Jacob logra abatir al monstruo con varios golpes eléctricos. El pasillo lleva hacia el pabellón médico o hacia el sector de procesamiento de residuos.",
-                        visual: "Jacob Lee over a defeated monster, stun baton glowing with blue electricity, cinematic comic art",
+                        text: "Con el camino despejado, desciendes hacia los niveles inferiores de logística. Pero el ascensor principal está bloqueado. Solo queda el montacargas de la mina profunda.",
+                        panels: [
+                            { visual: "Jacob Lee looking at a massive rusty mining elevator shaft gong down into darkness, industrial horror", sfx: "PROFUNDIDAD" },
+                            { visual: "dark prison corridor fork with signs medical wing and waste processing, sci-fi horror", sfx: "RUTA?" }
+                        ],
                         choices: [
-                            { text: "Entrar en el Pabellón Médico", target: "jacob_medical" },
-                            { text: "Bajar por las alcantarillas", target: "jacob_sewers" }
+                            { text: "Descender al Sector Minero", target: "jacob_mining_elevator" } // New Route
                         ]
                     },
-                    "jacob_medical": {
-                        text: "El aire en el pabellón médico es gélido. Ves a un prisionero herido, Elias. Te dice que Dani está en el nivel superior, pero un grupo de 'Escupidores' bloquea el camino.",
-                        visual: "Jacob Lee talking to a wounded prisoner Elias, medical lab with broken tanks, green glowing liquid",
+                    // --- CAPÍTULO INTERMEDIO: SECTOR MINERO (JACOB) ---
+                    "jacob_mining_elevator": {
+                        text: "El montacargas desciende chirriando. 300 metros bajo la superficie. [LOG DE AUDIO - FOREMAN]: 'Encontramos algo en la veta 9. Huevos. Grandes. No responden al fuego.'",
+                        panels: [
+                            { visual: "inside a rusty industrial elevator cage, Jacob holding a weapon, red emergency lights passing by", sfx: "CLANK... CLANK" }
+                        ],
                         choices: [
-                            { text: "Enfrentar a los Escupidores", target: "jacob_fight_spitters" },
-                            { text: "Rodear por la zona de criogenia", target: "jacob_cryo" }
+                            { text: "Investigar veta 9", target: "jacob_drill_site" },
+                            { text: "Buscar salida de emergencia", target: "jacob_mining_tunnel" }
                         ]
                     },
-                    "jacob_fight_spitters": {
-                        text: "Usas el GRP para lanzar cilindros de gas. La explosión elimina a los mutantes. Jacob sube por el ascensor principal hacia el núcleo.",
-                        visual: "Jacob Lee using GRP to throw a canister at mutated spitters, explosion, orange lighting",
+                    "jacob_drill_site": {
+                        text: "Llegas a la zona de excavación. Enormes taladros láser inactivos. Y nidos. Cientos de ellos. Algunos ya están abiertos. Ves a un 'Ciego' (Blind) patrullando por el sonido.",
+                        panels: [
+                            { visual: "underground cavern with massive laser drills, alien organic nests everywhere, slime, dark atmosphere", sfx: "CLICK... CLICK" }
+                        ],
                         choices: [
-                            { text: "Llegar al Núcleo", target: "convergence" }
+                            { text: "Lanzar piedra (Distracción)", target: "jacob_tunnel_collapse" },
+                            { text: "Atacar por la espalda", target: "jacob_death_blind" }
                         ]
                     },
-                    "jacob_cryo": {
-                        text: "El frío es insoportable. Una de las cápsulas de criogenia explota a tu paso. Una criatura ciega pero rápida sale del vapor.",
-                        visual: "Jacob Lee in a frozen corridor, white steam everywhere, a blind slender monster with long claws",
-                        choices: [
-                            { text: "Caminar en silencio", target: "jacob_sewers" },
-                            { text: "Atacar preventivamente", target: "jacob_death_cryo" }
-                        ]
-                    },
-                    "jacob_death_cryo": {
+                    "jacob_death_blind": {
                         ending: true,
-                        title: "CONGELADO EN EL TIEMPO",
-                        desc: "El ataque de Jacob alertó a la colmena criogénica. Decenas de mutantes salieron de las sombras. No hubo lucha, solo el silencio de la tumba helada.",
-                        visual: "Jacob Lee surrounded by pale monsters in a frozen room, horror comic style"
+                        title: "OIDOR ABSOLUTO",
+                        desc: "Subestimaste su oído. El Ciego te despedazó antes de que pudieras levantar el arma.",
+                        panels: [{ visual: "blind monster with long claws screaming directly at camera, Jacob falling", sfx: "SCREECH" }]
                     },
-                    "jacob_sewers": {
-                        text: "Jacob cae en las alcantarillas de la prisión. El agua negra le llega a la cintura. Algo gigante se mueve bajo la superficie. Debes alcanzar la escalera antes de que te detecte.",
-                        visual: "Jacob Lee in dark sewers, waist deep in black water, ripples in the distance, cinematic suspense",
+                    "jacob_mining_tunnel": {
+                        text: "Los túneles son un laberinto. Encuentras un cadáver de un minero con una grabadora. [LOG DE AUDIO]: 'El Alcaide sabía esto. Nos envió aquí para alimentarlos.'",
+                        panels: [
+                            { visual: "dark rocky tunnel with mining cart tracks, dead miner in spacesuit against wall", sfx: "VERDAD" }
+                        ],
                         choices: [
-                            { text: "Nadar rápido hacia la luz", target: "jacob_death_sewer" },
-                            { text: "Moverse pegado a la pared", target: "jacob_sewer_safe" }
+                            { text: "Seguir las vías", target: "jacob_tunnel_collapse" }
+                        ]
+                    },
+                    "jacob_tunnel_collapse": {
+                        text: "Un temblor sacude la mina. El techo comienza a ceder. Tienes que correr hacia la esclusa de presión del Hábitat.",
+                        panels: [
+                            { visual: "rocks falling from ceiling, dust cloud, Jacob running towards a heavy metal door", sfx: "DERRUMBE" }
+                        ],
+                        choices: [
+                            { text: "Deslizarse bajo la puerta", target: "jacob_habitat" } // Re-connects to flow
+                        ]
+                    },
+                    // ----------------------------------------------------
+                    "jacob_habitat": { // Nuevo nivel
+                        text: "La Cúpula de Hábitat. Vegetación sintética y niebla. Algo acecha en el follaje. Necesitas el código de la escotilla de mantenimiento.",
+                        panels: [
+                            { visual: "artificial forest inside a glass dome, sci-fi greenhouse, spooky atmosphere, fog", sfx: "RUSTLE" }
+                        ],
+                        choices: [
+                            { text: "Buscar el cuerpo del guardia", target: "jacob_habitat_loot" }, // Loot code
+                            { text: "Forzar la escotilla", target: "jacob_death_habitat" }
+                        ]
+                    },
+                    "jacob_death_habitat": {
+                        ending: true,
+                        title: "EMBOSCADA",
+                        desc: "El ruido de la escotilla atrajo a los 'Rushers'. Camuflados en la vegetación, no los viste venir.",
+                        panels: [{ visual: "camouflaged mutant jumping from trees, claws extended", sfx: "SCREECH" }]
+                    },
+                    "jacob_habitat_loot": {
+                        text: "Encuentras el código en un cadáver. También ves marcas de arrastre hacia el alcantarillado.",
+                        panels: [
+                            { visual: "Jacob looting a corpse in high tech armor, finding a datapad", sfx: "DATA" }
+                        ],
+                        choices: [
+                            { text: "Bajar a las alcantarillas", target: "jacob_sewers" } // Conecta con historia original
+                        ]
+                    },
+
+                    // ... (Mantenemos jacob_sewers, medical, etc. originales abajo, pero necesitamos reconectar algunos flujos) ...
+                    // RE-DEFINICIONES DE ORIGINALES PARA ENCAJAR:
+
+                    "jacob_sewers": {
+                        text: "El agua negra de las alcantarillas te llega al pecho. Es el único camino hacia el Garage.",
+                        panels: [
+                            { visual: "Jacob Lee in dark sewers, waist deep in black water, ripples in the distance, cinematic suspense", sfx: "SATURACIÓN" }
+                        ],
+                        choices: [
+                            { text: "Nadar rápido", target: "jacob_death_sewer" },
+                            { text: "Sigilo (Caminar lento)", target: "jacob_sewer_safe" }
                         ]
                     },
                     "jacob_death_sewer": {
                         ending: true,
-                        title: "CONSUMIDO POR EL ABISMO",
-                        desc: "El ruido del nado atrajo al depredador del sector de residuos. Jacob fue succionado hacia el fondo antes de poder gritar. Su cuerpo ahora forma parte de la biomasa de la luna.",
-                        visual: "Jacob Lee disappearing into black water, a massive tentacle visible, dark comic art"
+                        title: "BIO-ABSORCIÓN",
+                        desc: "El chapoteo atrajo a una sanguijuela gigante. Fuiste consumido.",
+                        panels: [{ visual: "Jacob Lee disappearing into black water, a massive tentacle visible", sfx: "GLUP" }]
                     },
                     "jacob_sewer_safe": {
-                        text: "Con cautela, Jacob llega a una salida de emergencia. Escucha disparos arriba. Al salir, se encuentra en una sala de mando donde Dani está acorralada.",
-                        visual: "Jacob Lee climbing a ladder out of the sewer, emerging into a tech room with neon lights",
+                        text: "Llegas a la escalera de mantenimiento. Arriba, en la Sala de Servidores, ves a alguien.",
+                        panels: [
+                            { visual: "Jacob Lee climbing a ladder out of the sewer, emerging into a tech room", sfx: "SALIDA" }
+                        ],
+                        choices: [{ text: "Encarar al desconocido", target: "convergence" }]
+                    },
+                    "jacob_vents": { // Camino alternativo corte
+                        text: "Los conductos te llevan directo sobre el bloque de celdas, evitando la masacre inicial, pero te dejan caer en el sector médico.",
+                        panels: [{ visual: "Jacob Lee crawling in ventilation shaft, looking down at chaos", sfx: "CLANK" }],
+                        choices: [{ text: "Caer al sector médico", target: "jacob_medical" }]
+                    },
+                    "jacob_medical": {
+                        text: "Pabellón Médico. Gritos agónicos. Encuentras a un aliado improbable muriendo: El Capitan Ferris (reimaginado/cameo). Señala el camino al Sanctum.",
+                        panels: [
+                            { visual: "medical lab with broken tanks, green glowing liquid, blood on floor", sfx: "AUXILIO" }
+                        ],
                         choices: [
-                            { text: "Ayudar a Dani", target: "convergence" }
+                            { text: "Ir al laboratorio de criogenia", target: "jacob_cryo" }
                         ]
                     },
-                    "jacob_vents": {
-                        text: "El conducto es estrecho. Jacob se arrastra mientras escucha mutaciones justo bajo sus pies. Llega a una sala de servidores donde una mujer está hackeando el sistema.",
-                        visual: "Jacob Lee crawling in ventilation shaft, sci-fi horror, looking through a grate at a hacker woman",
+                    "jacob_cryo": {
+                        text: "Laboratorio de Criogenia. Niebla helada. Un robot de seguridad dañado patrulla erráticamente.",
+                        panels: [
+                            { visual: "frozen room with cryo pods, security robot with sparks, blue fog", sfx: "BZZZT" }
+                        ],
                         choices: [
-                            { text: "Salir del conducto", target: "convergence" }
+                            { text: "Moverse entre las cápsulas", target: "jacob_sewers" }, // Reconexión
+                            { text: "Atacar al robot", target: "jacob_death_robot" }
                         ]
+                    },
+                    "jacob_death_robot": {
+                        ending: true,
+                        title: "DESCUARTIZADO",
+                        desc: "Los robots de seguridad son letales. Te cortó en dos antes de que levantaras el arma.",
+                        panels: [{ visual: "security robot firing lasers, brutal demise", sfx: "ZAP" }]
                     },
 
-                    // --- CAMINO DE DANI ---
-                    "dani_start": {
-                        text: "Dani Nakamura se infiltra por el hangar exterior. Su objetivo es claro: recuperar los datos de la UJC antes de que la infección consuma todo.",
-                        visual: "Dani Nakamura in high-tech suit, space station hangar, Jupiter's moon in background, cinematic comic style",
+
+                    // --- RUTA DANI: EXPANDIDA ---
+                    "dani_arrival": {
+                        text: "MEMORIA 01: INFILTRACIÓN.\n\nDani entra por la esclusa de carga exterior. El objetivo no es escapar, es entrar. Necesita pruebas de lo que la UJC está haciendo aquí.",
+                        panels: [
+                            { visual: "Dani Nakamura cutting through a metal door with a laser tool, space background", sfx: "CORTANDO" }
+                        ],
                         choices: [
-                            { text: "Hackear la terminal de seguridad", target: "dani_tech" },
-                            { text: "Bypass por la sala de criogenia", target: "dani_cryo" }
+                            { text: "Hackear dron de vigilancia", target: "dani_stealth" },
+                            { text: "Entrada directa", target: "dani_combat_start" }
+                        ]
+                    },
+                    "dani_combat_start": {
+                        ending: true,
+                        title: "DETECTADA",
+                        desc: "Las torretas automáticas detectaron tu bioseñal. No tuviste oportunidad.",
+                        panels: [{ visual: "automated turrets firing, red lasers, death screen", sfx: "DETECTED" }]
+                    },
+                    "dani_stealth": {
+                        text: "Evades los escáneres. Llegas a los archivos antiguos. Aquí es donde empezó todo, antes de la prisión.",
+                        panels: [
+                            { visual: "Dani hiding behind crates, security drone passing by, stealth tension", sfx: "SHHH" }
+                        ],
+                        choices: [
+                            { text: "Descargar bitácoras", target: "dani_data" }
+                        ]
+                    },
+                    "dani_data": {
+                        text: "Los datos confirman la 'Evolución Forzada'. [ARCHIVO ENCRIPTADO]: 'Sujeto Zero encontrado en las Ruinas de Arcas. Año 2120.' ¿Ruinas? Esto no es solo una prisión.",
+                        panels: [
+                            { visual: "holographic screen showing DNA helix mutation and architectural blueprints of ancient ruins", sfx: "REVELACIÓN" }
+                        ],
+                        choices: [
+                            { text: "Buscar las Ruinas", target: "dani_colony_ruins" } // New Route
+                        ]
+                    },
+                    // --- CAPÍTULO INTERMEDIO: LA COLONIA ANTIGUA (DANI) ---
+                    "dani_colony_ruins": {
+                        text: "Desciendes por el hueco del ascensor antiguo. Llegas a una ciudad subterránea. Edificios de piedra y metal arcaico. La Colonia Original de Callisto, olvidada y enterrada.",
+                        panels: [
+                            { visual: "underground ancient city ruins, destroyed buildings, spooky fog, flashlight beam", sfx: "ECOS" }
+                        ],
+                        choices: [
+                            { text: "Explorar templo central", target: "dani_arcanum" },
+                            { text: "Investigar viviendas", target: "dani_ghosts" }
+                        ]
+                    },
+                    "dani_ghosts": {
+                        text: "Las casas están llenas de polvo y juguetes de niños. [HOLOGRAMA RESIDUAL]: Una familia cenando, luego luces rojas, luego gritos. Sucedió hace 100 años.",
+                        panels: [
+                            { visual: "dusty room with old furniture, ghostly blue hologram of people screaming", sfx: "MEMORIA" }
+                        ],
+                        choices: [
+                            { text: "Salir a la plaza", target: "dani_arcanum" }
+                        ]
+                    },
+                    "dani_arcanum": {
+                        text: "El 'Templo' es en realidad un laboratorio de contención UJC de primera generación. Aquí crearon al primer parásito. Encuentras un vial de 'Antídoto Prototipo'.",
+                        panels: [
+                            { visual: "ancient stone temple entrance with high tech lab equipment inside, contrast old vs new", sfx: "ORIGEN" }
+                        ],
+                        choices: [
+                            { text: "Tomar el vial", target: "dani_infiltrate" } // Re-connects
+                        ]
+                    },
+                    "dani_infiltrate": { // Antes "dani_start" (continuación)
+                        text: "Sales de las ruinas hacia el hangar principal. Con la verdad en tu poder, la misión cambia. Tienes que difundir esto.",
+                        panels: [
+                            { visual: "Dani Nakamura emerging from floor grating into a modern hangar bay, looking determined", sfx: "MISIÓN" }
+                        ],
+                        choices: [
+                            { text: "Hackear terminal de seguridad", target: "dani_tech" }
                         ]
                     },
                     "dani_tech": {
-                        text: "La terminal revela la ubicación del Alcaide. De repente, las alarmas suenan. Biófagos rompen los cristales. Necesitas apoyo.",
-                        visual: "Dani Nakamura at a holographic terminal, monsters breaking in, neon blue light, action comic style",
-                        choices: [
-                            { text: "Correr al bloque de celdas", target: "convergence" }
-                        ]
-                    },
-                    "dani_cryo": {
-                        text: "El frío es extremo. Dani ve cápsulas rotas. Un experimento fallido se lanza sobre ella. Sus armas apenas le hacen daño.",
-                        visual: "Dani Nakamura in a frozen laboratory, mutated monster in cryo pod, cold blue atmosphere, thriller comic style",
-                        choices: [
-                            { text: "Usar granada de pulso", target: "convergence_prep" }
-                        ]
-                    },
-                    "convergence_prep": {
-                        text: "Estás cerca del núcleo. Escuchas a alguien luchando en la habitación contigua. Es un prisionero, pero parece hábil.",
-                        visual: "Cinematic shot of a character looking through a heavy steel door, shadows of another person fighting",
-                        choices: [
-                            { text: "Unir fuerzas", target: "convergence" }
-                        ]
+                        text: "La terminal desbloquea el acceso al Sanctum. Pero también libera las celdas de aislamiento. Una horda se aproxima.",
+                        panels: [
+                            { visual: "Dani Nakamura typing fast on a keyboard, door opening, red alarms", sfx: "ACCESO" }
+                        ],
+                        choices: [{ text: "Correr hacia el punto de encuentro", target: "convergence" }]
                     },
 
-                    // --- CONVERGENCIA ---
+                    // --- CONVERGENCIA (COMÚN) ---
+                    "convergence_prep": { // (Opcional si vienen de un camino especifico)
+                        text: "Estás cerca del núcleo. Escuchas disparos al otro lado de la puerta.",
+                        panels: [{ visual: "heavy door with dents, sounds of battle behind", sfx: "GOLPES" }],
+                        choices: [{ text: "Abrir la puerta", target: "convergence" }]
+                    },
                     "convergence": {
-                        text: "Jacob y Dani se encuentran cara a cara. Tras un breve momento de tensión, deciden colaborar. 'El Alcaide está en el Sanctum', dice Dani. 'Terminemos con esto'.",
-                        visual: "Jacob Lee and Dani Nakamura standing together in a dark industrial corridor, both armed, determined looks, cinematic comic style",
-                        choices: [
-                            { text: "Asaltar el Sanctum del Alcaide", target: "boss_intro" }
-                        ]
+                        text: "Jacob y Dani se encuentran en la Sala de Servidores. Armas apuntadas. Breve pausa. 'Tú quieres salir, yo quiero la verdad', dice Dani. 'El Alcaide tiene ambas'.",
+                        panels: [
+                            { visual: "Jacob and Dani pointing weapons at each other, Mexican standoff style", sfx: "ALTO" },
+                            { visual: "Jacob lowering weapon, Dani nodding, shake hands", sfx: "TRATO" }
+                        ],
+                        choices: [{ text: "Bajar al Sanctum del Alcaide", target: "boss_intro" }]
                     },
 
-                    // --- JEFE FINAL ---
+                    // --- JEFE FINAL & FINALES (Mantenidos y pulidos) ---
                     "boss_intro": {
-                        text: "El Alcaide Cole os espera rodeado de tanques de mutación. 'La evolución requiere sacrificio'. Se inyecta el suero y comienza a transformarse en un coloso de pesadilla.",
-                        visual: "Warden Cole transforming into a giant mutated monster, tentacles and metal plates, boss battle arena, epic lighting",
+                        text: "Capitán Ferris... o lo que queda de él. El 'Alpha'. Una monstruosidad de dos cabezas y fuerza bruta.",
+                        panels: [
+                            { visual: "Alpha mutant roaring, massive muscular creature with exposed bone armor", sfx: "ROAR" }
+                        ],
                         choices: [
-                            { text: "Jacob: Distraer al Alcaide", target: "boss_phase_jacob" },
-                            { text: "Dani: Sabotear los tanques", target: "boss_phase_dani" }
+                            { text: "Jacob: Carga frontal", target: "boss_phase_jacob" },
+                            { text: "Dani: Fuego de cobertura", target: "boss_phase_dani" }
                         ]
                     },
                     "boss_phase_jacob": {
-                        text: "Jacob usa su GRP para lanzar escombros al Alcaide. Dani aprovecha para disparar a los puntos débiles. El monstruo ruge de dolor.",
-                        visual: "Jacob Lee using GRP blue energy, lifting a massive crate against the boss, Dani shooting in background",
-                        choices: [
-                            { text: "Golpe final combinado", target: "boss_finale" }
-                        ]
+                        text: "Jacob esquiva un golpe demoledor y clava la porra eléctrica en el ojo de la bestia.",
+                        panels: [{ visual: "Jacob sliding under a massive fist, striking upward with stun baton", sfx: "ZZZRRRT" }],
+                        choices: [{ text: "Rematar", target: "boss_finale" }]
                     },
                     "boss_phase_dani": {
-                        text: "Dani sobrecarga los tanques de biomasa, provocando una explosión que debilita al Alcaide. Jacob se prepara para el remate.",
-                        visual: "Massive explosion in the laboratory, the monster boss screaming in agony, Dani at a terminal",
-                        choices: [
-                            { text: "Golpe final combinado", target: "boss_finale" }
-                        ]
+                        text: "Dani vuela los tanques de combustible tras el Alpha. La explosión lo inestabiliza.",
+                        panels: [{ visual: "explosion engulfing the monster, Dani holding a detonator", sfx: "BOOM" }],
+                        choices: [{ text: "Rematar", target: "boss_finale" }]
                     },
                     "boss_finale": {
-                        text: "Con un esfuerzo conjunto, lográis derribar al Alcaide. La estación comienza a desmoronarse. Solo queda una cápsula de escape.",
-                        visual: "The giant monster collapsing, debris falling from ceiling, Jacob and Dani running towards an exit",
+                        text: "El Alpha cae. La estructura colapsa. Solo hay una cápsula de escape funcional.",
+                        panels: [
+                            { visual: "The monster dead on the floor, debris falling, one escape pod lit up", sfx: "CRITICAL" },
+                            { visual: "Jacob looking at Dani, then at the pod, realizing only one can go", sfx: "..." }
+                        ],
                         choices: [
-                            { text: "Huir de la estación", target: "ending_victory" },
-                            { text: "Jacob se queda para asegurar el despegue", target: "ending_brave" }
+                            { text: "Jacob: 'Lárgate de aquí, Dani'", target: "ending_brave" }, // Canon
+                            { text: "Ambos intentan entrar (Fallo)", target: "ending_victory" } // Alternativo
                         ]
                     },
 
-                    // --- CONTENIDO DESBLOQUEABLE: PROTOCOLO DANI ---
+                    // --- PROTOCOLO OMEGA (Secreto Dani) ---
                     "dani_secret_start": {
-                        text: "[PROTOCOLO SECRETO ACTIVADO] Dani despierta en una Black Iron devastada tras la explosión. No hay cápsulas. Solo queda resistir.",
-                        visual: "Dani Nakamura alone in a burning ruins of Black Iron Prison, smoke and embers, apocalyptic survival comic",
+                        text: "[PROTOCOLO OMEGA] Dani despierta en los escombros de la Torre. Jacob murió hace horas. Estás sola. La infección ha evolucionado.",
+                        panels: [{ visual: "Dani waking up in ash and rubble, broken helmet, red sky", sfx: "DESPERTAR" }],
                         choices: [
-                            { text: "Avanzar por el puente en llamas", target: "dani_secret_bridge" },
-                            { text: "Descender al núcleo sobrecargado", target: "dani_secret_core" }
-                        ]
-                    },
-                    "dani_secret_bridge": {
-                        text: "El puente se cae. Miles de mutantes escalan por los pilares. Dani dispara hasta que su arma se sobrecalienta.",
-                        visual: "Dani Nakamura standing on a broken bridge, infinite swarm of monsters climbing up, sunset red lighting",
-                        choices: [
-                            { text: "Última resistencia", target: "dani_secret_death" }
+                            { text: "Buscar transmisión", target: "dani_secret_core" }
                         ]
                     },
                     "dani_secret_core": {
-                        text: "El núcleo está a punto de fundirse. La radiación está transformando a Dani. Su mente lucha por mantenerse humana.",
-                        visual: "Dani Nakamura looking at her hands, glowing blue veins, nuclear core melting behind",
-                        choices: [
-                            { text: "Abrazar el final", target: "dani_secret_death" }
-                        ]
+                        text: "Encuentras la transmisión final de Jacob. Te da la fuerza para detonar el Núcleo y acabar con todo Callisto.",
+                        panels: [{ visual: "hologram of Jacob, Dani crying but determined, hand on self-destruct button", sfx: "ADIÓS" }],
+                        choices: [{ text: "Detonar", target: "dani_secret_death" }]
                     },
                     "dani_secret_death": {
                         ending: true,
-                        title: "ECHOES IN THE DARK",
-                        desc: "Dani luchó hasta el último suspiro. Su sacrificio se convirtió en el eco que guiará a los futuros rescatistas. No hubo escape, solo la gloria del guerrero.",
-                        visual: "Cinematic shot of Dani's broken helmet on the ground, flames in background, silent atmosphere"
+                        title: "SACRIFICIO FINAL",
+                        desc: "Callisto explota. La infección se purga con fuego. La UJC pierde sus datos. Ganaste.",
+                        panels: [{ visual: "Callisto moon exploding from space, shattered fragments", sfx: "SILENCIO" }]
                     },
 
                     // --- FINALES ---
-                    "ending_victory": { ending: true, title: "SUPERVIVIENTES DEL PROTOCOLO", desc: "Jacob y Dani logran escapar juntos. Mientras Callisto se aleja, los datos de la UJC están a salvo. La guerra contra el Alcaide ha terminado... por ahora." },
-                    "ending_brave": { ending: true, title: "EL ÚLTIMO PROTOCOLO", desc: "Jacob se queda atrás para asegurar que Dani escape con la verdad. Black Iron explota, borrando el horror. Dani jura que el sacrificio de Jacob no será en vano." },
-                    "ending_truth": { ending: true, title: "EL CAMINO EXTERIOR", desc: "Revelaste los experimentos de la UJC. La verdad llegó a la Tierra, pero ahora eres el fugitivo más buscado de la galaxia." },
-                    "ending_mutated": { ending: true, title: "EL PROTOCOLO COMPLETO", desc: "El suero te cambió. Conservas tu mente, pero tu cuerpo es el arma perfecta. Ya no temes a los monstruos; ahora eres uno de ellos." },
-                    "ending_survivor": { ending: true, title: "ESCAPE DE CALLISTO", desc: "La cápsula te alejó del horror. Mientras miras cómo Black Iron arde, sabes que esta pesadilla apenas está comenzando." }
+                    "ending_brave": {
+                        ending: true,
+                        title: "SACRIFICIO",
+                        desc: "Jacob lanza a Dani en la cápsula. Él se enfrenta a la horda final mientras la estación explota. Un verdadero héroe.",
+                        panels: [{ visual: "Jacob smiling sadly as pod door closes, turning to face monsters", sfx: "HONOR" }]
+                    },
+                    "ending_victory": {
+                        ending: true,
+                        title: "SOBRECARGA",
+                        desc: "La cápsula no soportó el peso de dos. Fallo de lanzamiento. Ambos atrapados.",
+                        panels: [{ visual: "pod sparks and fails, red warning lights, look of despair", sfx: "ERROR" }]
+                    }
                 }
             }
         };
 
-        // --- CLASE PARA FUTURA INTEGRACIÓN CON SUPABASE ---
-        class CloudSync {
-            constructor() {
-                // AQUÍ SE INTEGRARÍA SUPABASE EN EL FUTURO
-                // Se necesita: <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-                this.supabaseUrl = "TU_SUPABASE_URL";
-                this.supabaseKey = "TU_SUPABASE_ANON_KEY";
-                this.client = null; // supabase.createClient(this.supabaseUrl, this.supabaseKey);
-            }
-
-            async uploadSave(data) {
-                console.log("Subiendo a la nube (Simulado):", data);
-                // const { error } = await this.client.from('saves').upsert(data);
-                alert("Funcionalidad Cloud: Requiere configurar Supabase URL y Key.");
-            }
-
-            async downloadSave() {
-                console.log("Descargando de la nube (Simulado)");
-                // const { data } = await this.client.from('saves').select('*').single();
-                return null;
-            }
-        }
-
         class CallistoApp {
             constructor() {
                 this.lang = 'es';
-                this.currentSceneId = 'start';
+                this.currentSceneId = null;
                 this.charId = null;
                 this.history = [];
                 this.unlockedEndings = JSON.parse(localStorage.getItem('cal_endings')) || [];
@@ -714,8 +966,8 @@
                     char: document.getElementById('char-screen'),
                     game: document.getElementById('game-screen'),
                     end: document.getElementById('end-screen'),
-                    img: document.getElementById('sceneImg'),
                     loading: document.getElementById('imgLoading'),
+                    panelsGrid: document.getElementById('panelsGrid'),
                     choiceBox: document.getElementById('choiceBox'),
                     sceneText: document.getElementById('sceneText'),
                     charTag: document.getElementById('charTag'),
@@ -723,7 +975,7 @@
                     fileInput: document.getElementById('importFile')
                 };
 
-                document.getElementById('btnNew').onclick = () => this.showScreen('char');
+                document.getElementById('btnNew').onclick = () => this.startPrologue();
                 document.getElementById('btnConfirmChar').onclick = () => this.startGame();
                 document.getElementById('btnBack').onclick = () => this.goBack();
                 document.getElementById('btnRestart').onclick = () => this.resetGame();
@@ -741,12 +993,15 @@
             renderMenu() {
                 const ui = story.es.menu;
                 document.getElementById('menuIntro').textContent = ui.intro;
-                document.getElementById('statsInfo').textContent = `${ui.unlocked} ${this.unlockedEndings.length} / 10`;
+                const totalEndings = this.getTotalEndings();
+                document.getElementById('statsInfo').textContent = `${ui.unlocked} ${this.unlockedEndings.length} / ${totalEndings}`;
 
                 if (this.mainCompleted) {
                     this.dom.secretBtn.style.display = 'block';
-                    this.dom.secretBtn.textContent = "INICIAR PROTOCOLO DANI: SUPERVIVENCIA";
+                    this.dom.secretBtn.textContent = "INICIAR PROTOCOLO OMEGA";
                     this.dom.secretBtn.classList.add('unlocked-btn');
+                } else {
+                    this.dom.secretBtn.style.display = 'none';
                 }
             }
 
@@ -762,8 +1017,8 @@
                         </div>
                         <div class="char-info">
                             <div class="char-name">${c.name}</div>
-                            <div style="font-size:0.85rem; color:var(--accent); font-weight:bold; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">${c.role}</div>
-                            <p style="font-size:0.9rem; line-height:1.4; color:#aaa;">${c.desc}</p>
+                            <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:5px;">${c.role}</div>
+                            <p style="font-size:0.9rem; color:#ccc;">${c.desc}</p>
                         </div>
                     `;
                     card.onclick = () => {
@@ -789,8 +1044,20 @@
                 if (id === 'menu') this.renderMenu();
             }
 
+            startPrologue() {
+                this.currentSceneId = 'intro_context';
+                this.history = [];
+                this.showScreen('game');
+                this.renderScene(this.currentSceneId);
+            }
+
             startGame() {
-                this.currentSceneId = this.charId + "_start";
+                // Map old ID to new extended start scenes
+                const startMap = {
+                    'jacob': 'jacob_crash',
+                    'dani': 'dani_arrival'
+                };
+                this.currentSceneId = startMap[this.charId] || this.charId + "_start";
                 this.history = [];
                 this.showScreen('game');
                 this.renderScene(this.currentSceneId);
@@ -818,60 +1085,81 @@
                 this.renderScene(this.currentSceneId);
             }
 
+            preloadImage(url) {
+                return new Promise((resolve) => {
+                    if (!url || !url.startsWith('http')) return resolve(null);
+                    if (this.cache.has(url)) return resolve(this.cache.get(url));
+
+                    const img = new Image();
+                    img.onload = () => { this.cache.set(url, url); resolve(url); };
+                    img.onerror = () => resolve(null);
+                    img.src = url;
+                });
+            }
+
             async generateImage(prompt) {
-                // Sistema "Smart Fallback" para cuando no hay API Key o se agota la cuota
-                // Selecciona una imagen basada en palabras clave del prompt
-                const p = prompt.toLowerCase();
+                const p = (prompt || "").toLowerCase();
+                let url = "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&q=80&w=800";
 
-                let url = "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&q=80&w=800"; // Default: Space
-
-                if (p.includes("monster") || p.includes("mutant") || p.includes("alcaide") || p.includes("biófago")) {
-                    url = "https://images.unsplash.com/photo-1626544827763-d516dce335e2?q=80&w=800&auto=format&fit=crop"; // Scary/Dark abstract
-                } else if (p.includes("corridor") || p.includes("hallway") || p.includes("cells")) {
-                    url = "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=800&auto=format&fit=crop"; // Industrial corridor
-                } else if (p.includes("medical") || p.includes("lab") || p.includes("cryo")) {
-                    url = "https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?q=80&w=800&auto=format&fit=crop"; // Lab/Tech
+                if (p.includes("monster") || p.includes("mutant") || p.includes("alcaide") || p.includes("biófago") || p.includes("rushers")) {
+                    url = "https://images.unsplash.com/photo-1626544827763-d516dce335e2?q=80&w=800&auto=format&fit=crop";
+                } else if (p.includes("corridor") || p.includes("hallway") || p.includes("cells") || p.includes("tunnel")) {
+                    url = "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=800&auto=format&fit=crop";
+                } else if (p.includes("medical") || p.includes("lab") || p.includes("cryo") || p.includes("dome") || p.includes("habitat")) {
+                    url = "https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?q=80&w=800&auto=format&fit=crop";
                 } else if (p.includes("sewer") || p.includes("water") || p.includes("sludge")) {
-                    url = "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=800&auto=format&fit=crop"; // Dirty/Dark
-                } else if (p.includes("fire") || p.includes("explosion") || p.includes("bridge")) {
-                    url = "https://images.unsplash.com/photo-1497384401032-2182d658e500?q=80&w=800&auto=format&fit=crop"; // Fire/Action
+                    url = "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=800&auto=format&fit=crop";
+                } else if (p.includes("fire") || p.includes("explosion") || p.includes("bridge") || p.includes("crash") || p.includes("impact")) {
+                    url = "https://images.unsplash.com/photo-1497384401032-2182d658e500?q=80&w=800&auto=format&fit=crop";
+                } else if (p.includes("snow") || p.includes("ice") || p.includes("exterior")) {
+                    url = "https://images.unsplash.com/photo-1483664852095-d6cc6870705d?q=80&w=800&auto=format&fit=crop";
+                } else if (p.includes("robot") || p.includes("security") || p.includes("drone")) {
+                    url = "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop";
                 }
 
-                // Simular tiempo de carga para efecto dramático
                 this.dom.loading.classList.add('active');
-                await new Promise(r => setTimeout(r, 800));
+                await new Promise(r => setTimeout(r, 650));
                 this.dom.loading.classList.remove('active');
-
                 return url;
             }
 
-            async renderScene(id) {
-                const scene = story.es.scenes[id];
-                const char = story.es.chars.find(c => c.id === this.charId);
+            normalizeScene(scene) {
+                if (!scene) return null;
+                if (!scene.panels && scene.visual) {
+                    scene.panels = [{ visual: scene.visual }];
+                }
+                if (!Array.isArray(scene.panels) || scene.panels.length === 0) {
+                    scene.panels = [{ visual: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&q=80&w=800", sfx: "..." }];
+                }
+                return scene;
+            }
 
+            async renderScene(id) {
+                let scene = story.es.scenes[id];
                 if (!scene) return;
+
+                scene = this.normalizeScene(scene);
+
+                const char = story.es.chars.find(c => c.id === this.charId);
                 this.currentSceneId = id;
 
-                const labelId = id.includes('secret') ? "PROTOCOL_DANI" : id.toUpperCase();
-                this.dom.charTag.textContent = `SUJETO: ${char.name.toUpperCase()} // SECTOR: ${labelId}`;
-                this.dom.sceneText.textContent = scene.text;
+                const labelId = id.includes('secret') ? "OMEGA" : id.toUpperCase();
+                this.dom.charTag.textContent = ` SUJETO: ${char?.name?.toUpperCase() || "—"} // ${labelId}`;
+
+                this.dom.sceneText.textContent = scene.text || "";
                 this.dom.choiceBox.innerHTML = '';
 
-                // Si tenemos una URL (es decir, no es un prompt de texto para generar, sino ya una url válida o la por defecto)
-                // Usamos la URL directamente si empieza por http
-                if (scene.visual.startsWith('http')) {
-                    this.dom.img.src = scene.visual;
-                } else {
-                    // Fallback para prompts antiguos
-                    const url = await this.generateImage(scene.visual);
-                    this.dom.img.src = url;
-                }
+                await this.renderPanels(scene.panels);
 
                 if (scene.choices) {
                     scene.choices.forEach(c => {
                         const btn = document.createElement('button');
                         btn.textContent = c.text;
                         btn.onclick = () => {
+                            if (c.target === 'START_CHAR_LOGIC') {
+                                this.showScreen('char');
+                                return;
+                            }
                             this.history.push(id);
                             this.renderScene(c.target);
                         };
@@ -879,10 +1167,57 @@
                     });
                 }
 
-                if (scene.ending) this.handleEnding(id, scene);
-                else this.saveGame();
+                if (scene.ending) {
+                    this.handleEnding(id, scene);
+                } else {
+                    this.saveGame();
+                }
 
                 document.getElementById('btnBack').disabled = this.history.length === 0;
+            }
+
+            async renderPanels(panels) {
+                const grid = this.dom.panelsGrid;
+                grid.innerHTML = "";
+
+                grid.classList.remove("cols-2", "cols-3");
+                if (panels.length === 2) grid.classList.add("cols-2");
+                if (panels.length >= 3) grid.classList.add("cols-3");
+
+                this.dom.loading.classList.add("active");
+
+                const resolved = [];
+                for (const p of panels.slice(0, 3)) {
+                    const v = p.visual;
+                    let url = null;
+
+                    if (typeof v === "string" && v.startsWith("http")) {
+                        url = v;
+                        await this.preloadImage(url);
+                    } else {
+                        const gen = await this.generateImage(v);
+                        url = gen;
+                        await this.preloadImage(url);
+                    }
+
+                    resolved.push({
+                        url,
+                        sfx: p.sfx || ""
+                    });
+                }
+
+                this.dom.loading.classList.remove("active");
+
+                for (const p of resolved) {
+                    const panelEl = document.createElement("div");
+                    panelEl.className = "panel";
+
+                    panelEl.innerHTML = `
+                        ${p.sfx ? `<div class="panel-sfx">${this.escapeHtml(p.sfx)}</div>` : ""}
+                        <img class="panel-img" src="${p.url}" alt="panel" />
+                    `;
+                    grid.appendChild(panelEl);
+                }
             }
 
             saveGame() {
@@ -904,29 +1239,32 @@
                     localStorage.setItem('cal_endings', JSON.stringify(this.unlockedEndings));
                 }
 
-                // Marcar como completado si es un final principal
-                if (!id.includes('death') && !id.includes('secret')) {
+                if (id.startsWith("ending_")) {
                     this.mainCompleted = true;
                     localStorage.setItem('cal_main_completed', 'true');
                 }
 
                 localStorage.removeItem('cal_save_scene');
+                localStorage.removeItem('cal_save_char');
+                localStorage.removeItem('cal_save_history');
 
                 setTimeout(() => {
                     document.getElementById('endTitle').textContent = scene.title;
                     document.getElementById('endDesc').textContent = scene.desc;
                     this.showScreen('end');
-                }, 3000);
+                }, 1200);
             }
 
             exportGame() {
                 const saveData = {
-                    save_scene: localStorage.getItem('cal_save_scene'),
-                    save_char: localStorage.getItem('cal_save_char'),
-                    save_history: localStorage.getItem('cal_save_history'),
-                    endings: this.unlockedEndings,
-                    mainCompleted: this.mainCompleted,
-                    timestamp: new Date().toISOString()
+                    exportedAt: new Date().toISOString(),
+                    save: {
+                        scene: localStorage.getItem('cal_save_scene'),
+                        char: localStorage.getItem('cal_save_char'),
+                        history: JSON.parse(localStorage.getItem('cal_save_history') || "[]"),
+                        endings: this.unlockedEndings,
+                        mainCompleted: this.mainCompleted
+                    }
                 };
 
                 const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: "application/json" });
@@ -948,21 +1286,29 @@
                 reader.onload = (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
+                        const save = data.save || data;
 
-                        if (data.endings) {
-                            this.unlockedEndings = data.endings;
-                            localStorage.setItem('cal_endings', JSON.stringify(data.endings));
+                        if (save.endings || save.save_endings) {
+                            const endings = save.endings || save.save_endings;
+                            this.unlockedEndings = endings;
+                            localStorage.setItem('cal_endings', JSON.stringify(endings));
                         }
 
-                        if (data.mainCompleted !== undefined) {
-                            this.mainCompleted = data.mainCompleted;
-                            localStorage.setItem('cal_main_completed', String(data.mainCompleted));
+                        if (save.mainCompleted !== undefined) {
+                            this.mainCompleted = !!save.mainCompleted;
+                            localStorage.setItem('cal_main_completed', String(this.mainCompleted));
                         }
 
-                        if (data.save_scene) {
-                            localStorage.setItem('cal_save_scene', data.save_scene);
-                            localStorage.setItem('cal_save_char', data.save_char);
-                            localStorage.setItem('cal_save_history', data.save_history);
+                        const scene = save.scene || save.save_scene;
+                        const char = save.char || save.save_char;
+                        const history = save.history || JSON.parse(save.save_history || "[]");
+
+                        if (scene) {
+                            localStorage.setItem('cal_save_scene', scene);
+                            localStorage.setItem('cal_save_char', char || "");
+                            localStorage.setItem('cal_save_history', JSON.stringify(history || []));
+                        } else {
+                            localStorage.removeItem('cal_save_scene');
                         }
 
                         alert("Datos importados correctamente. La aplicación se recargará.");
@@ -973,6 +1319,20 @@
                     }
                 };
                 reader.readAsText(file);
+            }
+
+            getTotalEndings() {
+                const scenes = story.es.scenes;
+                return Object.keys(scenes).filter(k => scenes[k]?.ending).length;
+            }
+
+            escapeHtml(str) {
+                return String(str ?? "")
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#039;");
             }
         }
 
