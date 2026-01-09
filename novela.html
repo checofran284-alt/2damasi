@@ -553,416 +553,376 @@
 
     <!-- MAIN ENGINE SCRIPT -->
     <script>
-        const story = {
-            es: {
-                menu: {
-                    title: "CALLISTO: BLACK IRON",
-                    intro: "Luna de Júpiter, 2320. La Prisión de Hierro Negro. Un faro de orden en el caos del espacio muerto. Pero algo ha despertado bajo la superficie. La Corporación (UJC) ha perdido el control.",
-                    new: "INICIAR SIMULACIÓN",
-                    resume: "REESTABLECER ENLACE",
-                    unlocked: "ARCHIVOS DESBLOQUEADOS: "
-                },
-                chars: [
-                    { id: "jacob", name: "Jacob Lee", role: "Piloto de Carga", desc: "Transportista del Charon. Contrabandista accidental. Víctima de las circunstancias.", img: "img/03_jacob_crash_1.png" }, // Updated to local img placeholder
-                    { id: "dani", name: "Dani Nakamura", role: "Líder de The Outer Way", desc: "Terrorista buscada. Busca la verdad sobre los experimentos de Kallipolis.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" },
-                    { id: "elias", name: "Elias Porter", role: "Recluso 529-B", desc: "Ingeniero veterano. Conoce Hierro Negro como la palma de su mano. Busca una salida.", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" }
+        /* --- OBJETO DE HISTORIA COMPLETO (TODAS LAS IMÁGENES .PNG) --- */
+const story = {
+    es: {
+        menu: {
+            title: "CALLISTO: BLACK IRON",
+            intro: "Luna de Júpiter, 2320. La Prisión de Hierro Negro. Un faro de orden en el caos del espacio muerto. Pero algo ha despertado bajo la superficie. La Corporación (UJC) ha perdido el control.",
+            new: "INICIAR SIMULACIÓN",
+            resume: "REESTABLECER ENLACE",
+            unlocked: "ARCHIVOS DESBLOQUEADOS: "
+        },
+        chars: [
+            { id: "jacob", name: "Jacob Lee", role: "Piloto de Carga", desc: "Transportista del Charon. Contrabandista accidental. Víctima de las circunstancias.", img: "img/foto perfil jacob.png" },
+            { id: "dani", name: "Dani Nakamura", role: "Líder de The Outer Way", desc: "Terrorista buscada. Busca la verdad sobre los experimentos de Kallipolis-Callisto.", img: "img/foto perfil dani (2).png" },
+            { id: "elias", name: "Elias Porter", role: "Recluso 529-B", desc: "Prisionero/Ingeniero veterano. Conoce Hierro Negro como la palma de su mano. Busca una salida.", img: "img/foto perfil elias.png" }
+        ],
+        scenes: {
+            // --- PRÓLOGO / LORE ---
+            "intro_context": {
+                text: "REGISTRO UJC: AÑO 2320. LUNA MUERTA CALLISTO.\n\nLa Prisión de Hierro Negro opera al 100% de eficiencia. Los rumores sobre 'fugas biológicas' son infundados. El Alcaide Cole garantiza la seguridad. Sin embargo, la nave 'Charon' se aproxima con carga no declarada...",
+                panels: [
+                    { visual: "img/01_intro_moon.png", sfx: "SISTEMA ONLINE" },
+                    { visual: "img/02_intro_prison.png", sfx: "SEGURIDAD MÁXIMA" }
                 ],
-                scenes: {
-                    // --- PRÓLOGO / LORE ---
-                    "intro_context": {
-                        text: "REGISTRO UJC: AÑO 2320. LUNA MUERTA CALLISTO.\n\nLa Prisión de Hierro Negro opera al 100% de eficiencia. Los rumores sobre 'fugas biológicas' son infundados. El Alcaide Cole garantiza la seguridad. Sin embargo, la nave 'Charon' se aproxima con carga no declarada...",
-                        panels: [
-                            { visual: "img/01_intro_moon.png", sfx: "SISTEMA ONLINE" },
-                            { visual: "img/02_intro_prison.png", sfx: "SEGURIDAD MÁXIMA" }
-                        ],
-                        choices: [
-                            { text: "INICIAR SECUENCIA DE MEMORIA", target: "START_CHAR_LOGIC" }
-                        ]
-                    },
+                choices: [
+                    { text: "INICIAR SECUENCIA DE MEMORIA", target: "START_CHAR_LOGIC" }
+                ]
+            },
 
-                    // --- RUTA JACOB: EXPANDIDA ---
-                    "jacob_crash": {
-                        text: "MEMORIA 01: EL ACCIDENTE.\n\nLa nave 'Charon' es abordada. Pierdes el control. La gravedad de Callisto te atrapa. El impacto es inminente sobre el permafrost.",
-                        panels: [
-                            { visual: "img/03_jacob_crash_1.png", sfx: "MAYDAY" },
-                            { visual: "img/04_jacob_crash_2.png", sfx: "IMPACTO" }
-                        ],
-                        choices: [
-                            { text: "Salir de los restos", target: "jacob_intro_prison" }
-                        ]
-                    },
-                    "jacob_intro_prison": {
-                        text: "Sobrevives al choque, pero la seguridad de Black Iron te rodea. Robots de seguridad te arrastran. Sin juicio. Sin abogado. Te implantan el CORE en el cuello.",
-                        panels: [
-                            { visual: "img/05_jacob_arrest.png", sfx: "DETENCIÓN" },
-                            { visual: "img/06_jacob_chip.png", sfx: "PROCESADO" }
-                        ],
-                        choices: [
-                            { text: "Despertar en la celda", target: "jacob_cell_awaken" }
-                        ]
-                    },
-                    "jacob_cell_awaken": { // Antes "jacob_start"
-                        text: "Horas... o días después. Tu celda se abre tras una explosión. El caos reina. Jacob se asoma al pasillo. Gritos y fuego.",
-                        panels: [
-                            { visual: "img/07_jacob_cell.png", sfx: "ERROR SISTEMA" }
-                        ],
-                        choices: [
-                            { text: "Buscar un arma en el puesto de guardia", target: "jacob_guard_post" },
-                            { text: "Ir a los conductos de ventilación", target: "jacob_vents" }
-                        ]
-                    },
-                    "jacob_guard_post": {
-                        text: "El puesto de guardia es una carnicería. Consigues una porra aturdidora. Un guardia muere frente a ti, destrozado por 'algo'.",
-                        panels: [
-                            { visual: "img/08_jacob_guard.png", sfx: "..." }
-                        ],
-                        choices: [
-                            { text: "Avanzar por los pasillos", target: "jacob_meet_elias" },
-                            { text: "Huir hacia el pabellón general", target: "jacob_death_guard" }
-                        ]
-                    },
-                    "jacob_meet_elias": {
-                        text: "Una voz susurra desde la oscuridad de una celda de aislamiento. 'Eh, tú... el de la porra. Me llamo Elias. Si quieres salir de este infierno, necesito a alguien que sepa pilotar.' Elias Porter, un recluso veterano, te observa con ojos cansados pero calculadores.",
-                        panels: [
-                            { visual: "a prisoner with grey hair and beard looking through cell bars, shadows, cinematic lighting", sfx: "SUSURRO" }
-                        ],
-                        choices: [
-                            { text: "Confiar en Elias", target: "jacob_shu" }
-                        ]
-                    },
-                    "jacob_death_guard": {
-                        ending: true,
-                        title: "PRESA FÁCIL",
-                        desc: "Intentaste correr en lugar de luchar. Los 'Infectados' son más rápidos que tú.",
-                        panels: [{ visual: "monster tackling prisoner from behind, blurred motion, horror", sfx: "CRUNCH" }]
-                    },
-                    "jacob_shu": {
-                        text: "Unidad de Alojamiento Solitario (SHU). La maquinaria pesada tritura todo lo que cae. Un infectado 'Big Mouth' bloquea el puente.",
-                        panels: [
-                            { visual: "img/09_jacob_shu.png", sfx: "GRIND" }
-                        ],
-                        choices: [
-                            { text: "Empujarlo a la maquinaria", target: "jacob_melee" },
-                            { text: "Intentar esquivarlo", target: "jacob_death_shu" }
-                        ]
-                    },
-                    "jacob_death_shu": {
-                        ending: true,
-                        title: "TRITURADO",
-                        desc: "Fallaste al esquivar. La maquinaria de la SHU no distingue entre carne infectada y sana.",
-                        panels: [{ visual: "industrial fan blade spinning with blood spray, gruesome screen", sfx: "SPLAT" }]
-                    },
-                    "jacob_melee": {
-                        text: "Con el camino despejado, desciendes hacia los niveles inferiores de logística. Pero el ascensor principal está bloqueado. Solo queda el montacargas de la mina profunda.",
-                        panels: [
-                            { visual: "img/10_jacob_melee_1.png", sfx: "PROFUNDIDAD" },
-                            { visual: "img/11_jacob_melee_2.png", sfx: "RUTA?" }
-                        ],
-                        choices: [
-                            { text: "Descender al Sector Minero", target: "jacob_mining_elevator" } // New Route
-                        ]
-                    },
-                    // --- CAPÍTULO INTERMEDIO: SECTOR MINERO (JACOB) ---
-                    "jacob_mining_elevator": {
-                        text: "El montacargas desciende chirriando. 300 metros bajo la superficie. [LOG DE AUDIO - FOREMAN]: 'Encontramos algo en la veta 9. Huevos. Grandes. No responden al fuego.'",
-                        panels: [
-                            { visual: "img/12_jacob_elevator.png", sfx: "CLANK... CLANK" }
-                        ],
-                        choices: [
-                            { text: "Investigar veta 9", target: "jacob_drill_site" },
-                            { text: "Buscar salida de emergencia", target: "jacob_mining_tunnel" }
-                        ]
-                    },
-                    "jacob_drill_site": {
-                        text: "Llegas a la zona de excavación. Enormes taladros láser inactivos. Y nidos. Cientos de ellos. Algunos ya están abiertos. Ves a un 'Ciego' (Blind) patrullando por el sonido.",
-                        panels: [
-                            { visual: "img/13_jacob_drill.png", sfx: "CLICK... CLICK" }
-                        ],
-                        choices: [
-                            { text: "Lanzar piedra (Distracción)", target: "jacob_tunnel_collapse" },
-                            { text: "Atacar por la espalda", target: "jacob_death_blind" }
-                        ]
-                    },
-                    "jacob_death_blind": {
-                        ending: true,
-                        title: "OIDOR ABSOLUTO",
-                        desc: "Subestimaste su oído. El Ciego te despedazó antes de que pudieras levantar el arma.",
-                        panels: [{ visual: "blind monster with long claws screaming directly at camera, Jacob falling", sfx: "SCREECH" }]
-                    },
-                    "jacob_mining_tunnel": {
-                        text: "Los túneles son un laberinto. Encuentras un cadáver de un minero con una grabadora. [LOG DE AUDIO]: 'El Alcaide sabía esto. Nos envió aquí para alimentarlos.'",
-                        panels: [
-                            { visual: "img/14_jacob_tunnel.png", sfx: "VERDAD" }
-                        ],
-                        choices: [
-                            { text: "Seguir las vías", target: "jacob_tunnel_collapse" }
-                        ]
-                    },
-                    "jacob_tunnel_collapse": {
-                        text: "Un temblor sacude la mina. El techo comienza a ceder. Tienes que correr hacia la esclusa de presión del Hábitat.",
-                        panels: [
-                            { visual: "img/15_jacob_collapse.png", sfx: "DERRUMBE" }
-                        ],
-                        choices: [
-                            { text: "Deslizarse bajo la puerta", target: "jacob_habitat" } // Re-connects to flow
-                        ]
-                    },
-                    // ----------------------------------------------------
-                    "jacob_habitat": { // Nuevo nivel
-                        text: "La Cúpula de Hábitat. Vegetación sintética y niebla. Algo acecha en el follaje. Necesitas el código de la escotilla de mantenimiento.",
-                        panels: [
-                            { visual: "img/16_jacob_habitat.png", sfx: "RUSTLE" }
-                        ],
-                        choices: [
-                            { text: "Buscar el cuerpo del guardia", target: "jacob_habitat_loot" }, // Loot code
-                            { text: "Forzar la escotilla", target: "jacob_death_habitat" }
-                        ]
-                    },
-                    "jacob_death_habitat": {
-                        ending: true,
-                        title: "EMBOSCADA",
-                        desc: "El ruido de la escotilla atrajo a los 'Rushers'. Camuflados en la vegetación, no los viste venir.",
-                        panels: [{ visual: "camouflaged mutant jumping from trees, claws extended", sfx: "SCREECH" }]
-                    },
-                    "jacob_habitat_loot": {
-                        text: "Encuentras el código en un cadáver. También ves marcas de arrastre hacia el alcantarillado.",
-                        panels: [
-                            { visual: "img/17_jacob_loot.png", sfx: "DATA" }
-                        ],
-                        choices: [
-                            { text: "Bajar a las alcantarillas", target: "jacob_sewers" } // Conecta con historia original
-                        ]
-                    },
+            // --- RUTA JACOB ---
+            "jacob_crash": {
+                text: "MEMORIA 01: EL ACCIDENTE.\n\nLa nave 'Charon' es abordada. Pierdes el control. La gravedad de Callisto te atrapa. El impacto es inminente sobre el permafrost.",
+                panels: [
+                    { visual: "img/03_jacob_crash_1.png", sfx: "MAYDAY" },
+                    { visual: "img/04_jacob_crash_2.png", sfx: "IMPACTO" }
+                ],
+                choices: [
+                    { text: "Salir de los restos", target: "jacob_intro_prison" }
+                ]
+            },
+            "jacob_intro_prison": {
+                text: "Sobrevives al choque, pero la seguridad de Black Iron te rodea. Robots de seguridad te arrastran. Sin juicio. Sin abogado. Te implantan el CORE en el cuello.",
+                panels: [
+                    { visual: "img/05_jacob_arrest.png", sfx: "DETENCIÓN" },
+                    { visual: "img/06_jacob_chip.png", sfx: "PROCESADO" }
+                ],
+                choices: [
+                    { text: "Despertar en la celda", target: "jacob_cell_awaken" }
+                ]
+            },
+            "jacob_cell_awaken": {
+                text: "Horas... o días después. Tu celda se abre tras una explosión. El caos reina. Jacob se asoma al pasillo. Gritos y fuego.",
+                panels: [
+                    { visual: "img/07_jacob_cell.png", sfx: "ERROR SISTEMA" }
+                ],
+                choices: [
+                    { text: "Buscar un arma en el puesto de guardia", target: "jacob_guard_post" },
+                    { text: "Ir a los conductos de ventilación", target: "jacob_vents" }
+                ]
+            },
+            "jacob_guard_post": {
+                text: "El puesto de guardia es una carnicería. Consigues una porra aturdidora. Un guardia muere frente a ti, destrozado por 'algo'.",
+                panels: [
+                    { visual: "img/08_jacob_guard.png", sfx: "..." }
+                ],
+                choices: [
+                    { text: "Avanzar por los pasillos", target: "jacob_meet_elias" },
+                    { text: "Huir hacia el pabellón general", target: "jacob_death_guard" }
+                ]
+            },
+            "jacob_meet_elias": {
+                text: "Una voz susurra desde la oscuridad de una celda de aislamiento. 'Eh, tú... el de la porra. Me llamo Elias. Si quieres salir de este infierno, necesito a alguien que sepa pilotar.' Elias Porter, un recluso veterano, te observa con ojos cansados pero calculadores.",
+                panels: [
+                    { visual: "img/jacob_conoce_elias.png", sfx: "SUSURRO" }
+                ],
+                choices: [
+                    { text: "Confiar en Elias", target: "jacob_shu" }
+                ]
+            },
+            "jacob_death_guard": {
+                ending: true,
+                title: "PRESA FÁCIL",
+                desc: "Intentaste correr en lugar de luchar. Los 'Infectados' son más rápidos que tú.",
+                panels: [{ visual: "img/sanguijuela mata jacob.png", sfx: "CRUNCH" }]
+            },
+            "jacob_shu": {
+                text: "Unidad de Alojamiento Solitario (SHU). La maquinaria pesada tritura todo lo que cae. Un infectado 'Big Mouth' bloquea el puente.",
+                panels: [
+                    { visual: "img/09_jacob_shu.png", sfx: "GRIND" }
+                ],
+                choices: [
+                    { text: "Empujarlo a la maquinaria", target: "jacob_melee" },
+                    { text: "Intentar esquivarlo", target: "jacob_death_shu" }
+                ]
+            },
+            "jacob_death_shu": {
+                ending: true,
+                title: "TRITURADO",
+                desc: "Fallaste al esquivar. La maquinaria de la SHU no distingue entre carne infectada y sana.",
+                panels: [{ visual: "img/rematar.png", sfx: "SPLAT" }]
+            },
+            "jacob_melee": {
+                text: "Con el camino despejado, desciendes hacia los niveles inferiores de logística. Pero el ascensor principal está bloqueado. Solo queda el montacargas de la mina profunda.",
+                panels: [
+                    { visual: "img/10_jacob_melee_1.png", sfx: "PROFUNDIDAD" },
+                    { visual: "img/11_jacob_melee_2.png", sfx: "RUTA?" }
+                ],
+                choices: [
+                    { text: "Descender al Sector Minero", target: "jacob_mining_elevator" }
+                ]
+            },
+            "jacob_mining_elevator": {
+                text: "El montacargas desciende chirriando. 300 metros bajo la superficie.",
+                panels: [
+                    { visual: "img/12_jacob_elevator.png", sfx: "CLANK... CLANK" }
+                ],
+                choices: [
+                    { text: "Investigar veta 9", target: "jacob_drill_site" },
+                    { text: "Buscar salida de emergencia", target: "jacob_mining_tunnel" }
+                ]
+            },
+            "jacob_drill_site": {
+                text: "Llegas a la zona de excavación. Enormes taladros láser inactivos. Y nidos. Cientos de ellos.",
+                panels: [
+                    { visual: "img/13_jacob_drill.png", sfx: "CLICK... CLICK" }
+                ],
+                choices: [
+                    { text: "Lanzar piedra (Distracción)", target: "jacob_tunnel_collapse" },
+                    { text: "Atacar por la espalda", target: "jacob_death_blind" }
+                ]
+            },
+            "jacob_death_blind": {
+                ending: true,
+                title: "OIDOR ABSOLUTO",
+                desc: "Subestimaste su oído. El Ciego te despedazó antes de que pudieras levantar el arma.",
+                panels: [{ visual: "img/robot mata jacob.png", sfx: "SCREECH" }]
+            },
+            "jacob_mining_tunnel": {
+                text: "Los túneles son un laberinto. Encuentras un cadáver de un minero con una grabadora.",
+                panels: [
+                    { visual: "img/14_jacob_tunnel.png", sfx: "VERDAD" }
+                ],
+                choices: [
+                    { text: "Seguir las vías", target: "jacob_tunnel_collapse" }
+                ]
+            },
+            "jacob_tunnel_collapse": {
+                text: "Un temblor sacude la mina. El techo comienza a ceder. Tienes que correr hacia la esclusa de presión del Hábitat.",
+                panels: [
+                    { visual: "img/15_jacob_collapse.png", sfx: "DERRUMBE" }
+                ],
+                choices: [
+                    { text: "Deslizarse bajo la puerta", target: "jacob_habitat" }
+                ]
+            },
+            "jacob_habitat": {
+                text: "La Cúpula de Hábitat. Vegetación sintética y niebla. Algo acecha en el follaje.",
+                panels: [
+                    { visual: "img/16_jacob_habitat.png", sfx: "RUSTLE" }
+                ],
+                choices: [
+                    { text: "Buscar el cuerpo del guardia", target: "jacob_habitat_loot" },
+                    { text: "Forzar la escotilla", target: "jacob_death_habitat" }
+                ]
+            },
+            "jacob_death_habitat": {
+                ending: true,
+                title: "EMBOSCADA",
+                desc: "El ruido de la escotilla atrajo a los 'Rushers'. Camuflados en la vegetación.",
+                panels: [{ visual: "img/muerte torretas dani.png", sfx: "SCREECH" }]
+            },
+            "jacob_habitat_loot": {
+                text: "Encuentras el código en un cadáver. También ves marcas de arrastre hacia el alcantarillado.",
+                panels: [
+                    { visual: "img/17_jacob_loot.png", sfx: "DATA" }
+                ],
+                choices: [
+                    { text: "Bajar a las alcantarillas", target: "jacob_sewers" }
+                ]
+            },
+            "jacob_sewers": {
+                text: "El agua negra de las alcantarillas te llega al pecho. Es el único camino hacia el Garage.",
+                panels: [
+                    { visual: "img/jacob en la alcantarilla.png", sfx: "SATURACIÓN" }
+                ],
+                choices: [
+                    { text: "Nadar rápido", target: "jacob_death_sewer" },
+                    { text: "Sigilo (Caminar lento)", target: "jacob_sewer_safe" }
+                ]
+            },
+            "jacob_death_sewer": {
+                ending: true,
+                title: "BIO-ABSORCIÓN",
+                desc: "El chapoteo atrajo a una sanguijuela gigante. Fuiste consumido.",
+                panels: [{ visual: "img/sanguijuela mata jacob.png", sfx: "GLUP" }]
+            },
+            "jacob_sewer_safe": {
+                text: "Llegas a la escalera de mantenimiento. Arriba, en la Sala de Servidores, ves a alguien.",
+                panels: [
+                    { visual: "img/19_jacob_ladder.png", sfx: "SALIDA" }
+                ],
+                choices: [{ text: "Encarar al desconocido", target: "convergence" }]
+            },
+            "jacob_vents": {
+                text: "Los conductos te llevan directo sobre el bloque de celdas, evitando la masacre inicial.",
+                panels: [{ visual: "img/jacob se arrastra por escotillas.png", sfx: "CLANK" }],
+                choices: [{ text: "Caer al sector médico", target: "jacob_medical" }]
+            },
+            "jacob_medical": {
+                text: "Pabellón Médico. Gritos agónicos. Encuentras a un aliado improbable muriendo.",
+                panels: [
+                    { visual: "img/jacob cae en el laboratio medico.png", sfx: "AUXILIO" }
+                ],
+                choices: [
+                    { text: "Ir al laboratorio de criogenia", target: "jacob_cryo" }
+                ]
+            },
+            "jacob_cryo": {
+                text: "Laboratorio de Criogenia. Niebla helada. Un robot de seguridad dañado patrulla erráticamente.",
+                panels: [
+                    { visual: "img/jacob criogenizacion camara.png", sfx: "BZZZT" }
+                ],
+                choices: [
+                    { text: "Moverse entre las cápsulas", target: "jacob_sewers" },
+                    { text: "Atacar al robot", target: "jacob_death_robot" }
+                ]
+            },
+            "jacob_death_robot": {
+                ending: true,
+                title: "DESCUARTIZADO",
+                desc: "Los robots de seguridad son letales. Te cortó en dos antes de que levantaras el arma.",
+                panels: [{ visual: "img/robot mata jacob.png", sfx: "ZAP" }]
+            },
 
-                    // ... (Mantenemos jacob_sewers, medical, etc. originales abajo, pero necesitamos reconectar algunos flujos) ...
-                    // RE-DEFINICIONES DE ORIGINALES PARA ENCAJAR:
+            // --- RUTA DANI ---
+            "dani_arrival": {
+                text: "MEMORIA 01: INFILTRACIÓN.\n\nDani entra por la esclusa de carga exterior. El objetivo no es escapar, es entrar.",
+                panels: [
+                    { visual: "img/entrada ujc dani.png", sfx: "CORTANDO" }
+                ],
+                choices: [
+                    { text: "Hackear dron de vigilancia", target: "dani_stealth" },
+                    { text: "Entrada directa", target: "dani_combat_start" }
+                ]
+            },
+            "dani_combat_start": {
+                ending: true,
+                title: "DETECTADA",
+                desc: "Las torretas automáticas detectaron tu bioseñal.",
+                panels: [{ visual: "img/muerte torretas dani.png", sfx: "DETECTED" }]
+            },
+            "dani_stealth": {
+                text: "Evades los escáneres. Llegas a los archivos antiguos.",
+                panels: [
+                    { visual: "img/hackear dron dani.png", sfx: "SHHH" }
+                ],
+                choices: [
+                    { text: "Descargar bitácoras", target: "dani_data" }
+                ]
+            },
+            "dani_data": {
+                text: "Los datos confirman la 'Evolución Forzada'. [ARCHIVO ENCRIPTADO]: 'Sujeto Zero encontrado en las Ruinas de Arcas. Año 2120.'",
+                panels: [
+                    { visual: "img/dani descargar bitacoras.png", sfx: "REVELACIÓN" }
+                ],
+                choices: [
+                    { text: "Buscar las Ruinas", target: "dani_colony_ruins" }
+                ]
+            },
+            "dani_colony_ruins": {
+                text: "Desciendes por el hueco del ascensor antiguo. Llegas a una ciudad subterránea.",
+                panels: [
+                    { visual: "img/CIUDAD SUBTERRANEA.png", sfx: "ECOS" }
+                ],
+                choices: [
+                    { text: "Explorar templo central", target: "dani_arcanum" },
+                    { text: "Investigar viviendas", target: "dani_ghosts" }
+                ]
+            },
+            "dani_ghosts": {
+                text: "Las casas están llenas de polvo y juguetes de niños.",
+                panels: [
+                    { visual: "img/investiga viviendas dani.png", sfx: "MEMORIA" }
+                ],
+                choices: [
+                    { text: "Salir, ir al templo", target: "dani_arcanum" }
+                ]
+            },
+            "dani_arcanum": {
+                text: "El 'Templo' es en realidad un laboratorio de contención UJC. Encuentras un vial de 'Antídoto Prototipo'.",
+                panels: [
+                    { visual: "img/explorar templo dani.png", sfx: "ORIGEN" }
+                ],
+                choices: [
+                    { text: "Tomar el vial", target: "dani_infiltrate" }
+                ]
+            },
+            "dani_infiltrate": {
+                text: "Sales de las ruinas hacia el hangar principal.",
+                panels: [
+                    { visual: "img/hangar.png", sfx: "MISIÓN" }
+                ],
+                choices: [
+                    { text: "Hackear terminal de seguridad", target: "dani_tech" }
+                ]
+            },
+            "dani_tech": {
+                text: "La terminal desbloquea el acceso al Sanctum. Pero también libera las celdas de aislamiento.",
+                panels: [
+                    { visual: "img/hackear terminal dani.png", sfx: "ACCESO" }
+                ],
+                choices: [{ text: "Correr hacia el punto de encuentro", target: "convergence" }]
+            },
 
-                    "jacob_sewers": {
-                        text: "El agua negra de las alcantarillas te llega al pecho. Es el único camino hacia el Garage.",
-                        panels: [
-                            { visual: "img/18_jacob_sewer.png", sfx: "SATURACIÓN" }
-                        ],
-                        choices: [
-                            { text: "Nadar rápido", target: "jacob_death_sewer" },
-                            { text: "Sigilo (Caminar lento)", target: "jacob_sewer_safe" }
-                        ]
-                    },
-                    "jacob_death_sewer": {
-                        ending: true,
-                        title: "BIO-ABSORCIÓN",
-                        desc: "El chapoteo atrajo a una sanguijuela gigante. Fuiste consumido.",
-                        panels: [{ visual: "Jacob Lee disappearing into black water, a massive tentacle visible", sfx: "GLUP" }]
-                    },
-                    "jacob_sewer_safe": {
-                        text: "Llegas a la escalera de mantenimiento. Arriba, en la Sala de Servidores, ves a alguien.",
-                        panels: [
-                            { visual: "img/19_jacob_ladder.png", sfx: "SALIDA" }
-                        ],
-                        choices: [{ text: "Encarar al desconocido", target: "convergence" }]
-                    },
-                    "jacob_vents": { // Camino alternativo corte
-                        text: "Los conductos te llevan directo sobre el bloque de celdas, evitando la masacre inicial, pero te dejan caer en el sector médico.",
-                        panels: [{ visual: "Jacob Lee crawling in ventilation shaft, looking down at chaos", sfx: "CLANK" }],
-                        choices: [{ text: "Caer al sector médico", target: "jacob_medical" }]
-                    },
-                    "jacob_medical": {
-                        text: "Pabellón Médico. Gritos agónicos. Encuentras a un aliado improbable muriendo: El Capitan Ferris (reimaginado/cameo). Señala el camino al Sanctum.",
-                        panels: [
-                            { visual: "medical lab with broken tanks, green glowing liquid, blood on floor", sfx: "AUXILIO" }
-                        ],
-                        choices: [
-                            { text: "Ir al laboratorio de criogenia", target: "jacob_cryo" }
-                        ]
-                    },
-                    "jacob_cryo": {
-                        text: "Laboratorio de Criogenia. Niebla helada. Un robot de seguridad dañado patrulla erráticamente.",
-                        panels: [
-                            { visual: "frozen room with cryo pods, security robot with sparks, blue fog", sfx: "BZZZT" }
-                        ],
-                        choices: [
-                            { text: "Moverse entre las cápsulas", target: "jacob_sewers" }, // Reconexión
-                            { text: "Atacar al robot", target: "jacob_death_robot" }
-                        ]
-                    },
-                    "jacob_death_robot": {
-                        ending: true,
-                        title: "DESCUARTIZADO",
-                        desc: "Los robots de seguridad son letales. Te cortó en dos antes de que levantaras el arma.",
-                        panels: [{ visual: "security robot firing lasers, brutal demise", sfx: "ZAP" }]
-                    },
+            // --- CONVERGENCIA ---
+            "convergence": {
+                text: "Jacob y Dani se encuentran en la Sala de Servidores. Armas apuntadas. 'Tú quieres salir, yo quiero la verdad', dice Dani.",
+                panels: [
+                    { visual: "img/trato.png", sfx: "ALTO" }
+                ],
+                choices: [{ text: "Bajar al Sanctum del Alcaide", target: "boss_intro" }]
+            },
 
+            // --- JEFE FINAL ---
+            "boss_intro": {
+                text: "Capitán Ferris... o lo que queda de él. El 'Alpha'.",
+                panels: [
+                    { visual: "img/pelea boss final alcaide.png", sfx: "ROAR" }
+                ],
+                choices: [
+                    { text: "Jacob: Carga frontal", target: "boss_phase_jacob" },
+                    { text: "Dani: Fuego de cobertura", target: "boss_phase_dani" }
+                ]
+            },
+            "boss_phase_jacob": {
+                text: "Jacob esquiva un golpe demoledor y clava la porra eléctrica.",
+                panels: [{ visual: "img/jacob boss final.png", sfx: "ZZZRRRT" }],
+                choices: [{ text: "Rematar", target: "boss_finale" }]
+            },
+            "boss_phase_dani": {
+                text: "Dani vuela los tanques de combustible tras el Alpha.",
+                panels: [{ visual: "img/dani boss final.png", sfx: "BOOM" }],
+                choices: [{ text: "Rematar", target: "boss_finale" }]
+            },
+            "boss_finale": {
+                text: "El Alpha cae. La estructura colapsa. Solo hay una cápsula de escape funcional.",
+                panels: [
+                    { visual: "img/rematar.png", sfx: "CRITICAL" }
+                ],
+                choices: [
+                    { text: "Jacob: 'Lárgate de aquí, Dani'", target: "ending_brave" },
+                    { text: "Ambos intentan entrar", target: "ending_victory" }
+                ]
+            },
 
-                    // --- RUTA DANI: EXPANDIDA ---
-                    "dani_arrival": {
-                        text: "MEMORIA 01: INFILTRACIÓN.\n\nDani entra por la esclusa de carga exterior. El objetivo no es escapar, es entrar. Necesita pruebas de lo que la UJC está haciendo aquí.",
-                        panels: [
-                            { visual: "Dani Nakamura cutting through a metal door with a laser tool, space background", sfx: "CORTANDO" }
-                        ],
-                        choices: [
-                            { text: "Hackear dron de vigilancia", target: "dani_stealth" },
-                            { text: "Entrada directa", target: "dani_combat_start" }
-                        ]
-                    },
-                    "dani_combat_start": {
-                        ending: true,
-                        title: "DETECTADA",
-                        desc: "Las torretas automáticas detectaron tu bioseñal. No tuviste oportunidad.",
-                        panels: [{ visual: "automated turrets firing, red lasers, death screen", sfx: "DETECTED" }]
-                    },
-                    "dani_stealth": {
-                        text: "Evades los escáneres. Llegas a los archivos antiguos. Aquí es donde empezó todo, antes de la prisión.",
-                        panels: [
-                            { visual: "Dani hiding behind crates, security drone passing by, stealth tension", sfx: "SHHH" }
-                        ],
-                        choices: [
-                            { text: "Descargar bitácoras", target: "dani_data" }
-                        ]
-                    },
-                    "dani_data": {
-                        text: "Los datos confirman la 'Evolución Forzada'. [ARCHIVO ENCRIPTADO]: 'Sujeto Zero encontrado en las Ruinas de Arcas. Año 2120.' ¿Ruinas? Esto no es solo una prisión.",
-                        panels: [
-                            { visual: "holographic screen showing DNA helix mutation and architectural blueprints of ancient ruins", sfx: "REVELACIÓN" }
-                        ],
-                        choices: [
-                            { text: "Buscar las Ruinas", target: "dani_colony_ruins" } // New Route
-                        ]
-                    },
-                    // --- CAPÍTULO INTERMEDIO: LA COLONIA ANTIGUA (DANI) ---
-                    "dani_colony_ruins": {
-                        text: "Desciendes por el hueco del ascensor antiguo. Llegas a una ciudad subterránea. Edificios de piedra y metal arcaico. La Colonia Original de Callisto, olvidada y enterrada.",
-                        panels: [
-                            { visual: "underground ancient city ruins, destroyed buildings, spooky fog, flashlight beam", sfx: "ECOS" }
-                        ],
-                        choices: [
-                            { text: "Explorar templo central", target: "dani_arcanum" },
-                            { text: "Investigar viviendas", target: "dani_ghosts" }
-                        ]
-                    },
-                    "dani_ghosts": {
-                        text: "Las casas están llenas de polvo y juguetes de niños. [HOLOGRAMA RESIDUAL]: Una familia cenando, luego luces rojas, luego gritos. Sucedió hace 100 años.",
-                        panels: [
-                            { visual: "dusty room with old furniture, ghostly blue hologram of people screaming", sfx: "MEMORIA" }
-                        ],
-                        choices: [
-                            { text: "Salir a la plaza", target: "dani_arcanum" }
-                        ]
-                    },
-                    "dani_arcanum": {
-                        text: "El 'Templo' es en realidad un laboratorio de contención UJC de primera generación. Aquí crearon al primer parásito. Encuentras un vial de 'Antídoto Prototipo'.",
-                        panels: [
-                            { visual: "ancient stone temple entrance with high tech lab equipment inside, contrast old vs new", sfx: "ORIGEN" }
-                        ],
-                        choices: [
-                            { text: "Tomar el vial", target: "dani_infiltrate" } // Re-connects
-                        ]
-                    },
-                    "dani_infiltrate": { // Antes "dani_start" (continuación)
-                        text: "Sales de las ruinas hacia el hangar principal. Con la verdad en tu poder, la misión cambia. Tienes que difundir esto.",
-                        panels: [
-                            { visual: "Dani Nakamura emerging from floor grating into a modern hangar bay, looking determined", sfx: "MISIÓN" }
-                        ],
-                        choices: [
-                            { text: "Hackear terminal de seguridad", target: "dani_tech" }
-                        ]
-                    },
-                    "dani_tech": {
-                        text: "La terminal desbloquea el acceso al Sanctum. Pero también libera las celdas de aislamiento. Una horda se aproxima.",
-                        panels: [
-                            { visual: "Dani Nakamura typing fast on a keyboard, door opening, red alarms", sfx: "ACCESO" }
-                        ],
-                        choices: [{ text: "Correr hacia el punto de encuentro", target: "convergence" }]
-                    },
-
-                    // --- CONVERGENCIA (COMÚN) ---
-                    "convergence_prep": { // (Opcional si vienen de un camino especifico)
-                        text: "Estás cerca del núcleo. Escuchas disparos al otro lado de la puerta.",
-                        panels: [{ visual: "heavy door with dents, sounds of battle behind", sfx: "GOLPES" }],
-                        choices: [{ text: "Abrir la puerta", target: "convergence" }]
-                    },
-                    "convergence": {
-                        text: "Jacob y Dani se encuentran en la Sala de Servidores. Armas apuntadas. Breve pausa. 'Tú quieres salir, yo quiero la verdad', dice Dani. 'El Alcaide tiene ambas'.",
-                        panels: [
-                            { visual: "img/20_convergence.png", sfx: "ALTO" },
-                            { visual: "Jacob lowering weapon, Dani nodding, shake hands", sfx: "TRATO" }
-                        ],
-                        choices: [{ text: "Bajar al Sanctum del Alcaide", target: "boss_intro" }]
-                    },
-
-                    // --- JEFE FINAL & FINALES (Mantenidos y pulidos) ---
-                    "boss_intro": {
-                        text: "Capitán Ferris... o lo que queda de él. El 'Alpha'. Una monstruosidad de dos cabezas y fuerza bruta.",
-                        panels: [
-                            { visual: "Alpha mutant roaring, massive muscular creature with exposed bone armor", sfx: "ROAR" }
-                        ],
-                        choices: [
-                            { text: "Jacob: Carga frontal", target: "boss_phase_jacob" },
-                            { text: "Dani: Fuego de cobertura", target: "boss_phase_dani" }
-                        ]
-                    },
-                    "boss_phase_jacob": {
-                        text: "Jacob esquiva un golpe demoledor y clava la porra eléctrica en el ojo de la bestia.",
-                        panels: [{ visual: "Jacob sliding under a massive fist, striking upward with stun baton", sfx: "ZZZRRRT" }],
-                        choices: [{ text: "Rematar", target: "boss_finale" }]
-                    },
-                    "boss_phase_dani": {
-                        text: "Dani vuela los tanques de combustible tras el Alpha. La explosión lo inestabiliza.",
-                        panels: [{ visual: "explosion engulfing the monster, Dani holding a detonator", sfx: "BOOM" }],
-                        choices: [{ text: "Rematar", target: "boss_finale" }]
-                    },
-                    "boss_finale": {
-                        text: "El Alpha cae. La estructura colapsa. Solo hay una cápsula de escape funcional.",
-                        panels: [
-                            { visual: "The monster dead on the floor, debris falling, one escape pod lit up", sfx: "CRITICAL" },
-                            { visual: "Jacob looking at Dani, then at the pod, realizing only one can go", sfx: "..." }
-                        ],
-                        choices: [
-                            { text: "Jacob: 'Lárgate de aquí, Dani'", target: "ending_brave" }, // Canon
-                            { text: "Ambos intentan entrar (Fallo)", target: "ending_victory" } // Alternativo
-                        ]
-                    },
-
-                    // --- PROTOCOLO ELIAS (Historia Secreta) ---
-                    "elias_start": {
-                        text: "[PROTOCOLO ELIAS] Recluso 529-B. Elias Porter está en el taller de mantenimiento cuando las alarmas se activan. No es un simulacro. Algo ha salido mal en el bloque médico.",
-                        panels: [{ visual: "Elias Porter in a dark industrial workshop, holding a wrench, red alarm lights flashing", sfx: "ALARMA" }],
-                        choices: [
-                            { text: "Bloquear las puertas del taller", target: "elias_outbreak" }
-                        ]
-                    },
-                    "elias_outbreak": {
-                        text: "Gritos en los conductos. El sistema de ventilación está transportando 'algo' gaseoso... o biológico. Elias sella el sector, escuchando cómo sus compañeros son masacrados al otro lado.",
-                        panels: [{ visual: "monitor screen showing prison corridors in chaos, blurry monsters, static", sfx: "SANGRE" }],
-                        choices: [
-                            { text: "Hackear la red de sensores", target: "elias_discovery" }
-                        ]
-                    },
-                    "elias_discovery": {
-                        text: "Los sensores detectan un impacto en la superficie. Una nave de carga: El Charon. 'Un piloto... si sobrevive al choque, él es mi ticket de salida'. Elias empieza a moverse por los conductos hacia el bloque de celdas.",
-                        panels: [{ visual: "holographic radar showing a crash site on Callisto's surface, green dots", sfx: "ESPERANZA" }],
-                        choices: [{ text: "Esperar a Jacob Lee", target: "elias_waiting" }]
-                    },
-                    "elias_waiting": {
-                        text: "Elias se oculta en la sombra de su celda, viendo cómo la infección se propaga. Sabe que ha sido mordido en la huida, pero resiste por una última oportunidad de libertad.",
-                        panels: [{ visual: "Elias looking at a bite on his arm, sweating, determined face", sfx: "RESISTENCIA" }],
-                        choices: [{ text: "Encuentro con el Piloto", target: "jacob_meet_elias" }]
-                    },
-
-                    // --- FINALES ---
-                    "ending_brave": {
-                        ending: true,
-                        title: "SACRIFICIO",
-                        desc: "Jacob lanza a Dani en la cápsula. Él se enfrenta a la horda final mientras la estación explota. Un verdadero héroe.",
-                        panels: [{ visual: "Jacob smiling sadly as pod door closes, turning to face monsters", sfx: "HONOR" }]
-                    },
-                    "ending_victory": {
-                        ending: true,
-                        title: "SOBRECARGA",
-                        desc: "La cápsula no soportó el peso de dos. Fallo de lanzamiento. Ambos atrapados.",
-                        panels: [{ visual: "pod sparks and fails, red warning lights, look of despair", sfx: "ERROR" }]
-                    }
-                }
+            // --- FINALES ---
+            "ending_brave": {
+                ending: true,
+                title: "SACRIFICIO",
+                desc: "Jacob lanza a Dani en la cápsula. Él se enfrenta a la horda final mientras la estación explota.",
+                panels: [{ visual: "img/jacob se sacrifica para salvar a Dani.png", sfx: "HONOR" }]
+            },
+            "ending_victory": {
+                ending: true,
+                title: "SOBRECARGA",
+                desc: "La cápsula no soportó el peso de dos. Fallo de lanzamiento.",
+                panels: [{ visual: "img/07_jacob_cell.png", sfx: "ERROR" }]
             }
-        };
+        }
+    }
+};
 
         class CallistoApp {
             constructor() {
