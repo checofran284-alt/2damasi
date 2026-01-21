@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART CITY: NEURAL GRID V4.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Base Palette from ciudad4-1 */
+            --city-bg: #020617;
+            --city-base: #06b6d4;
+            /* Cyan-500 equivalent */
+
+            /* Monochromatic Sector Styles */
+            --sector-a: rgba(6, 182, 212, 0.15);
+            /* Financial/Core */
+            --sector-b: rgba(6, 182, 212, 0.08);
+            /* Industrial */
+            --sector-c: rgba(6, 182, 212, 0.05);
+            /* Residential */
+            --sector-d: rgba(6, 182, 212, 0.02);
+            /* Dark/Suburbs */
+
+            /* Tower Status Colors (Only these break the monochrome) */
+            --tower-online: #22c55e;
+            --tower-transition: #eab308;
+            --tower-off: #334155;
+            --tower-error: #ef4444;
+
+            --color-road: rgba(6, 182, 212, 0.2);
+            --color-data: #ccfbf1;
+        }
+
+        body {
+            background-color: var(--city-bg);
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            perspective: 1000px;
+            /* For Parallax */
+        }
+
+        /* --- VISUAL EFFECTS --- */
+        .scanline {
+            width: 100%;
+            height: 200px;
+            z-index: 20;
+            background: linear-gradient(0deg, transparent 0%, rgba(6, 182, 212, 0.05) 50%, transparent 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% {
+                bottom: 100%;
+            }
+
+            100% {
+                bottom: -200px;
+            }
+        }
+
+        .glass-panel {
+            background: rgba(2, 6, 23, 0.85);
+            /* Darker for better contrast */
+            backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid rgba(6, 182, 212, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- MAP CONTAINER (PARALLAX TARGET) --- */
+        #viewport {
+            position: absolute;
+            inset: -5%;
+            /* Larger than screen to allow panning */
+            width: 110%;
+            height: 110%;
+            z-index: 0;
+            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 80%);
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: transform 0.1s ease-out;
+            /* Smooth follow */
+        }
+
+        /* --- SVG STYLES --- */
+        .district {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            stroke-width: 1;
+            stroke: rgba(6, 182, 212, 0.2);
+            fill-opacity: 1;
+        }
+
+        .district:hover {
+            fill-opacity: 0.8;
+            stroke: var(--city-base);
+            stroke-width: 2;
+            filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.3));
+        }
+
+        .district.selected {
+            stroke: #fff !important;
+            stroke-width: 3 !important;
+            filter: drop-shadow(0 0 30px rgba(6, 182, 212, 0.6)) !important;
+        }
+
+        /* Specific Monochrome Sector Fills */
+        .sector-a {
+            fill: var(--sector-a);
+        }
+
+        .sector-b {
+            fill: var(--sector-b);
+        }
+
+        .sector-c {
+            fill: var(--sector-c);
+        }
+
+        .sector-d {
+            fill: var(--sector-d);
+        }
+
+        /* Roads & Data */
+        .city-road {
+            stroke: var(--color-road);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-dasharray: 2, 8;
+            opacity: 0.5;
+        }
+
+        .data-packet {
+            fill: var(--color-data);
+            filter: drop-shadow(0 0 8px var(--city-base));
+        }
+
+        /* Towers */
+        .tower-beacon {
+            transition: fill 0.4s, filter 0.4s;
+        }
+
+        .tower-online {
+            fill: var(--tower-online);
+            filter: drop-shadow(0 0 20px var(--tower-online));
+        }
+
+        .tower-transition {
+            fill: var(--tower-transition);
+            animation: pulse-yellow 1s infinite;
+            filter: drop-shadow(0 0 15px var(--tower-transition));
+        }
+
+        .tower-off {
+            fill: var(--tower-off);
+            opacity: 0.5;
+        }
+
+        .tower-error {
+            fill: var(--tower-error);
+            animation: flash-red 0.5s infinite;
+            filter: drop-shadow(0 0 20px var(--tower-error));
+        }
+
+        @keyframes pulse-yellow {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.6
+            }
+        }
+
+        @keyframes flash-red {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.3
+            }
+        }
+
+        /* Decor */
+        .building {
+            fill: rgba(6, 182, 212, 0.1);
+            transition: fill 0.3s;
+        }
+
+        .group-sector:hover .building {
+            fill: rgba(6, 182, 212, 0.3);
+        }
+
+        /* Grid Background Pattern */
+        .grid-line {
+            stroke: rgba(6, 182, 212, 0.05);
+            stroke-width: 0.5;
+        }
+
+        /* UI Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scanline"></div>
+
+    <!-- PARALLAX VIEWPORT -->
+    <div id="viewport">
+        <svg id="map-svg" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+            <!-- Background Grid -->
+            <defs>
+                <pattern id="gridPattern" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <path d="M 50 0 L 0 0 0 50" fill="none" class="grid-line" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#gridPattern)" />
+
+            <!-- Map Layers -->
+            <g id="layer-districts"></g>
+            <g id="layer-connections"></g>
+            <g id="layer-traffic"></g>
+            <g id="layer-towers"></g>
+            <g id="layer-labels"></g>
+
+            <!-- Debris Layer (Floating particles) -->
+            <g id="layer-debris"></g>
+        </svg>
+    </div>
+
+    <!-- UI: HEADER -->
+    <header class="fixed top-6 left-6 right-6 h-20 glass-panel rounded-2xl flex items-center justify-between px-8 z-50">
+        <div class="flex items-center gap-5">
+            <div class="relative w-4 h-4">
+                <div class="absolute inset-0 bg-cyan-400 rounded-full animate-ping opacity-75"></div>
+                <div class="relative w-4 h-4 bg-cyan-500 rounded-full shadow-[0_0_15px_#06b6d4]"></div>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black italic text-white tracking-widest drop-shadow-md">
+                    SMART_CITY <span class="text-cyan-400 font-thin">OS</span>
+                </h1>
+                <p class="text-[9px] text-cyan-200/50 font-bold tracking-[0.4em] uppercase">Neural Network Control V4.1
+                </p>
+            </div>
+        </div>
+        <div class="flex gap-8 text-right">
+            <div>
+                <p class="text-[9px] text-slate-500 uppercase tracking-widest">Network Load</p>
+                <p id="net-load" class="text-xs font-mono text-cyan-300">45.2 TB/s</p>
+            </div>
+            <div class="border-r border-white/10 pr-6">
+                <p class="text-[9px] text-slate-500 uppercase tracking-widest">System Status</p>
+                <p class="text-xs font-black text-emerald-400 italic">OPTIMAL</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- UI: SIDEBAR -->
+    <aside
+        class="fixed top-32 left-6 bottom-6 w-80 glass-panel rounded-2xl p-6 flex flex-col gap-6 z-40 transition-transform duration-300">
+
+        <!-- Mode Selector -->
+        <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-black mb-2">Estrategia de Control</p>
+            <div class="flex gap-2">
+                <button onclick="setMode('manual')" id="btn-mode-manual"
+                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/50">Manual</button>
+                <button onclick="setMode('auto')" id="btn-mode-auto"
+                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5">Auto</button>
+            </div>
+        </div>
+
+        <!-- Selected Sector Info -->
+        <div id="sector-info" class="hidden animate-slide-in">
+            <div class="relative overflow-hidden p-5 rounded-xl bg-slate-900/50 border border-cyan-900/50">
+                <div class="absolute top-0 right-0 p-2 opacity-20"><i class="fas fa-server text-4xl text-cyan-500"></i>
+                </div>
+                <p class="text-[9px] text-cyan-500 font-black tracking-widest mb-1">DATA CENTER NODE</p>
+                <h2 id="ui-name" class="text-xl font-black text-white italic tracking-wide mb-2">SERVER NAME</h2>
+                <div id="ui-status-badge"
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-white">
+                    <span class="w-2 h-2 rounded-full bg-gray-500"></span> OFFLINE
+                </div>
+            </div>
+
+            <!-- Dashboard Actions (Connected to Logic) -->
+            <div class="flex flex-col gap-2 mt-4">
+                <p class="text-[9px] text-slate-600 uppercase tracking-widest font-black ml-1">Protocolos</p>
+                <button onclick="sendAction('START')"
+                    class="group relative w-full py-3 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500 font-bold text-[10px] uppercase tracking-widest border border-emerald-500/20 rounded-lg transition-all overflow-hidden">
+                    <span
+                        class="absolute inset-0 bg-emerald-500/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></span>
+                    <span class="relative flex items-center justify-center gap-2"><i class="fas fa-power-off"></i>
+                        Iniciar Secuencia</span>
+                </button>
+                <button onclick="sendAction('STOP')"
+                    class="group w-full py-3 bg-slate-500/5 hover:bg-slate-500/10 text-slate-400 font-bold text-[10px] uppercase tracking-widest border border-slate-500/20 rounded-lg transition-all">
+                    <span class="flex items-center justify-center gap-2"><i class="fas fa-stop"></i> Detener
+                        Núcleo</span>
+                </button>
+            </div>
+
+            <!-- Metrics -->
+            <div class="mt-4 space-y-2">
+                <div class="flex justify-between text-[10px] font-mono text-cyan-300"><span>CPU</span><span
+                        id="ui-cpu">0%</span></div>
+                <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                    <div id="ui-cpu-bar" class="h-full bg-cyan-400 transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center opacity-30">
+            <i class="fas fa-satellite-dish text-4xl mb-4 text-cyan-500"></i>
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Selecciona un Sector<br>del Mapa
+            </p>
+        </div>
+
+        <!-- Terminal -->
+        <div class="mt-auto">
+            <div class="flex justify-between items-end mb-1 px-1">
+                <h3 class="text-[9px] font-black text-slate-600 uppercase tracking-widest">System Log</h3>
+                <span class="animate-pulse text-cyan-500 text-[10px]">●</span>
+            </div>
+            <div id="console-log"
+                class="h-32 bg-black/60 rounded-xl border border-white/5 p-3 font-mono text-[9px] text-cyan-600/80 overflow-y-auto flex flex-col-reverse shadow-inner">
+                <div>> Ready.</div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // --- 1. DATA CONFIGURATION (DASHBOARD LOGIC) ---
+        // Mapping Dashboard Sectors to Visual Styles of Ciudad4
+        const SECTORS = [
+            {
+                id: "A", name: "Sector: Core", server: "NEXUS_PRIME",
+                style: "sector-a", status: "online", cpu: 45,
+                // Path borrowed/adapted from Ciudad4 (Financial Center-like)
+                path: "M300,0 L1000,0 L1000,200 L500,300 L300,300 L250,150 Z"
+            },
+            {
+                id: "B", name: "Sector: Ind", server: "FACTORY_HUB",
+                style: "sector-b", status: "online", cpu: 78,
+                // Industrial Area
+                path: "M0,0 L300,0 L250,150 L300,300 L0,300 Z"
+            },
+            {
+                id: "C", name: "Sector: Res", server: "HABITAT_SYS",
+                style: "sector-c", status: "online", cpu: 32,
+                // Residential
+                path: "M300,300 L500,300 L1000,200 L1000,450 L600,450 Z"
+            },
+            {
+                id: "D", name: "Sector: Dark", server: "QUARANTINE",
+                style: "sector-d", status: "stopped", cpu: 0,
+                // Periphery/Dark
+                path: "M0,300 L300,300 L600,450 L1000,450 L1000,600 L0,600 Z"
+            },
+            {
+                id: "E", name: "Sector: Exp", server: "LAB_OMEGA",
+                style: "sector-b", status: "online", cpu: 12,
+                // New Experimental Zone (Island)
+                path: "M750,50 L950,50 L950,250 L750,250 Z"
+            }
+        ];
+
+        let selectedSectorId = null;
+        let controlMode = 'manual';
+
+        // --- 2. INITIALIZATION ---
+        window.onload = () => {
+            renderMap();
+            initParallax();
+            initTrafficSystem();
+            log("System initialized securely.");
+            log("Waiting for operator command...");
+        };
+
+        // --- 3. RENDER ENGINE ---
+        function renderMap() {
+            const layerDistricts = document.getElementById('layer-districts');
+            const layerTowers = document.getElementById('layer-towers');
+            const layerLabels = document.getElementById('layer-labels');
+            const layerConnections = document.getElementById('layer-connections');
+            const layerDebris = document.getElementById('layer-debris');
+
+            // Draw Connections First (Bottom Layer)
+            drawConnections(layerConnections);
+
+            SECTORS.forEach(sec => {
+                const center = getPolyCenter(sec.path);
+                sec.cx = center.x;
+                sec.cy = center.y;
+
+                // Group
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                g.setAttribute("class", "group-sector");
+                g.onclick = () => selectSector(sec.id);
+
+                // District Path
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", sec.path);
+                path.setAttribute("class", `district ${sec.style}`);
+                path.setAttribute("id", `poly-${sec.id}`);
+                g.appendChild(path);
+
+                // Buildings / Debris
+                drawDetails(g, sec);
+
+                layerDistricts.appendChild(g);
+
+                // Tower
+                const gTower = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                gTower.setAttribute("id", `tower-grp-${sec.id}`);
+
+                // Mast
+                const mast = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                mast.setAttribute("d", `M${center.x},${center.y} L${center.x},${center.y - 35}`);
+                mast.setAttribute("stroke", "rgba(6,182,212,0.5)");
+                mast.setAttribute("stroke-width", "2");
+
+                // Beacon based on status
+                const beacon = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                beacon.setAttribute("cx", center.x);
+                beacon.setAttribute("cy", center.y - 35);
+                beacon.setAttribute("r", 5);
+                beacon.setAttribute("id", `beacon-${sec.id}`);
+                updateBeaconVisuals(beacon, sec.status);
+
+                gTower.appendChild(mast);
+                gTower.appendChild(beacon);
+                layerTowers.appendChild(gTower);
+
+                // Label
+                drawLabel(layerLabels, sec);
+            });
+
+            // Extra Debris in the background
+            for (let i = 0; i < 30; i++) {
+                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                dot.setAttribute("cx", Math.random() * 1000);
+                dot.setAttribute("cy", Math.random() * 600);
+                dot.setAttribute("r", Math.random() * 1.5);
+                dot.setAttribute("fill", "rgba(6,182,212,0.3)");
+                layerDebris.appendChild(dot);
+            }
+        }
+
+        function drawDetails(g, sec) {
+            // Generate random simple buildings inside the generic area of the sector
+            const count = 15;
+            for (let i = 0; i < count; i++) {
+                const w = 5 + Math.random() * 20;
+                const h = 5 + Math.random() * 30;
+                const ox = (Math.random() - 0.5) * 100;
+                const oy = (Math.random() - 0.5) * 80;
+
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("x", sec.cx + ox);
+                rect.setAttribute("y", sec.cy + oy);
+                rect.setAttribute("width", w);
+                rect.setAttribute("height", h);
+                rect.setAttribute("class", "building");
+                g.appendChild(rect);
+            }
+        }
+
+        function drawLabel(layer, sec) {
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.style.pointerEvents = "none";
+
+            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txt.setAttribute("x", sec.cx);
+            txt.setAttribute("y", sec.cy + 30);
+            txt.setAttribute("text-anchor", "middle");
+            txt.setAttribute("fill", "rgba(255,255,255,0.7)");
+            txt.setAttribute("font-size", "10");
+            txt.setAttribute("font-family", "monospace");
+            txt.setAttribute("font-weight", "bold");
+            txt.textContent = sec.id;
+
+            g.appendChild(txt);
+            layer.appendChild(g);
+        }
+
+        // --- GLOBAL CONNECTIONS DEFINITION ---
+        // 0:A, 1:B, 2:C, 3:D, 4:E
+        const CONNECTIONS = [[0, 1], [1, 2], [2, 3], [0, 2], [1, 4], [0, 4]];
+
+        function drawConnections(layer) {
+            CONNECTIONS.forEach(pair => {
+                const s1 = SECTORS[pair[0]];
+                const s2 = SECTORS[pair[1]];
+                if (!s1 || !s2) return;
+
+                const p1 = getPolyCenter(s1.path);
+                const p2 = getPolyCenter(s2.path);
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                line.setAttribute("d", `M${p1.x},${p1.y} L${p2.x},${p2.y}`);
+                line.setAttribute("class", "city-road");
+                line.setAttribute("id", `road-${s1.id}-${s2.id}`);
+                layer.appendChild(line);
+            });
+        }
+
+        // --- 4. ADVANCED VISUALS: PARALLAX & TRAFFIC ---
+        function initParallax() {
+            const viewport = document.getElementById('viewport');
+
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth / 2 - e.clientX) / 40;
+                const y = (window.innerHeight / 2 - e.clientY) / 40;
+                viewport.style.transform = `scale(1.05) translate(${x}px, ${y}px) rotateX(${y / 2}deg) rotateY(${-x / 2}deg)`;
+            });
+        }
+
+        function initTrafficSystem() {
+            updateTraffic();
+            // Optional: Re-check traffic every few seconds if status changes externally
+            setInterval(updateTraffic, 5000);
+        }
+
+        function updateTraffic() {
+            const layerTraffic = document.getElementById('layer-traffic');
+            layerTraffic.innerHTML = ''; // Clear existing to rebuild based on current status
+
+            CONNECTIONS.forEach(pair => {
+                const s1 = SECTORS[pair[0]];
+                const s2 = SECTORS[pair[1]];
+
+                // Traffic only if BOTH ends are ONLINE
+                if (s1.status !== 'online' || s2.status !== 'online') return;
+
+                const roadId = `road-${s1.id}-${s2.id}`;
+
+                // Spawn persistent vehicles (2 per road)
+                for (let k = 0; k < 2; k++) {
+                    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    const car = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    car.setAttribute("r", 2);
+                    car.setAttribute("class", "data-packet");
+
+                    const params = (k === 0) ? { dur: 3, begin: 0 } : { dur: 4, begin: 1.5 };
+
+                    const anim = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+                    anim.setAttribute("dur", `${params.dur + Math.random()}s`);
+                    anim.setAttribute("repeatCount", "indefinite");
+                    anim.setAttribute("begin", `${params.begin}s`);
+
+                    const mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+                    mpath.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `#${roadId}`);
+
+                    anim.appendChild(mpath);
+                    car.appendChild(anim);
+                    group.appendChild(car);
+                    layerTraffic.appendChild(group);
+                }
+            });
+        }
+
+        // --- 5. UI LOGIC (DASHBOARD) ---
+        function selectSector(id) {
+            selectedSectorId = id;
+            const sec = SECTORS.find(s => s.id === id);
+
+            // Highlight Visuals
+            document.querySelectorAll('.district').forEach(d => d.classList.remove('selected'));
+            document.getElementById(`poly-${id}`).classList.add('selected');
+
+            // Show UI
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('sector-info').classList.remove('hidden');
+
+            // Populate Info
+            document.getElementById('ui-name').innerText = sec.server;
+            document.getElementById('ui-cpu').innerText = sec.cpu + '%';
+            document.getElementById('ui-cpu-bar').style.width = sec.cpu + '%';
+
+            updateStatusBadge(sec);
+            log(`Accessing Node: ${sec.server}...`);
+        }
+
+        function updateStatusBadge(sec) {
+            const badge = document.getElementById('ui-status-badge');
+            let colorClass = 'bg-gray-500';
+            let label = 'UNKNOWN';
+            let textClass = 'text-white';
+
+            if (sec.status === 'online') { colorClass = 'bg-green-500'; label = 'ONLINE'; textClass = 'text-green-400'; }
+            else if (sec.status === 'transition') { colorClass = 'bg-yellow-500 animate-pulse'; label = 'WORKING...'; textClass = 'text-yellow-400'; }
+            else if (sec.status === 'error') { colorClass = 'bg-red-500'; label = 'CRITICAL'; textClass = 'text-red-400'; }
+            else { label = 'OFFLINE'; textClass = 'text-slate-400'; }
+
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full ${colorClass} mr-2"></span> ${label}`;
+            badge.className = `inline-flex items-center px-3 py-1 rounded bg-black/40 border border-white/10 text-[10px] font-mono ${textClass}`;
+        }
+
+        async function sendAction(action) {
+            if (!selectedSectorId) return;
+            const sec = SECTORS.find(s => s.id === selectedSectorId);
+
+            if (action === 'START') {
+                if (sec.status === 'online') { log("Already Online."); return; }
+
+                sec.status = 'transition';
+                refreshVisuals(sec);
+                log(`Initializing ${sec.server}...`);
+
+                await new Promise(r => setTimeout(r, 2000));
+
+                sec.status = 'online';
+                sec.cpu = 20 + Math.floor(Math.random() * 60);
+                log(`${sec.server} is now ONLINE.`);
+
+            } else if (action === 'STOP') {
+                if (sec.status === 'stopped') { log("Already Stopped."); return; }
+
+                sec.status = 'transition';
+                refreshVisuals(sec);
+                log(`Stopping ${sec.server}...`);
+
+                await new Promise(r => setTimeout(r, 1500));
+
+                sec.status = 'stopped';
+                sec.cpu = 0;
+                log(`${sec.server} has stopped.`);
+            }
+
+            refreshVisuals(sec);
+        }
+
+        function refreshVisuals(sec) {
+            // Update Tower Beacon
+            const beacon = document.getElementById(`beacon-${sec.id}`);
+            updateBeaconVisuals(beacon, sec.status);
+
+            // Update UI if selected
+            if (selectedSectorId === sec.id) {
+                updateStatusBadge(sec);
+                document.getElementById('ui-cpu').innerText = sec.cpu + '%';
+                document.getElementById('ui-cpu-bar').style.width = sec.cpu + '%';
+            }
+
+            // Update traffic in case a node went offline/online
+            updateTraffic();
+        }
+
+        function updateBeaconVisuals(el, status) {
+            el.setAttribute("class", `tower-beacon tower-${status}`);
+        }
+
+        function setMode(mode) {
+            controlMode = mode;
+            document.getElementById('btn-mode-manual').className = mode === 'manual' ?
+                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/50" :
+                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5";
+
+            document.getElementById('btn-mode-auto').className = mode === 'auto' ?
+                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/50" :
+                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5";
+
+            log(`Control Mode switched to: ${mode.toUpperCase()}`);
+        }
+
+        // --- UTILS ---
+        function getPolyCenter(path) {
+            // Simple regex for M x,y and L x,y
+            const nums = path.replace(/[a-zA-Z]/g, '').split(/[\s,]+/).filter(x => x).map(Number);
+            let x = 0, y = 0, c = 0;
+            for (let i = 0; i < nums.length; i += 2) { x += nums[i]; y += nums[i + 1]; c++; }
+            return { x: x / c, y: y / c };
+        }
+
+        function log(msg) {
+            const c = document.getElementById('console-log');
+            const d = document.createElement('div');
+            d.innerText = `> ${msg}`;
+            c.prepend(d);
+            if (c.childNodes.length > 20) c.lastChild.remove();
+        }
+
+    </script>
+</body>
+
+</html>
