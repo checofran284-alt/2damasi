@@ -3,12 +3,84 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2025-12-07T17:51:26+01:00</updated>
+    <updated>2026-01-25T19:13:56+01:00</updated>
     <author>
         <name>Francisco Ferres Briceño</name>
     </author>
     <id>https://checofran284-alt.github.io/2damasi</id>
 
+    <entry>
+        <title>&quot;CONFIGURAR UN AGENTE CON UNA IA LOCAL&quot;</title>
+        <author>
+            <name>Francisco Ferres Briceño</name>
+        </author>
+        <link href="https://checofran284-alt.github.io/2damasi/utiliza-un-agente-con-una-ia-local/"/>
+        <id>https://checofran284-alt.github.io/2damasi/utiliza-un-agente-con-una-ia-local/</id>
+
+        <updated>2026-01-25T16:53:31+01:00</updated>
+            <summary>
+                <![CDATA[
+                    ç Integrantes: Francisco Ferres , Pablo Pérez, Mario Pérez ____________________________________________________________________________________________________________ INDICE: ____________________________________________________________________________________________________________ Para la semana del 15 de enero de&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                <p> </p>
+<p> </p>
+<p>ç<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/25/una-ilustracion-tecn.png" alt="" width="1024" height="1024" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/una-ilustracion-tecn-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/una-ilustracion-tecn-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/una-ilustracion-tecn-md.png 768w"></figure>
+<p class="align-center"><strong><span style="text-decoration: underline;">Integrantes: Francisco Ferres , Pablo Pérez, Mario Pérez</span></strong></p>
+<p>____________________________________________________________________________________________________________</p>
+<p class="align-left">INDICE:</p>
+<ol class="align-center">
+<li class="align-left">Introducción</li>
+<li class="align-left">Configuración del Agente con IA local</li>
+<li class="align-left">Conclusión</li>
+</ol>
+<p class="align-left">____________________________________________________________________________________________________________</p>
+<h5 class="align-left">1. INTRODUCCIÓN</h5>
+<p data-start="220" data-end="726">Para la semana del <strong data-start="239" data-end="262">15 de enero de 2026</strong> se llevó a cabo una actividad centrada en la <strong data-start="308" data-end="361">configuración y evaluación del agente Antigravity</strong> en combinación con <strong data-start="381" data-end="424">modelos de lenguaje ejecutados en local</strong> mediante la herramienta <strong data-start="449" data-end="462">LM Studio</strong>. Nuestro grupo decidió realizar esta práctica, la cual tuvo como objetivo analizar el proceso de integración de <em>Antigravity </em>como agente intermediario y estudiar su comportamiento al trabajar con modelos orientados a tareas de generación y análisis de código, ejecutados íntegramente sobre <strong data-start="712" data-end="725">GPU local</strong>.</p>
+<p data-start="728" data-end="1183">En concreto, se emplearon los modelos <strong data-start="766" data-end="783">Codestral-22B</strong> y <strong data-start="786" data-end="797">Granite 4H Tiny</strong>, seleccionados para representar dos enfoques distintos en términos de tamaño, arquitectura y exigencia computacional. A través de esta configuración se buscó evaluar aspectos como la <strong data-start="980" data-end="1007">estabilidad del sistema</strong>, el <strong data-start="1012" data-end="1052">consumo de recursos (CPU, RAM y GPU)</strong>, el <strong data-start="1057" data-end="1080">tiempo de respuesta</strong> y la <strong data-start="1086" data-end="1122">calidad de las salidas generadas</strong> al ejecutar tareas prácticas de programación y razonamiento.</p>
+<p data-start="1185" data-end="1591">El desarrollo de esta actividad permitió observar cómo Antigravity gestiona modelos de diferente escala dentro de LM Studio, así como su capacidad para mantener un comportamiento consistente bajo distintas cargas de trabajo.</p>
+<p class="align-left">____________________________________________________________________________________________________________</p>
+<h5 class="align-left">2. CONFIGURACIÓN DEL AGENTE CON IA EN LOCAL</h5>
+<p class="align-center">Para empezar la actividad deberemos de tener descargado <em>LM Studio</em> y <em>Antigravity </em>los cuales se puede acceder de manera fácil mediante estos dos enlaces:</p>
+<p class="align-center"><a href="https://antigravity.google/">https://antigravity.google/</a></p>
+<p class="align-center"><a href="https://antigravity.google/"> https://lmstudio.ai/</a></p>
+<p class="align-center">Una vez nos registremos con nuestras cuentas, deberemos de realizar los siguientes pasos guiados por imágenes para explicar el proceso de resolución de la actividad. A continuación mostraremos los pasos a seguir...⬇️</p>
+<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/25/Captura-de-pantalla-2026-01-25-181742.png" alt="" width="2559" height="1379" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-181742-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-181742-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-181742-md.png 768w"></figure>
+<p class="align-center">PASO 1 - LO PRIMERO QUE DEBEREMOS DE HACER DENTRO DE LA PÁGINA DE LM STUDIO SERÁ DESCARGAR LOS MODELOS QUE USAREMOS, LOS CUALES SERÁN <span style="text-decoration: underline;"><strong data-start="766" data-end="783">Codestral-22B</strong> y <strong data-start="786" data-end="797">Granite 4H Tiny</strong><em><strong data-start="786" data-end="797">,</strong></em></span> EN NUESTRO CASO PARA ELLO NOS IREMOS A LA LUPA QUE SE ENCUENTRA A LA IZQUIERDA (<strong><em>color morado</em></strong>)…</p>
+<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/25/Captura-de-pantalla-2026-01-25-181706.png" alt="" width="2559" height="1382" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-181706-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-181706-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-181706-md.png 768w"></figure>
+<p class="align-center">PASO 2 - AQUÍ BUSCAREMOS LOS MODELOS Y LOS DESCARGAREMOS TARDA UN POCO DEPENDIENDO LA CONEXIÓN A INTERNET QUE TENGAS.</p>
+<div class="gallery-wrapper gallery-wrapper--wide"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="2">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-22-124545.png" data-size="2559x1336"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-22-124545-thumbnail.png" alt="" width="720" height="376"></a></figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-25-191321.png" data-size="2559x1346"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-25-191321-thumbnail.png" alt="" width="720" height="379"></a></figure>
+</div></div>
+<p class="align-center">PASO 3 - EN ESTE PASO UNA VEZ DESCARGADO LOS DOS MODELOS DEBEREMOS DE IRNOS A LA TERMINAL DE LM STUDIO DONDE SE ENCONTRABA LA LUPA SOLO QUE ESTE SIMBOLO SE ENCUENTRA MÁS ARRIBA (<strong><em>color verde</em></strong>)… PARA CARGAR LOS MODELOS DEBEREMOS IRNOS AL BOTON DE ARRIBA (<em><strong>Select a model to load</strong></em>) AHÍ ESCOGEREMOS NUSTROS MODELOS QUE PREVIAMENTE DESCARGAMOS.</p>
+<p class="align-center">ANTES DE CARGAR LOS MODELOS ES NECESARIO ACTIVIAR EL SWITCH PARA HABALITAR SU FUNCIONAMIENTO (<em><strong>Status: Running</strong></em>), EL CUAL NOS DEBE SALIR EN VERDE Y EN ESA MISMA LÍNEA NOS DEBE HABILITAR LA IP (<em><strong>http://127.0.0.1:1234</strong></em>) CON LA QUE SE VINCULARA PARA QUE FUNCIONE PROXIMAMENTE CON ANTIGRAVITY.</p>
+<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/25/Captura-de-pantalla-2026-01-25-183926.png" alt="" width="2559" height="1381" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-183926-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-183926-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-25-183926-md.png 768w"></figure>
+<p class="align-center">PASO 4 - ABRIMOS ANTIGRAVITY Y BUSCAMOS EL ENRUTADOR CON LM STUDIO, PERO ANTES DEBEMOS SABER LO SIGUIENTE:</p>
+<blockquote>
+<p class="align-left">Antigravity, al tratarse de un editor desarrollado por Google, presenta actualmente <strong data-start="1794" data-end="1869">restricciones de accesibilidad a determinadas opciones de configuración</strong>, especialmente en su versión gratuita. Estas limitaciones afectaron inicialmente al desarrollo de la práctica, ya que impedían configurar correctamente el <strong data-start="2025" data-end="2047">agente por defecto</strong> que viene integrado en la aplicación, el cual se encuentra situado en el panel lateral derecho de la interfaz.</p>
+<p>¿Qué pasa con este Agente?</p>
+<p data-start="2160" data-end="2629">El principal problema asociado a este agente es que, al intentar <strong data-start="2225" data-end="2267">enrutarlo hacia una dirección IP local</strong> o <strong data-start="2270" data-end="2306">modificar los modelos utilizados</strong> para habilitar el uso de modelos locales, es necesario acceder a la <strong data-start="2375" data-end="2406">configuración del proveedor</strong>, ubicada dentro de las <strong data-start="2430" data-end="2452">opciones avanzadas</strong>. Sin embargo, dichas opciones aparecen <strong data-start="2492" data-end="2533">deshabilitadas en la versión gratuita</strong>, lo que imposibilita realizar cambios sobre el proveedor.</p>
+<p data-start="2631" data-end="2880">Según la información proporcionada por el propio (Gemini), el acceso a estas configuraciones avanzadas <em>requiere una suscripción de pago</em><strong data-start="2742" data-end="2778">, </strong>Debido a estas restricciones, se optó por aplicar una solución alternativa, permitiendo continuar con la práctica y habilitar el uso de modelos locales ejecutados en LM Studio sin depender de las opciones bloqueadas por la versión gratuita.</p>
+</blockquote>
+<div class="gallery-wrapper gallery-wrapper--wide"><div class="gallery"  data-is-empty="false" data-translation="Add images" data-columns="2">
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-25-185959.png" data-size="2559x1379"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-25-185959-thumbnail.png" alt="" width="720" height="388"></a></figure>
+<figure class="gallery__item"><a href="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-25-190010.png" data-size="2559x1376"><img loading="lazy" src="https://checofran284-alt.github.io/2damasi/media/posts/25/gallery/Captura-de-pantalla-2026-01-25-190010-thumbnail.png" alt="" width="720" height="387"></a></figure>
+</div></div>
+<p class="align-center">PASO 5 - LA SOLUCIÓN AL PROBLEMA DEL PASO ANTERIOR SERÁ DESCARGAR UNA EXTENSION DE UN AGENTE DEDICADO A LA GESTIÓN, AYUDA Y PLANIFICACIÓN DE CÓDIGO LLAMADO <span style="text-decoration: underline;"><strong>Cline</strong></span><strong> </strong>,A PARTIR DE ESTE AGENTE CONFIGURAREMOS TODO PARA PROBAR QUE FUNCIONA DE MANERA CORRECTA</p>
+<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/25/Captura-de-pantalla-2026-01-22-125134.png" alt="" width="1504" height="996" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-22-125134-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-22-125134-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-22-125134-md.png 768w"></figure>
+<p class="align-center">PASO 6 - UNA VEZ DESCARGADO CLINE DEBEREMOS DE REALIZAR LA SIGUIENTE CONFIGURACIÓN PARA SU USO</p>
+<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/25/Captura-de-pantalla-2026-01-22-125313.png" alt="" width="1502" height="1001" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-22-125313-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-22-125313-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/25/responsive/Captura-de-pantalla-2026-01-22-125313-md.png 768w"></figure>
+<p>PASO 7 - DONDE PONE EL CÓDIGO</p>
+<p> </p>
+<p> </p>
+<p>____________________________________________________________________________________________________________</p>
+<h5 class="align-left">3. CONCLUSIÓN</h5>
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>&quot;COMPARATIVAS DE MODELOS&quot;</title>
         <author>
