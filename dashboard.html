@@ -4,9 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART CITY: NEURAL GRID V4.3</title>
+    <title>SMART CITY: NEURAL GRID V4.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://jdyfpihuvsoeukzqorbz.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkeWZwaWh1dnNvZXVrenFvcmJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5OTA3NzYsImV4cCI6MjA4NDU2Njc3Nn0.oDPNMGzLVyRLADSxr2q3rW3nGgHoUTX4e3hfpivP92k'
+
+        const supabaseClient = supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        )
+    </script>
     <style>
         :root {
             /* Base Palette from ciudad4-1 */
@@ -228,6 +238,42 @@
         .animate-slide-in {
             animation: slideIn 0.3s ease-out forwards;
         }
+
+        /* --- LOGIN SCREEN --- */
+        #login-screen,
+        #register-screen {
+            background: radial-gradient(circle at 50% 50%, #020617 0%, #000000 100%);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+        }
+
+        #login-screen.hidden-auth,
+        #register-screen.hidden-auth {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            display: none;
+            /* Ensure it doesn't block clicks when hidden */
+        }
+
+        .login-card {
+            background: rgba(2, 6, 23, 0.9);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 50px rgba(6, 182, 212, 0.2), inset 0 0 20px rgba(6, 182, 212, 0.1);
+        }
+
+        .input-field {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--city-base);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            outline: none;
+        }
     </style>
 </head>
 
@@ -274,6 +320,12 @@
         </div>
         <div class="flex gap-8 text-right">
             <div>
+                <button id="header-logout-btn" onclick="handleSignOut()"
+                    class="hidden text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded hover:bg-red-500/20 transition-all uppercase font-bold tracking-wider">
+                    <i class="fas fa-power-off mr-1"></i> Disconnect
+                </button>
+            </div>
+            <div>
                 <p class="text-[9px] text-slate-500 uppercase tracking-widest">Network Load</p>
                 <p id="net-load" class="text-xs font-mono text-cyan-300">45.2 TB/s</p>
             </div>
@@ -283,6 +335,126 @@
             </div>
         </div>
     </header>
+
+    <!-- LOGIN OVERLAY -->
+    <div id="login-screen" class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="login-card p-10 rounded-3xl w-full max-w-md text-center relative overflow-hidden">
+            <!-- Deco -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-900 to-transparent">
+            </div>
+
+            <i class="fas fa-network-wired text-5xl text-cyan-500 mb-6 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]"></i>
+
+            <h1 class="text-3xl font-black italic text-white tracking-widest mb-1">SMART_CITY <span
+                    class="text-cyan-400 font-thin">OS</span></h1>
+            <p class="text-[10px] text-cyan-200/50 font-bold tracking-[0.4em] uppercase mb-8">Secure Access Terminal</p>
+
+            <form id="global-auth-form" class="space-y-4 text-left">
+                <div>
+                    <label
+                        class="block text-[10px] text-cyan-300 uppercase tracking-widest font-bold mb-1 ml-1">Identity</label>
+                    <input id="login-email" type="email" placeholder="OPERATOR ID (EMAIL)"
+                        class="input-field w-full px-4 py-3 text-sm text-cyan-100 rounded-lg placeholder-slate-600 font-mono" />
+                </div>
+                <div>
+                    <label class="block text-[10px] text-cyan-300 uppercase tracking-widest font-bold mb-1 ml-1">Access
+                        Key</label>
+                    <input id="login-pass" type="password" placeholder="••••••••••••"
+                        class="input-field w-full px-4 py-3 text-sm text-cyan-100 rounded-lg placeholder-slate-600 font-mono" />
+                </div>
+
+                <div id="auth-error-msg"
+                    class="text-red-400 text-xs font-mono text-center h-4 opacity-0 transition-opacity"></div>
+
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="handleSignIn()"
+                        class="flex-1 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-black rounded-lg shadow-lg shadow-cyan-900/30 transition-all uppercase text-xs tracking-widest">
+                        Initialize
+                    </button>
+                    <button type="button" onclick="showRegisterScreen()"
+                        class="flex-1 py-3 bg-transparent border border-white/10 hover:bg-white/5 text-slate-400 font-bold rounded-lg transition-all uppercase text-xs tracking-widest">
+                        Create Account
+                    </button>
+                </div>
+
+                <div class="relative py-4 my-2">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-white/10"></div>
+                    </div>
+                    <div
+                        class="relative flex justify-center text-[10px] uppercase tracking-widest text-slate-500 bg-[#06101f] px-2 rounded">
+                        Or Access With</div>
+                </div>
+
+                <button type="button" onclick="signInWithGoogle()"
+                    class="w-full py-3 bg-white hover:bg-slate-200 text-slate-900 font-bold rounded-lg transition-all uppercase text-xs tracking-widest flex items-center justify-center gap-2">
+                    <i class="fab fa-google text-red-500"></i> Google Identity
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- REGISTER OVERLAY (Hidden by default) -->
+    <div id="register-screen" class="fixed inset-0 flex items-center justify-center p-4 hidden-auth">
+        <div class="login-card p-10 rounded-3xl w-full max-w-md text-center relative overflow-hidden">
+            <!-- Deco -->
+            <div
+                class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-900 to-transparent">
+            </div>
+
+            <i class="fas fa-user-plus text-5xl text-purple-500 mb-6 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"></i>
+
+            <h1 class="text-3xl font-black italic text-white tracking-widest mb-1">NEW <span
+                    class="text-purple-400 font-thin">OPERATOR</span></h1>
+            <p class="text-[10px] text-purple-200/50 font-bold tracking-[0.4em] uppercase mb-8">System Access Request
+            </p>
+
+            <form id="global-reg-form" class="space-y-4 text-left">
+                <div>
+                    <label
+                        class="block text-[10px] text-purple-300 uppercase tracking-widest font-bold mb-1 ml-1">Identity
+                        (Email)</label>
+                    <input id="reg-email" type="email" placeholder="NEW OPERATOR ID"
+                        class="input-field w-full px-4 py-3 text-sm text-purple-100 rounded-lg placeholder-slate-600 font-mono focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)]" />
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] text-purple-300 uppercase tracking-widest font-bold mb-1 ml-1">Secure
+                        Password</label>
+                    <input id="reg-pass" type="password" placeholder="••••••••••••"
+                        class="input-field w-full px-4 py-3 text-sm text-purple-100 rounded-lg placeholder-slate-600 font-mono focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)]" />
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] text-purple-300 uppercase tracking-widest font-bold mb-1 ml-1">Confirm
+                        Password</label>
+                    <input id="reg-pass-confirm" type="password" placeholder="••••••••••••"
+                        class="input-field w-full px-4 py-3 text-sm text-purple-100 rounded-lg placeholder-slate-600 font-mono focus:border-purple-500 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)]" />
+                </div>
+
+                <div id="reg-error-msg"
+                    class="text-red-400 text-xs font-mono text-center h-4 opacity-0 transition-opacity"></div>
+
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="showLoginScreen()"
+                        class="flex-1 py-3 bg-transparent border border-white/10 hover:bg-white/5 text-slate-400 font-bold rounded-lg transition-all uppercase text-xs tracking-widest">
+                        Back to Login
+                    </button>
+                    <button type="button" onclick="handleSignUp()"
+                        class="flex-1 py-3 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-lg shadow-lg shadow-purple-900/30 transition-all uppercase text-xs tracking-widest">
+                        Create Operator
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- UI: SIDEBAR -->
     <aside
@@ -371,14 +543,14 @@
         // Mapping Dashboard Sectors to Visual Styles of Ciudad4
         const SECTORS = [
             {
-                id: "A", name: "Sector: Core", server: "NEXUS_PRIME",
-                style: "sector-a", status: "online", cpu: 45,
+                id: "A", name: "Sector: Core", server: "W10",
+                style: "sector-a", status: "stopped", cpu: 0,
                 // Path borrowed/adapted from Ciudad4 (Financial Center-like)
                 path: "M300,0 L1000,0 L1000,200 L500,300 L300,300 L250,150 Z"
             },
             {
-                id: "B", name: "Sector: Ind", server: "FACTORY_HUB",
-                style: "sector-b", status: "online", cpu: 78,
+                id: "B", name: "Sector: Ind", server: "UbuntuServer24",
+                style: "sector-b", status: "stopped", cpu: 0,
                 // Industrial Area
                 path: "M0,0 L300,0 L250,150 L300,300 L0,300 Z"
             },
@@ -397,22 +569,19 @@
             {
                 id: "E", name: "Sector: Exp", server: "LAB_OMEGA",
                 style: "sector-b", status: "online", cpu: 12,
-                // New Experimental Zone (Island)
-                path: "M750,50 L950,50 L950,250 L750,250 Z"
+                // Integrated Annex (Polygonal) - Fits better with Core/Res
+                path: "M650,100 L850,120 L800,280 L600,220 Z"
             }
         ];
 
         let selectedSectorId = null;
-        let controlMode = 'manual';
+        let currentMode = 'single';
+        let selectedGroup = new Set();
 
         // --- 2. INITIALIZATION ---
-        window.onload = () => {
-            renderMap();
-            initParallax();
-            initTrafficSystem();
-            log("System initialized securely.");
-            log("Waiting for operator command...");
-        };
+        // --- 2. INITIALIZATION ---
+        // Initialization handling merged at the bottom of the script
+
 
         // --- 3. RENDER ENGINE ---
         function renderMap() {
@@ -524,7 +693,9 @@
         // --- GLOBAL CONNECTIONS DEFINITION ---
         const CONNECTIONS = [
             [0, 1], [1, 2], [2, 3], [0, 2], [1, 4], [0, 4],
-            [1, 3] // New Connection: Factory (B) <-> Dark (D)
+            [1, 3], // New Connection: Factory (B) <-> Dark (D)
+            [4, 2], // Exp (E) <-> Res (C)
+            [4, 3]  // Exp (E) <-> Dark (D)
         ];
 
         function drawConnections(layer) {
@@ -613,9 +784,6 @@
         }
 
         // --- 5. UI LOGIC (DASHBOARD) ---
-        let currentMode = 'single';
-        let selectedGroup = new Set();
-
         function setMode(mode) {
             currentMode = mode;
             selectedGroup.clear();
@@ -722,32 +890,51 @@
         async function sendAction(action) {
             if (!selectedSectorId) return;
             const sec = SECTORS.find(s => s.id === selectedSectorId);
+            const vmName = sec.server; // "W10" or "UbuntuServer24"
 
             if (action === 'START') {
                 if (sec.status === 'online') { log("Already Online."); return; }
 
                 sec.status = 'transition';
                 refreshVisuals(sec);
-                log(`Initializing ${sec.server}...`);
+                log(`Initializing VM: ${vmName}...`);
 
-                await new Promise(r => setTimeout(r, 2000));
-
-                sec.status = 'online';
-                sec.cpu = 20 + Math.floor(Math.random() * 60);
-                log(`${sec.server} is now ONLINE.`);
+                // Backend Call
+                try {
+                    const res = await fetchStartVM(vmName);
+                    if (res.ok) {
+                        sec.status = 'online';
+                        sec.cpu = 20 + Math.floor(Math.random() * 60);
+                        log(`${vmName} STARTED successfully.`);
+                    } else {
+                        throw new Error('Backend Error');
+                    }
+                } catch (e) {
+                    sec.status = 'error';
+                    log(`Error starting ${vmName}: ${e.message}`);
+                }
 
             } else if (action === 'STOP') {
                 if (sec.status === 'stopped') { log("Already Stopped."); return; }
 
                 sec.status = 'transition';
                 refreshVisuals(sec);
-                log(`Stopping ${sec.server}...`);
+                log(`Stopping VM: ${vmName}...`);
 
-                await new Promise(r => setTimeout(r, 1500));
-
-                sec.status = 'stopped';
-                sec.cpu = 0;
-                log(`${sec.server} has stopped.`);
+                // Backend Call
+                try {
+                    const res = await fetchStopVM(vmName);
+                    if (res.ok) {
+                        sec.status = 'stopped';
+                        sec.cpu = 0;
+                        log(`${vmName} STOPPED successfully.`);
+                    } else {
+                        throw new Error('Backend Error');
+                    }
+                } catch (e) {
+                    sec.status = 'error';
+                    log(`Error stopping ${vmName}: ${e.message}`);
+                }
             }
 
             refreshVisuals(sec);
@@ -769,21 +956,10 @@
             updateTraffic();
         }
 
+
+
         function updateBeaconVisuals(el, status) {
             el.setAttribute("class", `tower-beacon tower-${status}`);
-        }
-
-        function setMode(mode) {
-            controlMode = mode;
-            document.getElementById('btn-mode-manual').className = mode === 'manual' ?
-                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/50" :
-                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5";
-
-            document.getElementById('btn-mode-auto').className = mode === 'auto' ?
-                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/50" :
-                "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5";
-
-            log(`Control Mode switched to: ${mode.toUpperCase()}`);
         }
 
         // --- UTILS ---
@@ -802,6 +978,206 @@
             c.prepend(d);
             if (c.childNodes.length > 20) c.lastChild.remove();
         }
+
+
+
+        // --- VIRTUALBOX API ---
+        const API_BASE = 'http://localhost:3001/api/vms';
+
+        async function fetchVMs() {
+            try {
+                const res = await fetch(API_BASE);
+                const vms = await res.json();
+                // vms = ["W10", "UbuntuServer24"]
+                log(`Detected VMs: ${vms.join(', ')}`);
+                // Optional: Update status if backend provided status (currently just list)
+            } catch (e) {
+                log("Backend Offline (VirtualBox Control Unavailable)");
+            }
+        }
+
+        async function fetchStartVM(name) {
+            return fetch(`${API_BASE}/${name}/start`, { method: 'POST' });
+        }
+
+        async function fetchStopVM(name) {
+            return fetch(`${API_BASE}/${name}/stop`, { method: 'POST' });
+        }
+
+
+        // --- AUTH & VALIDATION LOGIC ---
+        function toggleLoginScreen(show) {
+            const loginScreen = document.getElementById('login-screen');
+            const regScreen = document.getElementById('register-screen');
+            const logoutBtn = document.getElementById('header-logout-btn');
+
+            if (show) {
+                // Show Login by default when "Showing Auth"
+                loginScreen.classList.remove('hidden-auth');
+                loginScreen.style.display = 'flex';
+                regScreen.classList.add('hidden-auth');
+                regScreen.style.display = 'none';
+
+                logoutBtn.classList.add('hidden');
+                document.getElementById('viewport').style.filter = 'blur(10px) grayscale(80%)';
+            } else {
+                loginScreen.classList.add('hidden-auth');
+                regScreen.classList.add('hidden-auth');
+                setTimeout(() => {
+                    loginScreen.style.display = 'none';
+                    regScreen.style.display = 'none';
+                }, 500);
+
+                logoutBtn.classList.remove('hidden');
+                document.getElementById('viewport').style.filter = 'none';
+            }
+        }
+
+        function showRegisterScreen() {
+            document.getElementById('login-screen').classList.add('hidden-auth');
+            setTimeout(() => document.getElementById('login-screen').style.display = 'none', 500);
+
+            const reg = document.getElementById('register-screen');
+            reg.style.display = 'flex';
+            setTimeout(() => reg.classList.remove('hidden-auth'), 50);
+        }
+
+        function showLoginScreen() {
+            document.getElementById('register-screen').classList.add('hidden-auth');
+            setTimeout(() => document.getElementById('register-screen').style.display = 'none', 500);
+
+            const login = document.getElementById('login-screen');
+            login.style.display = 'flex';
+            setTimeout(() => login.classList.remove('hidden-auth'), 50);
+        }
+
+        function showAuthError(msg, isSuccess = false, context = 'login') {
+            const id = context === 'register' ? 'reg-error-msg' : 'auth-error-msg';
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            el.innerText = `> ${isSuccess ? 'SUCCESS' : 'ERROR'}: ${msg}`;
+
+            if (isSuccess) {
+                el.classList.remove('text-red-400');
+                el.classList.add('text-emerald-400');
+            } else {
+                el.classList.remove('text-emerald-400');
+                el.classList.add('text-red-400');
+            }
+
+            el.classList.remove('opacity-0');
+            setTimeout(() => el.classList.add('opacity-0'), isSuccess ? 6000 : 3000);
+        }
+
+
+        async function handleSignUp() {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+            const confirmPass = document.getElementById('reg-pass-confirm').value;
+
+            if (!email || !password || !confirmPass) { showAuthError("MISSING CREDENTIALS", false, 'register'); return; }
+            if (password !== confirmPass) { showAuthError("PASSWORDS DO NOT MATCH", false, 'register'); return; }
+            if (password.length < 6) { showAuthError("PASSWORD TOO SHORT (MIN 6)", false, 'register'); return; }
+
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+            if (error) {
+                showAuthError(error.message, false, 'register');
+            } else {
+                if (data.user && !data.session) {
+                    showAuthError("CHECK EMAIL TO CONFIRM REGISTRATION", true, 'register');
+                    log(`Registration pending for ${email}`);
+                } else if (data.session) {
+                    showAuthError("REGISTRATION COMPLETE. LOGGING IN...", true, 'register');
+                    log(`Registration successful for ${email}`);
+                    // Auth state change will handle screen closing
+                }
+            }
+        }
+
+        async function handleSignIn() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+
+            if (!email || !password) { showAuthError("MISSING CREDENTIALS"); return; }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email, password
+            });
+
+            if (error) {
+                showAuthError(error.message);
+                log(`Auth Failed: ${error.message}`);
+            } else {
+                log(`Session Established: ${email}`);
+                // State change handled by onAuthStateChange listener
+            }
+        }
+
+        async function signInWithGoogle() {
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        },
+                    },
+                });
+
+                if (error) throw error;
+                log("Redirecting to Google Identity Services...");
+            } catch (error) {
+                showAuthError(error.message);
+                log(`Google Auth Error: ${error.message}`);
+            }
+        }
+
+        async function handleSignOut() {
+            await supabaseClient.auth.signOut();
+            log('Session Terminated.');
+            // Toggle handled by listener
+        }
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                toggleLoginScreen(false);
+                log(`Operator Connected: ${session.user.email}`);
+            } else {
+                toggleLoginScreen(true);
+            }
+        });
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            // Check initial session
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    toggleLoginScreen(false);
+                    log(`Restored Session: ${session.user.email}`);
+                } else {
+                    toggleLoginScreen(true); // Force login
+                }
+            });
+
+            setMode('single');
+            renderMap();
+            initParallax();
+            initTrafficSystem();
+            fetchVMs(); // Initialize VM list
+
+            log("System initialized securely.");
+            log("Waiting for operator authentication...");
+        };
+
+
+
+
+
+
+
 
     </script>
 </body>
