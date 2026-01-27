@@ -465,68 +465,99 @@
             <p class="text-[9px] text-slate-500 uppercase tracking-widest font-black mb-2">Estrategia de Control</p>
             <div class="flex gap-2 mb-3">
                 <button onclick="setMode('single')" id="btn-mode-single"
-                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/50 transition-all">Single</button>
+                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded transition-all">Single</button>
                 <button onclick="setMode('group')" id="btn-mode-group"
-                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5 transition-all">Group</button>
+                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded transition-all">Group</button>
                 <button onclick="setMode('all')" id="btn-mode-all"
-                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5 transition-all">All</button>
-            </div>
-
-            <button onclick="executeSequence()" id="btn-exec-main"
-                class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-black rounded-lg shadow-lg shadow-cyan-900/50 transition-all transform active:scale-95 uppercase text-[10px] tracking-widest hidden">
-                <i class="fas fa-play mr-2"></i> EJECUTAR SECUENCIA
-            </button>
-        </div>
-
-        <!-- Selected Sector Info -->
-        <div id="sector-info" class="hidden animate-slide-in">
-            <div class="relative overflow-hidden p-5 rounded-xl bg-slate-900/50 border border-cyan-900/50">
-                <div class="absolute top-0 right-0 p-2 opacity-20"><i class="fas fa-server text-4xl text-cyan-500"></i>
-                </div>
-                <p class="text-[9px] text-cyan-500 font-black tracking-widest mb-1">DATA CENTER NODE</p>
-                <h2 id="ui-name" class="text-xl font-black text-white italic tracking-wide mb-2">SERVER NAME</h2>
-                <div id="ui-status-badge"
-                    class="inline-flex items-center gap-2 px-3 py-1 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-white">
-                    <span class="w-2 h-2 rounded-full bg-gray-500"></span> OFFLINE
-                </div>
-            </div>
-
-            <!-- Dashboard Actions (Connected to Logic) -->
-            <div class="flex flex-col gap-2 mt-4">
-                <p class="text-[9px] text-slate-600 uppercase tracking-widest font-black ml-1">Protocolos</p>
-                <button onclick="sendAction('START')"
-                    class="group relative w-full py-3 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500 font-bold text-[10px] uppercase tracking-widest border border-emerald-500/20 rounded-lg transition-all overflow-hidden">
-                    <span
-                        class="absolute inset-0 bg-emerald-500/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></span>
-                    <span class="relative flex items-center justify-center gap-2"><i class="fas fa-power-off"></i>
-                        Iniciar Secuencia</span>
-                </button>
-                <button onclick="sendAction('STOP')"
-                    class="group w-full py-3 bg-slate-500/5 hover:bg-slate-500/10 text-slate-400 font-bold text-[10px] uppercase tracking-widest border border-slate-500/20 rounded-lg transition-all">
-                    <span class="flex items-center justify-center gap-2"><i class="fas fa-stop"></i> Detener
-                        Núcleo</span>
-                </button>
-            </div>
-
-            <!-- Metrics -->
-            <div class="mt-4 space-y-2">
-                <div class="flex justify-between text-[10px] font-mono text-cyan-300"><span>CPU</span><span
-                        id="ui-cpu">0%</span></div>
-                <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-                    <div id="ui-cpu-bar" class="h-full bg-cyan-400 transition-all duration-500" style="width: 0%"></div>
-                </div>
+                    class="flex-1 py-2 text-[10px] font-bold uppercase rounded transition-all">All</button>
             </div>
         </div>
 
-        <!-- Empty State -->
-        <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center opacity-30">
-            <i class="fas fa-satellite-dish text-4xl mb-4 text-cyan-500"></i>
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Selecciona un Sector<br>del Mapa
-            </p>
+        <!-- SINGLE MODE PANEL -->
+        <div id="panel-single" class="hidden animate-slide-in">
+            <div id="sector-info" class="hidden">
+                <div class="relative overflow-hidden p-5 rounded-xl bg-slate-900/50 border border-cyan-900/50 mb-4">
+                    <div class="absolute top-0 right-0 p-2 opacity-20"><i
+                            class="fas fa-server text-4xl text-cyan-500"></i></div>
+                    <p class="text-[9px] text-cyan-500 font-black tracking-widest mb-1">TARGET NODE</p>
+                    <h2 id="ui-name" class="text-xl font-black text-white italic tracking-wide mb-2">SERVER NAME</h2>
+                    <div id="ui-status-badge"
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-white">
+                        <span class="w-2 h-2 rounded-full bg-gray-500"></span> OFFLINE
+                    </div>
+                </div>
+
+                <!-- CPU Stats (Inserted Fix) -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-[9px] font-mono text-cyan-400 mb-1">
+                        <span>CPU USAGE</span>
+                        <span id="ui-cpu">0%</span>
+                    </div>
+                    <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                        <div id="ui-cpu-bar" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <button onclick="handleSingleAction('start')"
+                        class="w-full py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 rounded font-bold text-[10px] tracking-widest uppercase transition-all"><i
+                            class="fas fa-play mr-2"></i> START VM</button>
+                    <button onclick="handleSingleAction('stop')"
+                        class="w-full py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30 rounded font-bold text-[10px] tracking-widest uppercase transition-all"><i
+                            class="fas fa-stop mr-2"></i> STOP (ACPI)</button>
+                    <button onclick="handleSingleAction('force')"
+                        class="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded font-bold text-[10px] tracking-widest uppercase transition-all"><i
+                            class="fas fa-skull mr-2"></i> FORCE KILL</button>
+                </div>
+            </div>
+            <div id="empty-state-single" class="flex flex-col items-center justify-center text-center opacity-30 py-10">
+                <i class="fas fa-mouse-pointer text-4xl mb-4 text-cyan-500"></i>
+                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Select a VM on Map</p>
+            </div>
+        </div>
+
+        <!-- GROUP MODE PANEL -->
+        <div id="panel-group" class="hidden animate-slide-in flex-col h-full overflow-hidden">
+            <p class="text-[9px] text-slate-500 uppercase tracking-widest font-black mb-2">Select Targets</p>
+            <div id="group-list" class="flex-1 overflow-y-auto pr-1 mb-4 space-y-1">
+                <!-- Injected via JS -->
+            </div>
+            <div class="flex flex-col gap-2 mt-auto">
+                <button onclick="handleGroupAction('start')"
+                    class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded shadow shadow-emerald-900/50 text-[10px] tracking-widest uppercase transition-all"><i
+                        class="fas fa-play mr-2"></i> START GROUP</button>
+                <div class="flex gap-2">
+                    <button onclick="handleGroupAction('stop')"
+                        class="flex-1 py-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-500 border border-amber-600/50 rounded font-bold text-[10px] tracking-widest uppercase transition-all"><i
+                            class="fas fa-stop mr-2"></i> STOP</button>
+                    <button onclick="handleGroupAction('force')"
+                        class="flex-1 py-3 bg-red-600/20 hover:bg-red-600/30 text-red-500 border border-red-600/50 rounded font-bold text-[10px] tracking-widest uppercase transition-all"><i
+                            class="fas fa-skull mr-2"></i> KILL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALL MODE PANEL -->
+        <div id="panel-all" class="hidden animate-slide-in flex-1 flex flex-col justify-center gap-4">
+            <div class="text-center mb-4">
+                <i class="fas fa-globe text-cyan-500 text-5xl mb-4 drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]"></i>
+                <h3 class="text-xl font-black italic text-white tracking-widest">GLOBAL CMD</h3>
+                <p class="text-[9px] text-slate-500 uppercase tracking-widest">Affects All Systems</p>
+            </div>
+            <button onclick="handleAllAction('start')"
+                class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-black rounded-xl shadow-lg shadow-emerald-900/40 text-xs tracking-widest uppercase transition-all"><i
+                    class="fas fa-play mr-2"></i> START ALL SYSTEMS</button>
+            <button onclick="handleAllAction('stop')"
+                class="w-full py-4 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-500/50 font-black rounded-xl text-xs tracking-widest uppercase transition-all"><i
+                    class="fas fa-stop mr-2"></i> STOP ALL (SOFT)</button>
+            <button onclick="handleAllAction('force')"
+                class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl shadow-lg shadow-red-900/40 text-xs tracking-widest uppercase transition-all"><i
+                    class="fas fa-radiation mr-2"></i> EMERGENCY KILL ALL</button>
         </div>
 
         <!-- Terminal -->
-        <div class="mt-auto">
+        <div class="mt-auto pt-4 border-t border-white/5">
             <div class="flex justify-between items-end mb-1 px-1">
                 <h3 class="text-[9px] font-black text-slate-600 uppercase tracking-widest">System Log</h3>
                 <span class="animate-pulse text-cyan-500 text-[10px]">●</span>
@@ -545,31 +576,26 @@
             {
                 id: "A", name: "Sector: Core", server: "W10",
                 style: "sector-a", status: "stopped", cpu: 0,
-                // Path borrowed/adapted from Ciudad4 (Financial Center-like)
                 path: "M300,0 L1000,0 L1000,200 L500,300 L300,300 L250,150 Z"
             },
             {
                 id: "B", name: "Sector: Ind", server: "UbuntuServer24",
                 style: "sector-b", status: "stopped", cpu: 0,
-                // Industrial Area
                 path: "M0,0 L300,0 L250,150 L300,300 L0,300 Z"
             },
             {
-                id: "C", name: "Sector: Res", server: "HABITAT_SYS",
-                style: "sector-c", status: "online", cpu: 32,
-                // Residential
+                id: "C", name: "Sector: Res", server: "UbuntuServer25",
+                style: "sector-c", status: "stopped", cpu: 0,
                 path: "M300,300 L500,300 L1000,200 L1000,450 L600,450 Z"
             },
             {
-                id: "D", name: "Sector: Dark", server: "QUARANTINE",
+                id: "D", name: "Sector: Dark", server: "LinuxMint",
                 style: "sector-d", status: "stopped", cpu: 0,
-                // Periphery/Dark
                 path: "M0,300 L300,300 L600,450 L1000,450 L1000,600 L0,600 Z"
             },
             {
-                id: "E", name: "Sector: Exp", server: "LAB_OMEGA",
-                style: "sector-b", status: "online", cpu: 12,
-                // Integrated Annex (Polygonal) - Fits better with Core/Res
+                id: "E", name: "Sector: Exp", server: "UbuntuServer26",
+                style: "sector-b", status: "stopped", cpu: 0,
                 path: "M650,100 L850,120 L800,280 L600,220 Z"
             }
         ];
@@ -797,37 +823,144 @@
                     "flex-1 py-2 text-[10px] font-bold uppercase rounded bg-transparent text-slate-500 border border-white/10 hover:bg-white/5 transition-all";
             });
 
-            // Toggle Execute Button
-            const execBtn = document.getElementById('btn-exec-main');
-            if (mode === 'group' || mode === 'all') execBtn.classList.remove('hidden');
-            else execBtn.classList.add('hidden');
+            // Render Group List
+            if (currentMode === 'group') renderGroupList();
 
-            // Reset View
+            // Reset View Logic
             document.querySelectorAll('.district').forEach(d => d.classList.remove('selected'));
-            document.getElementById('sector-info').classList.add('hidden');
-            document.getElementById('empty-state').classList.remove('hidden');
-        }
 
-        async function executeSequence() {
-            let targets = [];
-            if (currentMode === 'all') targets = SECTORS.map(s => s.id);
-            else if (currentMode === 'group') targets = Array.from(selectedGroup);
+            // Panel Visibility
+            document.getElementById('panel-single').classList.add('hidden');
+            document.getElementById('panel-group').classList.add('hidden');
+            document.getElementById('panel-all').classList.add('hidden');
 
-            if (targets.length === 0) return;
+            if (currentMode === 'single') document.getElementById('panel-single').classList.remove('hidden');
+            else if (currentMode === 'group') document.getElementById('panel-group').classList.remove('hidden');
+            else if (currentMode === 'all') document.getElementById('panel-all').classList.remove('hidden');
 
-            for (const id of targets) {
-                const sec = SECTORS.find(s => s.id === id);
-                if (sec.status !== 'online') {
-                    // Simulate auto-start
-                    sec.status = 'transition';
-                    refreshVisuals(sec);
-                    await new Promise(r => setTimeout(r, 200));
-                    sec.status = 'online';
-                    sec.cpu = 20 + Math.floor(Math.random() * 60);
-                    refreshVisuals(sec);
-                }
+            // Reset Single Selection
+            if (currentMode !== 'single') {
+                selectedSectorId = null;
+                document.getElementById('sector-info').classList.add('hidden');
+                document.getElementById('empty-state-single').classList.remove('hidden');
             }
         }
+
+        // --- NEW HANDLERS ---
+        async function handleSingleAction(action) {
+            if (!selectedSectorId) return;
+            const sec = SECTORS.find(s => s.id === selectedSectorId);
+            const vmName = sec.server;
+
+            log(`[SINGLE] Executing ${action.toUpperCase()} on ${vmName}...`);
+
+            // Optimistic Update
+            if (action === 'start') { sec.status = 'transition'; refreshVisuals(sec); }
+
+            const res = await fetchVMAction(vmName, action);
+            if (res.success) {
+                log(`[SUCCESS] ${vmName}: ${res.status}`);
+                if (action === 'start') { sec.status = 'online'; sec.cpu = randomCpu(); }
+                else if (action === 'stop' || action === 'force') { sec.status = 'stopped'; sec.cpu = 0; }
+                refreshVisuals(sec);
+            } else {
+                log(`[ERROR] ${vmName}: ${res.error || 'Failed'}`);
+                sec.status = 'error';
+                refreshVisuals(sec);
+            }
+        }
+
+        async function handleGroupAction(action) {
+            const targets = Array.from(selectedGroup);
+            if (targets.length === 0) { log("No VMs selected for group action."); return; }
+
+            const vmNames = targets.map(id => SECTORS.find(s => s.id === id).server);
+            log(`[GROUP] ${action.toUpperCase()} on: ${vmNames.join(', ')}`);
+
+            const res = await fetchGroupAction(vmNames, action);
+            if (res.success) { // Server returns array of results
+                res.results.forEach(r => {
+                    const sec = SECTORS.find(s => s.server === r.name);
+                    if (r.success) {
+                        if (action === 'start') { sec.status = 'online'; sec.cpu = randomCpu(); }
+                        else { sec.status = 'stopped'; sec.cpu = 0; }
+                    } else {
+                        sec.status = 'error';
+                    }
+                    refreshVisuals(sec);
+                });
+                log(`[GROUP] Action completed.`);
+            } else {
+                log(`[GROUP ERROR] One or more commands failed.`);
+            }
+        }
+
+        async function handleAllAction(action) {
+            log(`[GLOBAL] ${action.toUpperCase()} ALL SYSTEMS...`);
+            const res = await fetchAllAction(action);
+            // Since 'all' redirects to group in valid server, we expect same structure logic or just refresh all
+            // Based on server structure, if it redirects, fetch handles it.
+
+            // Simplest approach: Refetch all status or Assume success for UI snappiness
+            if (res) {
+                log(`[GLOBAL] Command sent. Refreshing states...`);
+                setTimeout(fetchVMs, 1000); // Sync truth
+
+                // Artificial Visual Update
+                SECTORS.forEach(sec => {
+                    if (action === 'start') { sec.status = 'online'; sec.cpu = randomCpu(); }
+                    else { sec.status = 'stopped'; sec.cpu = 0; }
+                    refreshVisuals(sec);
+                });
+            }
+        }
+
+        function renderGroupList() {
+            const container = document.getElementById('group-list');
+            container.innerHTML = '';
+
+            SECTORS.forEach(sec => {
+                const isSelected = selectedGroup.has(sec.id);
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-3 rounded border mb-1 cursor-pointer transition-all ${isSelected ? 'bg-cyan-500/20 border-cyan-500' : 'bg-black/40 border-white/5 hover:bg-white/5'}`;
+                item.onclick = () => toggleGroupSelection(sec.id);
+
+                let theme = getThemeColor(sec.server);
+                let statusColor = 'bg-gray-500';
+                if (sec.status === 'online') statusColor = `bg-${theme}-500 shadow-[0_0_8px_rgba(var(--color-${theme}-500),0.8)]`; // Simplistic approximation
+                // Fix: explicit colors for status dots
+                if (sec.status === 'online') statusColor = 'bg-green-500 shadow-[0_0_8px_#22c55e]';
+                else if (sec.status === 'error') statusColor = 'bg-red-500';
+
+                // Use theme for text/border if selected
+                const activeClass = isSelected ? `border-${theme}-400 bg-${theme}-400/20 text-${theme}-300` : 'border-slate-500';
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-4 h-4 rounded flex items-center justify-center border ${activeClass} ${isSelected ? 'bg-opacity-20' : ''}">
+                            ${isSelected ? `<i class="fas fa-check text-[10px] text-${theme}-400"></i>` : ''}
+                        </div>
+                        <span class="text-[10px] font-mono font-bold ${isSelected ? `text-${theme}-400` : 'text-slate-400'}">${sec.server}</span>
+                    </div>
+                    <div class="w-2 h-2 rounded-full ${statusColor}"></div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleGroupSelection(id) {
+            if (selectedGroup.has(id)) selectedGroup.delete(id);
+            else selectedGroup.add(id);
+            renderGroupList();
+
+            // Highlight on map too
+            const poly = document.getElementById(`poly-${id}`);
+            if (selectedGroup.has(id)) poly.classList.add('selected');
+            else poly.classList.remove('selected');
+        }
+
+        function randomCpu() { return 20 + Math.floor(Math.random() * 60); }
+
         function selectSector(id) {
             if (currentMode === 'all') return;
 
@@ -837,48 +970,34 @@
                 selectedSectorId = id;
                 document.querySelectorAll('.district').forEach(d => d.classList.remove('selected'));
                 poly.classList.add('selected');
-                showSectorDetails(id);
+
+                document.getElementById('empty-state-single').classList.add('hidden');
+                document.getElementById('sector-info').classList.remove('hidden');
+
+                const sec = SECTORS.find(s => s.id === id);
+                document.getElementById('ui-name').innerText = sec.server;
+                updateStatusBadge(sec);
+                log(`Selected: ${sec.server}`);
             }
             else if (currentMode === 'group') {
-                if (selectedGroup.has(id)) {
-                    selectedGroup.delete(id);
-                    poly.classList.remove('selected');
-                } else {
-                    selectedGroup.add(id);
-                    poly.classList.add('selected');
-                }
-
-                // Show details of the last toggled sector, or hide if empty
-                if (selectedGroup.size > 0 || selectedGroup.has(id)) showSectorDetails(id);
-                else {
-                    document.getElementById('sector-info').classList.add('hidden');
-                    document.getElementById('empty-state').classList.remove('hidden');
-                }
+                toggleGroupSelection(id);
             }
         }
-
-        function showSectorDetails(id) {
-            const sec = SECTORS.find(s => s.id === id);
-
-            document.getElementById('empty-state').classList.add('hidden');
-            document.getElementById('sector-info').classList.remove('hidden');
-
-            document.getElementById('ui-name').innerText = sec.server;
-            document.getElementById('ui-cpu').innerText = sec.cpu + '%';
-            document.getElementById('ui-cpu-bar').style.width = sec.cpu + '%';
-
-            updateStatusBadge(sec);
-            log(`Accessing Node: ${sec.server}...`);
-        }
-
 
         function updateStatusBadge(sec) {
             const badge = document.getElementById('ui-status-badge');
+            if (!badge) return;
+
+            const theme = getThemeColor(sec.server);
             let colorClass = 'bg-gray-500';
             let label = 'UNKNOWN';
             let textClass = 'text-white';
 
-            if (sec.status === 'online') { colorClass = 'bg-green-500'; label = 'ONLINE'; textClass = 'text-green-400'; }
+            if (sec.status === 'online') {
+                colorClass = `bg-${theme}-500`;
+                label = 'ONLINE';
+                textClass = `text-${theme}-400`;
+            }
             else if (sec.status === 'transition') { colorClass = 'bg-yellow-500 animate-pulse'; label = 'WORKING...'; textClass = 'text-yellow-400'; }
             else if (sec.status === 'error') { colorClass = 'bg-red-500'; label = 'CRITICAL'; textClass = 'text-red-400'; }
             else { label = 'OFFLINE'; textClass = 'text-slate-400'; }
@@ -887,69 +1006,20 @@
             badge.className = `inline-flex items-center px-3 py-1 rounded bg-black/40 border border-white/10 text-[10px] font-mono ${textClass}`;
         }
 
-        async function sendAction(action) {
-            if (!selectedSectorId) return;
-            const sec = SECTORS.find(s => s.id === selectedSectorId);
-            const vmName = sec.server; // "W10" or "UbuntuServer24"
-
-            if (action === 'START') {
-                if (sec.status === 'online') { log("Already Online."); return; }
-
-                sec.status = 'transition';
-                refreshVisuals(sec);
-                log(`Initializing VM: ${vmName}...`);
-
-                // Backend Call
-                try {
-                    const res = await fetchStartVM(vmName);
-                    if (res.ok) {
-                        sec.status = 'online';
-                        sec.cpu = 20 + Math.floor(Math.random() * 60);
-                        log(`${vmName} STARTED successfully.`);
-                    } else {
-                        throw new Error('Backend Error');
-                    }
-                } catch (e) {
-                    sec.status = 'error';
-                    log(`Error starting ${vmName}: ${e.message}`);
-                }
-
-            } else if (action === 'STOP') {
-                if (sec.status === 'stopped') { log("Already Stopped."); return; }
-
-                sec.status = 'transition';
-                refreshVisuals(sec);
-                log(`Stopping VM: ${vmName}...`);
-
-                // Backend Call
-                try {
-                    const res = await fetchStopVM(vmName);
-                    if (res.ok) {
-                        sec.status = 'stopped';
-                        sec.cpu = 0;
-                        log(`${vmName} STOPPED successfully.`);
-                    } else {
-                        throw new Error('Backend Error');
-                    }
-                } catch (e) {
-                    sec.status = 'error';
-                    log(`Error stopping ${vmName}: ${e.message}`);
-                }
-            }
-
-            refreshVisuals(sec);
-        }
-
         function refreshVisuals(sec) {
             // Update Tower Beacon
             const beacon = document.getElementById(`beacon-${sec.id}`);
-            updateBeaconVisuals(beacon, sec.status);
+            if (beacon) updateBeaconVisuals(beacon, sec.status);
 
             // Update UI if selected
             if (selectedSectorId === sec.id) {
                 updateStatusBadge(sec);
-                document.getElementById('ui-cpu').innerText = sec.cpu + '%';
-                document.getElementById('ui-cpu-bar').style.width = sec.cpu + '%';
+
+                const elCpu = document.getElementById('ui-cpu');
+                if (elCpu) elCpu.innerText = sec.cpu + '%';
+
+                const elBar = document.getElementById('ui-cpu-bar');
+                if (elBar) elBar.style.width = sec.cpu + '%';
             }
 
             // Update traffic in case a node went offline/online
@@ -984,25 +1054,88 @@
         // --- VIRTUALBOX API ---
         const API_BASE = 'http://localhost:3001/api/vms';
 
+        // NEW: Action Helper
+        async function fetchVMAction(name, action) {
+            try {
+                const res = await fetch(`${API_BASE}/${name}/${action}`, { method: 'POST' });
+                return await res.json();
+            } catch (e) { return { success: false, error: e.message }; }
+        }
+
+        async function fetchGroupAction(vms, action) {
+            try {
+                const res = await fetch(`${API_BASE}/group`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vms, action })
+                });
+                return await res.json();
+            } catch (e) { return { success: false, error: e.message }; }
+        }
+
+        async function fetchAllAction(action) {
+            try {
+                const res = await fetch(`${API_BASE}/all`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                // Assuming the server handles redirect or returns result
+                // Since fetch follows redirects automatically, we just check ok
+                if (res.ok) return { success: true };
+                return { success: false };
+            } catch (e) { return { success: false }; }
+        }
+
         async function fetchVMs() {
             try {
                 const res = await fetch(API_BASE);
-                const vms = await res.json();
-                // vms = ["W10", "UbuntuServer24"]
+                const data = await res.json();
+                const vms = data.vms || [];
                 log(`Detected VMs: ${vms.join(', ')}`);
-                // Optional: Update status if backend provided status (currently just list)
+                // Static mapping is now used in SECTORS. 
             } catch (e) {
                 log("Backend Offline (VirtualBox Control Unavailable)");
             }
         }
 
-        async function fetchStartVM(name) {
-            return fetch(`${API_BASE}/${name}/start`, { method: 'POST' });
+        async function pollVMStatus() {
+            // New Polling Logic to sync status
+            for (let sec of SECTORS) {
+                if (sec.server === "EMPTY" || sec.server === "Detecting...") continue;
+
+                try {
+                    // Assuming endpoint exists or we use global
+                    // Ideally: GET /api/vms/${name}/status
+                    const res = await fetch(`${API_BASE}/${sec.server}/status`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Map 'Running' -> 'online', 'PoweredOff' -> 'stopped'
+                        // Adjust based on actual API
+                        const newStatus = (data.status === 'Running' || data.status === 'running') ? 'online' : 'stopped';
+
+                        if (sec.status !== 'transition' && sec.status !== newStatus) {
+                            sec.status = newStatus;
+                            if (newStatus === 'online') sec.cpu = randomCpu();
+                            else sec.cpu = 0;
+                            refreshVisuals(sec);
+                        }
+                    }
+                } catch (e) { /* ignore poll errors */ }
+            }
         }
 
-        async function fetchStopVM(name) {
-            return fetch(`${API_BASE}/${name}/stop`, { method: 'POST' });
+        function getThemeColor(vmName) {
+            if (!vmName) return 'cyan';
+            const lower = vmName.toLowerCase();
+            if (lower.includes('ubuntu')) return 'emerald'; // Green
+            if (lower.includes('mint')) return 'amber'; // Orange/Amber
+            if (lower.includes('win') || lower.includes('w10')) return 'cyan'; // Blue
+            return 'cyan'; // Default
         }
+
+        // Removed old fetchStartVM/StopVM as they are replaced by generic handlers
+
 
 
         // --- AUTH & VALIDATION LOGIC ---
@@ -1162,22 +1295,25 @@
                 }
             });
 
-            setMode('single');
-            renderMap();
-            initParallax();
-            initTrafficSystem();
-            fetchVMs(); // Initialize VM list
+            // Async Init Sequence
+            initSystem();
 
             log("System initialized securely.");
             log("Waiting for operator authentication...");
         };
 
+        async function initSystem() {
+            setMode('single');
+            initParallax();
+            initTrafficSystem();
 
+            log("Connecting to VBox Hypervisor...");
+            await fetchVMs(); // 1. Get Names
+            renderMap();      // 2. Render Map with Names
+            renderGroupList(); // 3. Init Group UI
 
-
-
-
-
+            setInterval(pollVMStatus, 3000); // 4. Start Polling
+        }
 
     </script>
 </body>
