@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenByte Academy | Programa tu mañana, protege el planeta</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter & Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gbBlack: '#121212',       // Fondo principal (Gris Carbón oscuro)
+                        gbDark: '#1E1E1E',        // Fondo secundario
+                        gbGreen: '#00FF41',       // Verde Neón (Matrix)
+                        gbGreenDim: 'rgba(0, 255, 65, 0.1)',
+                        gbText: '#E0E0E0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #E0E0E0;
+            overflow-x: hidden;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        /* Matrix Canvas Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .glass-panel {
+            background: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(0, 255, 65, 0.3);
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .leaf-gradient {
+            background: linear-gradient(135deg, #00FF41 0%, #008F11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Matrix Background Effect -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b border-gbGreen/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3">
+                    <a href="#inicio" class="flex items-center gap-2 group">
+                        <i class="fa-solid fa-leaf text-gbGreen text-2xl group-hover:animate-pulse"></i>
+                        <span class="font-mono font-bold text-xl tracking-tighter text-white">
+                            GREENBYTE <span class="text-gbGreen">ACADEMY</span>
+                        </span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-6">
+                        <a href="#inicio" class="hover:text-gbGreen transition-colors px-3 py-2 rounded-md text-sm font-medium">Inicio</a>
+                        <a href="#cursos" class="hover:text-gbGreen transition-colors px-3 py-2 rounded-md text-sm font-medium">Cursos</a>
+                        <a href="#metodologia" class="hover:text-gbGreen transition-colors px-3 py-2 rounded-md text-sm font-medium">Metodología</a>
+                        <a href="#planes" class="hover:text-gbGreen transition-colors px-3 py-2 rounded-md text-sm font-medium">Planes</a>
+                        <a href="#equipo" class="hover:text-gbGreen transition-colors px-3 py-2 rounded-md text-sm font-medium">Equipo</a>
+                        <a href="#contacto" class="bg-gbGreen text-black hover:bg-white transition-colors px-5 py-2 rounded-full font-bold text-sm">Empezar Ahora</a>
+                    </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-400 hover:text-white focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden bg-gbBlack border-b border-gbGreen/20" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#inicio" class="text-white block px-3 py-2 rounded-md text-base font-medium">Inicio</a>
+                <a href="#cursos" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Cursos</a>
+                <a href="#metodologia" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Metodología</a>
+                <a href="#planes" class="text-gray-300 block px-3 py-2 rounded-md text-base font-medium">Planes</a>
+                <a href="#contacto" class="text-gbGreen block px-3 py-2 rounded-md text-base font-bold">Empezar</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gbGreen/30 bg-gbGreenDim mb-8">
+                <span class="w-2 h-2 rounded-full bg-gbGreen animate-pulse"></span>
+                <span class="text-gbGreen font-mono text-xs uppercase tracking-widest">Servidores 100% Renovables</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6">
+                Programa tu mañana,<br>
+                <span class="leaf-gradient">protege el planeta.</span>
+            </h1>
+            
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-10">
+                Aprende a programar sin frustración. Validación de código automática, gamificación y servidores Green Cloud. 
+                Únete al movimiento Open Source.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#cursos" class="px-8 py-4 bg-gbGreen text-black font-bold rounded-lg hover:shadow-[0_0_20px_rgba(0,255,65,0.6)] transition-all transform hover:-translate-y-1">
+                    Ver Cursos <i class="fa-solid fa-code ml-2"></i>
+                </a>
+                <a href="#metodologia" class="px-8 py-4 border border-gbGreen text-gbGreen font-bold rounded-lg hover:bg-gbGreenDim transition-all">
+                    Nuestra Metodología
+                </a>
+            </div>
+
+            <!-- Code Snippet Visual -->
+            <div class="mt-16 mx-auto max-w-4xl glass-panel rounded-xl overflow-hidden shadow-2xl border border-gray-700 text-left transform rotate-1 hover:rotate-0 transition-duration-500">
+                <div class="bg-[#1a1a1a] px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="ml-2 font-mono text-xs text-gray-500">main.py - GreenByte IDE</span>
+                </div>
+                <div class="p-6 font-mono text-sm md:text-base overflow-x-auto">
+                    <div class="text-gray-400"># Misión: Reducir huella de carbono</div>
+                    <div><span class="text-purple-400">def</span> <span class="text-blue-400">crear_futuro</span>(<span class="text-orange-400">usuario</span>):</div>
+                    <div class="pl-4"><span class="text-purple-400">if</span> usuario.actitud == <span class="text-green-400">"Sostenible"</span>:</div>
+                    <div class="pl-8">conocimiento = <span class="text-blue-400">GreenByte</span>.enseñar()</div>
+                    <div class="pl-8">mundo.<span class="text-yellow-400">mejorar</span>(conocimiento)</div>
+                    <div class="pl-8"><span class="text-purple-400">return</span> <span class="text-green-400">"Futuro Brillante"</span></div>
+                    <div class="mt-2 text-gbGreen typing-cursor">_</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="border-y border-gray-800 bg-black/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">0%</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Emisiones CO2</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">100%</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Energía Renovable</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">24/7</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">IA Mentoría</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold text-white mb-1">+50</div>
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Proyectos Open Source</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cursos Section (NEW) -->
+    <section id="cursos" class="py-20 bg-gbBlack relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-gbGreen font-mono text-sm uppercase tracking-widest mb-2">Micro-learning</h2>
+                <h3 class="text-3xl md:text-4xl font-bold text-white">Catálogo de Cursos</h3>
+                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">
+                    Aprende con rutas dinámicas, retos prácticos y feedback inmediato. Consigue tu certificado de Huella de Carbono.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Curso 1 -->
+                <div class="course-card bg-gbDark rounded-xl overflow-hidden border border-gray-800 transition-all">
+                    <div class="h-32 bg-gradient-to-r from-green-900 to-black p-6 flex items-end">
+                        <i class="fa-brands fa-python text-5xl text-gbGreen opacity-50"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gbGreen border border-gbGreen/30 px-2 py-1 rounded">PRINCIPIANTE</span>
+                            <span class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> 20h</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Python para la Sostenibilidad</h4>
+                        <p class="text-gray-400 text-sm mb-4">Aprende la sintaxis básica de Python creando scripts para calcular ahorros energéticos.</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-1">
+                            <li><i class="fa-solid fa-check text-gbGreen mr-2"></i> Variables y Bucles</li>
+                            <li><i class="fa-solid fa-check text-gbGreen mr-2"></i> Análisis de Datos básico</li>
+                        </ul>
+                        <button class="w-full py-2 bg-gray-800 hover:bg-gbGreen hover:text-black text-white rounded font-bold transition-colors">Ver Temario</button>
+                    </div>
+                </div>
+
+                <!-- Curso 2 -->
+                <div class="course-card bg-gbDark rounded-xl overflow-hidden border border-gray-800 transition-all">
+                    <div class="h-32 bg-gradient-to-r from-blue-900 to-black p-6 flex items-end">
+                        <i class="fa-brands fa-html5 text-5xl text-blue-400 opacity-50"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-blue-400 border border-blue-400/30 px-2 py-1 rounded">INTERMEDIO</span>
+                            <span class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> 45h</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Desarrollo Web Eco-Friendly</h4>
+                        <p class="text-gray-400 text-sm mb-4">HTML5, CSS y JS optimizados. Aprende "Eco-Design" para reducir el consumo de batería.</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-1">
+                            <li><i class="fa-solid fa-check text-gbGreen mr-2"></i> Diseño Responsivo</li>
+                            <li><i class="fa-solid fa-check text-gbGreen mr-2"></i> Optimización de carga</li>
+                        </ul>
+                        <button class="w-full py-2 bg-gray-800 hover:bg-blue-500 hover:text-white text-white rounded font-bold transition-colors">Ver Temario</button>
+                    </div>
+                </div>
+
+                <!-- Curso 3 -->
+                <div class="course-card bg-gbDark rounded-xl overflow-hidden border border-gray-800 transition-all">
+                    <div class="h-32 bg-gradient-to-r from-red-900 to-black p-6 flex items-end">
+                        <i class="fa-brands fa-java text-5xl text-red-500 opacity-50"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-red-500 border border-red-500/30 px-2 py-1 rounded">AVANZADO</span>
+                            <span class="text-xs text-gray-500"><i class="fa-regular fa-clock"></i> 60h</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Java y Algoritmos Eficientes</h4>
+                        <p class="text-gray-400 text-sm mb-4">Domina Java creando algoritmos que consumen menos CPU y memoria.</p>
+                        <ul class="text-sm text-gray-500 mb-6 space-y-1">
+                            <li><i class="fa-solid fa-check text-gbGreen mr-2"></i> POO Avanzada</li>
+                            <li><i class="fa-solid fa-check text-gbGreen mr-2"></i> Estructuras de Datos</li>
+                        </ul>
+                        <button class="w-full py-2 bg-gray-800 hover:bg-red-500 hover:text-white text-white rounded font-bold transition-colors">Ver Temario</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <p class="text-gray-400 mb-4">¿No sabes por dónde empezar?</p>
+                <button class="text-gbGreen border-b border-gbGreen hover:text-white hover:border-white transition-colors">
+                    Realiza nuestro test de nivel gratuito
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology / Features -->
+    <section id="metodologia" class="py-20 bg-gbDark relative border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-gbGreen font-mono text-sm uppercase tracking-widest mb-2">Metodología</h2>
+                <h3 class="text-3xl md:text-4xl font-bold text-white">Liderazgo por Valor y Ética</h3>
+                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">No somos solo una academia, somos un movimiento. Combatimos la "fatiga de pantalla" con micro-learning y salvamos el planeta mientras aprendes.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-8 rounded-2xl bg-gbBlack border border-gray-800 hover:border-gbGreen transition-all group">
+                    <div class="w-14 h-14 rounded-full bg-gbGreenDim flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-server text-gbGreen text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Green Cloud Hosting</h4>
+                    <p class="text-gray-400">Toda nuestra infraestructura corre en Google Cloud y AWS con regiones certificadas en energía 100% renovable. Aprende sin contaminar.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-8 rounded-2xl bg-gbBlack border border-gray-800 hover:border-gbGreen transition-all group">
+                    <div class="w-14 h-14 rounded-full bg-gbGreenDim flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-gamepad text-gbGreen text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Anti-Frustración</h4>
+                    <p class="text-gray-400">Gamificación real. Validación automática de código al instante. Si fallas, nuestra IA te explica por qué, no solo te da el error.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-8 rounded-2xl bg-gbBlack border border-gray-800 hover:border-gbGreen transition-all group">
+                    <div class="w-14 h-14 rounded-full bg-gbGreenDim flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-users text-gbGreen text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">Comunidad Open Source</h4>
+                    <p class="text-gray-400">No eres un número. Participa en proyectos reales, conecta con mentores senior y consigue tu primera oportunidad laboral.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="planes" class="py-20 bg-gbBlack relative">
+        <div class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gbGreen/50 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Planes Flexibles</h2>
+                <p class="mt-4 text-gray-400">Diseñados para estudiantes y jóvenes profesionales.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Plan Semilla -->
+                <div class="rounded-2xl bg-gbDark p-8 border border-gray-700 flex flex-col hover:border-gray-500 transition-colors">
+                    <div class="mb-4">
+                        <span class="px-3 py-1 rounded-full bg-gray-700 text-xs font-bold text-gray-300">BASICO</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Plan Semilla</h3>
+                    <div class="text-4xl font-bold text-white mb-6">0€<span class="text-lg text-gray-500 font-normal">/mes</span></div>
+                    <p class="text-gray-400 mb-8">Ideal para empezar a tocar código y entender los fundamentos.</p>
+                    
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center text-gray-300">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Fundamentos de programación
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Acceso a documentación
+                        </li>
+                        <li class="flex items-center text-gray-300">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Comunidad básica
+                        </li>
+                    </ul>
+                    
+                    <a href="#contacto" class="block w-full py-3 px-6 text-center rounded-lg border border-gray-600 text-white font-bold hover:bg-gray-700 transition-colors">
+                        Registrarse Gratis
+                    </a>
+                </div>
+
+                <!-- Plan Forestmium -->
+                <div class="rounded-2xl bg-gbDark p-8 border border-gbGreen relative flex flex-col transform md:-translate-y-4 shadow-[0_0_30px_rgba(0,255,65,0.15)] hover:scale-105 transition-transform duration-300">
+                    <div class="absolute top-0 right-0 bg-gbGreen text-black text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
+                        RECOMENDADO
+                    </div>
+                    <div class="mb-4">
+                        <span class="px-3 py-1 rounded-full bg-gbGreenDim text-gbGreen text-xs font-bold">PRO</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Plan Forestmium</h3>
+                    <div class="text-4xl font-bold text-white mb-6">9,95€<span class="text-lg text-gray-500 font-normal">/mes</span></div>
+                    <p class="text-gray-400 mb-8">Para quienes quieren acelerar su carrera profesional.</p>
+                    
+                    <ul class="space-y-4 mb-8 flex-1">
+                        <li class="flex items-center text-white">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> <strong>Validación automática de código</strong>
+                        </li>
+                        <li class="flex items-center text-white">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Proyectos Reales & Portafolio
+                        </li>
+                        <li class="flex items-center text-white">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Certificación Huella de Carbono
+                        </li>
+                        <li class="flex items-center text-white">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Mentoría Senior (Humanos)
+                        </li>
+                        <li class="flex items-center text-white">
+                            <i class="fa-solid fa-check text-gbGreen mr-3"></i> Bolsa de empleo exclusiva
+                        </li>
+                    </ul>
+                    
+                    <a href="#contacto" class="block w-full py-3 px-6 text-center rounded-lg bg-gbGreen text-black font-bold hover:bg-white transition-colors">
+                        Suscribirse Ahora
+                    </a>
+                    <p class="text-center text-xs text-gray-500 mt-4">
+                        *Descuentos disponibles para familias numerosas y estudiantes (Becas disponibles).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="equipo" class="py-20 bg-gbDark border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-12">El Equipo Detrás del Código</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="p-4">
+                    <div class="w-24 h-24 mx-auto bg-gray-700 rounded-full mb-4 flex items-center justify-center border-2 border-gbGreen relative group">
+                        <span class="font-mono text-2xl group-hover:opacity-0 transition-opacity">FF</span>
+                        <i class="fa-solid fa-code absolute text-gbGreen opacity-0 group-hover:opacity-100 transition-opacity text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-white">Francisco Ferres</h3>
+                    <p class="text-gbGreen text-sm">Co-Founder</p>
+                </div>
+                <div class="p-4">
+                    <div class="w-24 h-24 mx-auto bg-gray-700 rounded-full mb-4 flex items-center justify-center border-2 border-gbGreen relative group">
+                        <span class="font-mono text-2xl group-hover:opacity-0 transition-opacity">AV</span>
+                        <i class="fa-solid fa-terminal absolute text-gbGreen opacity-0 group-hover:opacity-100 transition-opacity text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-white">Arturo Vaquero</h3>
+                    <p class="text-gbGreen text-sm">Co-Founder</p>
+                </div>
+                <div class="p-4">
+                    <div class="w-24 h-24 mx-auto bg-gray-700 rounded-full mb-4 flex items-center justify-center border-2 border-gbGreen relative group">
+                        <span class="font-mono text-2xl group-hover:opacity-0 transition-opacity">PP</span>
+                        <i class="fa-solid fa-bug absolute text-gbGreen opacity-0 group-hover:opacity-100 transition-opacity text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-white">Pablo Pérez</h3>
+                    <p class="text-gbGreen text-sm">Co-Founder</p>
+                </div>
+                <div class="p-4">
+                    <div class="w-24 h-24 mx-auto bg-gray-700 rounded-full mb-4 flex items-center justify-center border-2 border-gbGreen relative group">
+                        <span class="font-mono text-2xl group-hover:opacity-0 transition-opacity">MP</span>
+                        <i class="fa-solid fa-database absolute text-gbGreen opacity-0 group-hover:opacity-100 transition-opacity text-2xl"></i>
+                    </div>
+                    <h3 class="font-bold text-white">Mario Pérez</h3>
+                    <p class="text-gbGreen text-sm">Co-Founder</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section (NEW) -->
+    <section id="contacto" class="py-20 bg-gbBlack border-t border-gray-800">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-white mb-4">Únete a la Revolución Verde</h2>
+                <p class="text-gray-400">Déjanos tu correo y te avisaremos para tu primera clase gratuita o para gestionar tu beca.</p>
+            </div>
+            
+            <form class="glass-panel p-8 rounded-xl border border-gray-700 space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2">Nombre</label>
+                        <input type="text" class="w-full bg-gbBlack border border-gray-600 rounded p-3 text-white focus:border-gbGreen focus:outline-none transition-colors" placeholder="Tu nombre">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-400 mb-2">Email</label>
+                        <input type="email" class="w-full bg-gbBlack border border-gray-600 rounded p-3 text-white focus:border-gbGreen focus:outline-none transition-colors" placeholder="tu@email.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-400 mb-2">Interés Principal</label>
+                    <select class="w-full bg-gbBlack border border-gray-600 rounded p-3 text-white focus:border-gbGreen focus:outline-none transition-colors">
+                        <option>Plan Semilla (Gratis)</option>
+                        <option>Plan Forestmium</option>
+                        <option>Información sobre Becas</option>
+                        <option>Ser Mentor</option>
+                    </select>
+                </div>
+                <button type="button" class="w-full py-4 bg-gbGreen text-black font-bold rounded-lg hover:bg-white transition-colors">
+                    Enviar Solicitud
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gbBlack border-t border-gray-800 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fa-solid fa-leaf text-gbGreen text-xl"></i>
+                        <span class="font-mono font-bold text-lg text-white">
+                            GREENBYTE <span class="text-gbGreen">ACADEMY</span>
+                        </span>
+                    </div>
+                    <p class="text-gray-400 max-w-sm">
+                        La primera plataforma de aprendizaje de código que combina la excelencia técnica con la responsabilidad ecológica.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Plataforma</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#cursos" class="hover:text-gbGreen">Cursos</a></li>
+                        <li><a href="#equipo" class="hover:text-gbGreen">Mentores</a></li>
+                        <li><a href="#planes" class="hover:text-gbGreen">Precios</a></li>
+                        <li><a href="#contacto" class="hover:text-gbGreen">Becas</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-gbGreen">Privacidad</a></li>
+                        <li><a href="#" class="hover:text-gbGreen">Términos</a></li>
+                        <li><a href="#" class="hover:text-gbGreen">Huella de Carbono</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm">© 2023 GreenByte Academy. Todos los derechos reservados.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-gbGreen"><i class="fa-brands fa-github text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-gbGreen"><i class="fa-brands fa-tiktok text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-gbGreen"><i class="fa-brands fa-instagram text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Matrix Effect Logic
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポ10';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = canvas.width/fontSize;
+
+        const rainDrops = [];
+
+        for( let x = 0; x < columns; x++ ) {
+            rainDrops[x] = 1;
+        }
+
+        const draw = () => {
+            ctx.fillStyle = 'rgba(18, 18, 18, 0.05)'; // Fade effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0'; // Neon Green text
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < rainDrops.length; i++)
+            {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i*fontSize, rainDrops[i]*fontSize);
+
+                if(rainDrops[i]*fontSize > canvas.height && Math.random() > 0.975){
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+
+        setInterval(draw, 30);
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
