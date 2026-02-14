@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINTRACK</title>
+    <!-- Importamos una fuente moderna (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES CSS (Tema Oscuro) --- */
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --surface-hover: #2C2C2C;
+            --primary-color: #00E676; /* Verde Finanzas */
+            --danger-color: #CF6679;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --nav-height: 70px;
+            --max-width: 480px;
+            --input-bg: #2C2C2C;
+        }
+
+        /* --- RESET & BASE --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #000; /* Fondo negro fuera de la app */
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- CONTENEDOR TIPO APP --- */
+        #app-container {
+            width: 100%;
+            max-width: var(--max-width);
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            padding-bottom: calc(var(--nav-height) + 20px); /* Espacio extra para scroll */
+            overflow-x: hidden;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--surface-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .user-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        /* --- MAIN SECTIONS --- */
+        main {
+            padding: 20px;
+        }
+
+        section {
+            display: none; /* Oculto por defecto */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        section.active {
+            display: block; /* Visible si tiene clase active */
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        /* --- ESTILOS GASTOS Y GENERALES --- */
+        .summary-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            flex: 1;
+            background: linear-gradient(145deg, var(--surface-color), #252525);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .summary-card span:first-child {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .summary-card .amount {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .form-container {
+            background-color: var(--surface-color);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .info-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .list-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .gasto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--surface-color);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .gasto-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .gasto-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .gasto-amount {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 20px;
+            font-style: italic;
+        }
+
+        /* --- ESTILOS AHORRO (ACTUALIZADO) --- */
+        .objetivo-card {
+            background-color: var(--surface-color);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            position: relative; /* Para posicionar elementos si fuera necesario */
+        }
+
+        .objetivo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .objetivo-title {
+            font-weight: 600;
+            font-size: 1rem;
+            display: block;
+        }
+
+        .objetivo-fechas {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* BADGES DE ESTADO */
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.en_curso {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid #444;
+        }
+
+        .status-badge.completado {
+            background-color: rgba(0, 230, 118, 0.15);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .progress-bar-bg {
+            background-color: #333;
+            border-radius: 4px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--primary-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+        
+        /* Color barra completada */
+        .progress-bar-fill.completado {
+            background-color: var(--primary-color); 
+            box-shadow: 0 0 8px var(--primary-color);
+        }
+
+        .objetivo-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        .objetivo-stats span {
+            width: 100%;
+            text-align: right;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: var(--max-width);
+            height: var(--nav-height);
+            background-color: var(--surface-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #333;
+            z-index: 100;
+            left: 50%;
+            transform: translateX(-50%); 
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            transition: color 0.2s ease;
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            transition: transform 0.2s;
+        }
+
+        .nav-btn span {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .nav-btn.active {
+            color: var(--primary-color);
+        }
+
+        .nav-btn.active svg {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo">FIN<span>TRACK</span></div>
+            <div class="user-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <!-- Sección GASTOS -->
+            <section id="section-gastos">
+                <h2>Resumen de Gastos</h2>
+                
+                <!-- Resumen Totales -->
+                <div class="summary-container">
+                    <div class="summary-card">
+                        <span>Total Hoy</span>
+                        <span class="amount" id="total-hoy">0.00 €</span>
+                    </div>
+                    <div class="summary-card">
+                        <span>Total Mes</span>
+                        <span class="amount" id="total-mes">0.00 €</span>
+                    </div>
+                </div>
+
+                <!-- Formulario -->
+                <div class="form-container">
+                    <div class="form-group">
+                        <label>Importe (€)</label>
+                        <input type="number" id="input-importe" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="select-categoria">
+                            <option value="Comida">Comida</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Ocio">Ocio</option>
+                            <option value="Suscripciones">Suscripciones</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="input-fecha">
+                    </div>
+                    <div class="form-group">
+                        <label>Nota (Opcional)</label>
+                        <textarea id="input-nota" rows="2" placeholder="Detalles del gasto..."></textarea>
+                    </div>
+                    <button id="btn-guardar-gasto" class="primary-btn">Guardar Gasto</button>
+                </div>
+
+                <!-- Lista Reciente -->
+                <div class="list-header">Movimientos Recientes</div>
+                <div id="lista-gastos">
+                    <!-- Aquí se renderizarán los gastos JS -->
+                </div>
+            </section>
+
+            <!-- Sección AHORRO (ACTUALIZADA) -->
+            <section id="section-ahorro">
+                <h2>Objetivos de Ahorro</h2>
+
+                <!-- Resumen Ahorro -->
+                <div class="summary-container">
+                    <div class="summary-card">
+                        <span>Ahorrado</span>
+                        <span class="amount" id="ahorro-total-acumulado">0.00 €</span>
+                    </div>
+                    <div class="summary-card">
+                        <span>Meta Total</span>
+                        <span class="amount" id="ahorro-total-objetivos">0.00 €</span>
+                    </div>
+                </div>
+
+                <!-- Formulario Nuevo Objetivo (ACTUALIZADO) -->
+                <div class="form-container">
+                    <div class="form-group">
+                        <label>Nombre del Objetivo</label>
+                        <input type="text" id="input-objetivo-nombre" placeholder="Ej. Viaje a Japón">
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Total (€)</label>
+                        <input type="number" id="input-objetivo-total" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Ya Ahorrado (€)</label>
+                        <input type="number" id="input-objetivo-ahorrado" placeholder="0.00" value="0" min="0" step="0.01">
+                    </div>
+                    <!-- Nuevos campos de fecha -->
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" id="input-objetivo-inicio">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Límite</label>
+                        <input type="date" id="input-objetivo-limite">
+                    </div>
+                    <button id="btn-guardar-objetivo" class="primary-btn">Guardar Objetivo</button>
+                </div>
+
+                <!-- Lista Objetivos -->
+                <div class="list-header">Mis Metas</div>
+                <div id="lista-objetivos">
+                    <!-- JS renders here -->
+                </div>
+            </section>
+
+            <!-- Sección SUSCRIPCIONES -->
+            <section id="section-suscripciones">
+                <h2>Suscripciones</h2>
+                <div class="form-container">
+                    <p class="info-text">
+                        Controla tus gastos recurrentes (Netflix, Gimnasio, Internet) para evitar sorpresas a fin de mes.
+                    </p>
+                    <button id="btn-nueva-suscripcion" class="primary-btn">Añadir nueva Suscripción</button>
+                </div>
+            </section>
+
+            <!-- Sección INVERSIONES -->
+            <section id="section-inversiones">
+                <h2>Portafolio</h2>
+                <div class="form-container">
+                    <p class="info-text">
+                        Gestiona tus activos (Acciones, Criptomonedas, Fondos) y monitoriza su rendimiento en tiempo real.
+                    </p>
+                    <button id="btn-nueva-inversion" class="primary-btn">Añadir nueva Inversión</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav>
+            <button class="nav-btn" onclick="showSection('section-gastos')" id="btn-gastos">
+                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span>Gastos</span>
+            </button>
+            
+            <button class="nav-btn" onclick="showSection('section-ahorro')" id="btn-ahorro">
+                <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                <span>Ahorro</span>
+            </button>
+
+            <button class="nav-btn" onclick="showSection('section-suscripciones')" id="btn-suscripciones">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm0-4h2V8h-2v5z"/></svg>
+                <span>Suscr.</span>
+            </button>
+
+            <button class="nav-btn" onclick="showSection('section-inversiones')" id="btn-inversiones">
+                <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                <span>Inver.</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // --- ESTADO GLOBAL ---
+        let gastos = [];
+        let objetivos = []; // Array global para almacenar los objetivos
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar fecha input a hoy
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('input-fecha').value = today;
+            
+            // Inicializar fecha inicio de ahorro a hoy por defecto
+            document.getElementById('input-objetivo-inicio').value = today;
+
+            // --- INICIALIZACIÓN DE GASTOS ---
+            loadGastosFromLocalStorage();
+            renderGastos();
+            calcularTotalesGastos();
+            
+            // --- INICIALIZACIÓN DE AHORRO (NUEVO) ---
+            loadObjetivosFromLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+            
+            // Navegación inicial
+            showSection('section-gastos');
+
+            // --- EVENT LISTENERS ---
+            document.getElementById('btn-guardar-gasto').addEventListener('click', addGasto);
+            
+            // Listener para el botón de guardar objetivo de ahorro
+            document.getElementById('btn-guardar-objetivo').addEventListener('click', addObjetivo);
+
+            // Placeholders para secciones futuras
+            document.getElementById('btn-nueva-suscripcion').addEventListener('click', addSuscripcion);
+            document.getElementById('btn-nueva-inversion').addEventListener('click', addInversion);
+        });
+
+        // --- LÓGICA DE GASTOS ---
+
+        function loadGastosFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_gastos');
+            if (storedData) {
+                gastos = JSON.parse(storedData);
+            }
+        }
+
+        function saveGastosToLocalStorage() {
+            localStorage.setItem('fintrack_gastos', JSON.stringify(gastos));
+        }
+
+        function addGasto() {
+            const importeInput = document.getElementById('input-importe');
+            const categoriaSelect = document.getElementById('select-categoria');
+            const fechaInput = document.getElementById('input-fecha');
+            const notaInput = document.getElementById('input-nota');
+
+            const importe = parseFloat(importeInput.value);
+            const categoria = categoriaSelect.value;
+            const fecha = fechaInput.value;
+            const nota = notaInput.value;
+
+            // Validación
+            if (isNaN(importe) || importe <= 0) {
+                alert("Por favor, introduce un importe válido.");
+                return;
+            }
+            if (!fecha) {
+                alert("Por favor, selecciona una fecha.");
+                return;
+            }
+
+            const nuevoGasto = {
+                id: Date.now(),
+                importe: importe,
+                categoria: categoria,
+                fecha: fecha,
+                nota: nota
+            };
+
+            gastos.push(nuevoGasto);
+            saveGastosToLocalStorage();
+            renderGastos();
+            calcularTotalesGastos();
+
+            importeInput.value = '';
+            notaInput.value = '';
+            categoriaSelect.value = 'Comida'; 
+        }
+
+        function renderGastos() {
+            const listaContainer = document.getElementById('lista-gastos');
+            listaContainer.innerHTML = '';
+
+            const gastosOrdenados = [...gastos].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            if (gastosOrdenados.length === 0) {
+                listaContainer.innerHTML = '<div class="empty-state">No hay gastos registrados.</div>';
+                return;
+            }
+
+            gastosOrdenados.forEach(gasto => {
+                const item = document.createElement('div');
+                item.className = 'gasto-item';
+                
+                const fechaObj = new Date(gasto.fecha);
+                const fechaStr = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+
+                item.innerHTML = `
+                    <div class="gasto-info">
+                        <h4>${gasto.categoria}</h4>
+                        <p>${fechaStr} ${gasto.nota ? ' - ' + gasto.nota : ''}</p>
+                    </div>
+                    <div class="gasto-amount">
+                        - ${gasto.importe.toFixed(2)} €
+                    </div>
+                `;
+                listaContainer.appendChild(item);
+            });
+        }
+
+        function calcularTotalesGastos() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const fechaActual = new Date();
+            const mesActual = fechaActual.getMonth(); 
+            const anioActual = fechaActual.getFullYear();
+
+            let totalHoy = 0;
+            let totalMes = 0;
+
+            gastos.forEach(gasto => {
+                const fechaGasto = new Date(gasto.fecha);
+                
+                if (gasto.fecha === hoy) {
+                    totalHoy += gasto.importe;
+                }
+
+                if (fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual) {
+                    totalMes += gasto.importe;
+                }
+            });
+
+            document.getElementById('total-hoy').textContent = totalHoy.toFixed(2) + ' €';
+            document.getElementById('total-mes').textContent = totalMes.toFixed(2) + ' €';
+        }
+
+        // --- LÓGICA DE AHORRO (ACTUALIZADA) ---
+
+        function loadObjetivosFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_objetivos');
+            if (storedData) {
+                objetivos = JSON.parse(storedData);
+            }
+        }
+
+        function saveObjetivosToLocalStorage() {
+            localStorage.setItem('fintrack_objetivos', JSON.stringify(objetivos));
+        }
+
+        function addObjetivo() {
+            // Referencias a inputs
+            const nombreInput = document.getElementById('input-objetivo-nombre');
+            const totalInput = document.getElementById('input-objetivo-total');
+            const ahorradoInput = document.getElementById('input-objetivo-ahorrado');
+            // Nuevos inputs de fecha
+            const inicioInput = document.getElementById('input-objetivo-inicio');
+            const limiteInput = document.getElementById('input-objetivo-limite');
+
+            // Obtener valores
+            const nombre = nombreInput.value.trim();
+            const total = parseFloat(totalInput.value);
+            const ahorrado = parseFloat(ahorradoInput.value) || 0;
+            const fechaInicio = inicioInput.value;
+            const fechaLimite = limiteInput.value;
+
+            // Validación: Nombre y Total son obligatorios
+            if (!nombre) {
+                alert("Por favor, pon un nombre al objetivo.");
+                return;
+            }
+            if (isNaN(total) || total <= 0) {
+                alert("El objetivo total debe ser mayor a 0.");
+                return;
+            }
+
+            // Lógica de Estado: 'en_curso' o 'completado' si ya tiene el dinero
+            let estado = 'en_curso';
+            if (ahorrado >= total) {
+                estado = 'completado';
+            }
+
+            // Crear objeto con la nueva estructura
+            const nuevoObjetivo = {
+                id: Date.now(),
+                nombre: nombre,
+                total: total,
+                ahorrado: ahorrado,
+                fechaInicio: fechaInicio,
+                fechaLimite: fechaLimite,
+                estado: estado
+            };
+
+            // Añadir al array global
+            objetivos.push(nuevoObjetivo);
+            
+            // Persistir, pintar y recalcular
+            saveObjetivosToLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+
+            // Limpiar el formulario
+            nombreInput.value = '';
+            totalInput.value = '';
+            ahorradoInput.value = '0';
+            inicioInput.value = new Date().toISOString().split('T')[0]; // Reset a hoy
+            limiteInput.value = '';
+        }
+
+        function renderObjetivos() {
+            const listaContainer = document.getElementById('lista-objetivos');
+            listaContainer.innerHTML = ''; 
+
+            if (objetivos.length === 0) {
+                listaContainer.innerHTML = '<div class="empty-state">No tienes metas activas.</div>';
+                return;
+            }
+
+            objetivos.forEach(obj => {
+                // Calcular porcentaje de progreso
+                const porcentaje = Math.min((obj.ahorrado / obj.total) * 100, 100);
+                
+                // Formatear fechas para mostrar
+                const inicioStr = obj.fechaInicio ? new Date(obj.fechaInicio).toLocaleDateString('es-ES') : '---';
+                const limiteStr = obj.fechaLimite ? new Date(obj.fechaLimite).toLocaleDateString('es-ES') : '---';
+                
+                // Determinar clase y texto del estado
+                // Usamos el campo 'estado' si existe, sino lo calculamos al vuelo para compatibilidad
+                let estadoActual = obj.estado || (obj.ahorrado >= obj.total ? 'completado' : 'en_curso');
+                
+                // Clases CSS para badge y barra
+                const estadoClass = estadoActual === 'completado' ? 'completado' : 'en_curso';
+                const estadoLabel = estadoActual === 'completado' ? 'Completado' : 'En Curso';
+
+                const item = document.createElement('div');
+                item.className = 'objetivo-card';
+                
+                // Estructura actualizada con Fechas y Badge de Estado
+                item.innerHTML = `
+                    <div class="objetivo-header">
+                        <div>
+                            <span class="objetivo-title">${obj.nombre}</span>
+                            <div class="objetivo-fechas">
+                                Inicio: ${inicioStr} &bull; Fin: ${limiteStr}
+                            </div>
+                        </div>
+                        <span class="status-badge ${estadoClass}">${estadoLabel}</span>
+                    </div>
+                    
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill ${estadoClass}" style="width: ${porcentaje}%"></div>
+                    </div>
+                    
+                    <div class="objetivo-stats">
+                        <span>${obj.ahorrado.toFixed(2)} € de ${obj.total.toFixed(2)} € (${porcentaje.toFixed(0)}%)</span>
+                    </div>
+                `;
+                listaContainer.appendChild(item);
+            });
+        }
+
+        function calcularResumenObjetivos() {
+            let totalAcumulado = 0;
+            let totalObjetivos = 0;
+
+            objetivos.forEach(obj => {
+                totalAcumulado += obj.ahorrado;
+                totalObjetivos += obj.total;
+            });
+
+            document.getElementById('ahorro-total-acumulado').textContent = totalAcumulado.toFixed(2) + ' €';
+            document.getElementById('ahorro-total-objetivos').textContent = totalObjetivos.toFixed(2) + ' €';
+        }
+
+        // --- LÓGICA DE NAVEGACIÓN ---
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) activeSection.classList.add('active');
+
+            updateNavState(sectionId);
+        }
+
+        function updateNavState(activeSectionId) {
+            const btnId = activeSectionId.replace('section-', 'btn-');
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            const activeBtn = document.getElementById(btnId);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        // --- PLACEHOLDERS ---
+        function addSuscripcion() { console.log("TODO: implementar addSuscripcion"); }
+        function addInversion() { console.log("TODO: implementar addInversion"); }
+
+    </script>
+</body>
+</html>
