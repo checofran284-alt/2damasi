@@ -443,7 +443,7 @@
             color: var(--edit-color); /* Azulito para destacar */
         }
 
-        /* --- MODAL (FLASHCARD) STYLES --- */
+        /* --- MODAL (FLASHCARD) STYLES REVISADO --- */
         .modal-overlay {
             display: none; /* Oculto por defecto */
             position: fixed;
@@ -463,9 +463,9 @@
             padding: 25px;
             border-radius: 16px;
             width: 100%;
-            max-width: 420px; /* Un poco más ancho para flashcards */
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 400px;
+            max-height: 90vh; /* Altura máxima para scroll */
+            overflow-y: auto; /* Scroll si es muy largo */
             border: 1px solid #444;
             box-shadow: 0 10px 25px rgba(0,0,0,0.8);
             display: flex;
@@ -494,7 +494,7 @@
             border-bottom: 1px solid #333;
         }
 
-        /* Estilos Flashcard & Carrusel */
+        /* Estilos Lista de Notas */
         .notes-section h4 {
             font-size: 1rem;
             color: var(--text-primary);
@@ -507,132 +507,65 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .new-note-container textarea {
-            min-height: 50px;
+            min-height: 60px;
             resize: vertical;
             background: #222;
-            font-size: 0.9rem;
         }
 
-        /* Estilos para el visor Flashcard */
-        .flashcard-area {
-            background: #181818;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px dashed #444;
+        .notes-list {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            position: relative;
-            min-height: 180px;
+            gap: 10px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        .flashcard-controls-top {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-
-        .toggle-filter-btn {
-            background: transparent;
-            border: 1px solid #555;
-            color: #888;
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .toggle-filter-btn.active {
-            border-color: var(--highlight-color);
-            color: var(--highlight-color);
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .flashcard-indicator {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .flashcard-display {
-            background: #252525;
-            width: 100%;
-            flex-grow: 1;
+        .note-item {
+            background-color: #252525;
+            padding: 12px;
             border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            border: 1px solid #333;
             position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border: 2px solid transparent;
+            transition: all 0.2s ease;
         }
 
-        /* Estado Destacado Flashcard */
-        .flashcard-display.is-highlighted {
+        /* Estilo para nota destacada */
+        .note-item.highlighted {
             border-color: var(--highlight-color);
-            background: linear-gradient(145deg, #2a2a2a, #332f1a);
+            background-color: rgba(255, 215, 0, 0.05);
         }
 
-        .flashcard-meta {
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
             font-size: 0.75rem;
             color: #888;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
         }
 
-        .flashcard-text {
-            font-size: 1rem;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            color: #ddd;
-            text-align: center;
-            margin: 10px 0;
+        .note-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap; /* Respetar saltos de línea */
         }
 
-        .btn-star-large {
+        .btn-star {
             background: none;
             border: none;
-            font-size: 1.5rem;
-            color: #444;
             cursor: pointer;
-            align-self: flex-end;
-            transition: transform 0.2s;
-        }
-        
-        .btn-star-large:hover { transform: scale(1.1); }
-        .btn-star-large.active { color: var(--highlight-color); }
-
-        .flashcard-nav {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-top: 15px;
+            font-size: 1.2rem;
+            padding: 0;
+            color: #555;
+            transition: color 0.2s;
         }
 
-        .nav-arrow {
-            background: var(--surface-hover);
-            color: var(--text-primary);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        .empty-flashcard {
-            color: #666;
-            font-style: italic;
-            margin-top: 50px;
+        .btn-star.active {
+            color: var(--highlight-color);
         }
 
         /* --- SISTEMA DE TOASTS --- */
@@ -911,7 +844,7 @@
         <!-- TOAST CONTAINER -->
         <div id="toast-container"></div>
 
-        <!-- MODAL SUSCRIPCION (FLASHCARD CAROUSEL) -->
+        <!-- MODAL SUSCRIPCION (FLASHCARD MEJORADO) -->
         <div id="sub-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
@@ -921,41 +854,24 @@
                     <!-- Detalles dinámicos -->
                 </div>
                 
-                <!-- Sección de Notas: Add & Flashcard -->
+                <!-- Sección de Notas Múltiples -->
                 <div class="notes-section">
-                    <h4>Bitácora & Notas</h4>
+                    <h4>Notas & Comentarios</h4>
                     
                     <!-- Input nueva nota -->
                     <div class="new-note-container">
-                        <textarea id="input-new-note" placeholder="Escribe nueva nota..."></textarea>
-                        <button onclick="addNoteToSub()" class="primary-btn" style="padding: 8px; font-size: 0.85rem;">Añadir nota</button>
+                        <textarea id="input-new-note" placeholder="Escribe una nueva nota aquí..."></textarea>
+                        <button onclick="addNoteToSub()" class="primary-btn" style="padding: 10px;">Añadir nota</button>
                     </div>
 
-                    <!-- Flashcard Carousel Area -->
-                    <div class="flashcard-area">
-                        <!-- Top Controls: Filter & Indicator -->
-                        <div class="flashcard-controls-top">
-                            <button id="btn-filter-star" class="toggle-filter-btn" onclick="toggleFilterHighlighted()">
-                                ★ Solo destacadas
-                            </button>
-                            <span id="flashcard-indicator" class="flashcard-indicator">0 / 0</span>
-                        </div>
-
-                        <!-- Main Card Display -->
-                        <div id="flashcard-display" class="flashcard-display">
-                            <!-- Contenido dinámico JS -->
-                            <p class="empty-flashcard">Sin notas aún.</p>
-                        </div>
-
-                        <!-- Navigation Arrows -->
-                        <div class="flashcard-nav">
-                            <button id="btn-prev-note" class="nav-arrow" onclick="prevNote()">Anterior</button>
-                            <button id="btn-next-note" class="nav-arrow" onclick="nextNote()">Siguiente</button>
-                        </div>
+                    <!-- Lista de notas existentes -->
+                    <div id="notes-list" class="notes-list">
+                        <!-- Se llena con JS -->
                     </div>
                 </div>
 
                 <div class="modal-actions">
+                    <!-- Ya no hay "Guardar notas" porque se guardan individualmente -->
                     <button onclick="closeSubModal()" class="secondary-btn" style="margin-top:0; width: 100%;">Cerrar</button>
                 </div>
             </div>
@@ -991,10 +907,8 @@
         let objetivos = []; 
         let suscripciones = []; 
         
-        // Estado Modal & Flashcards
+        // Variable para controlar qué suscripción se edita en el modal
         let currentSubIdForModal = null;
-        let currentNoteIndex = 0; // Índice de la nota actual visible
-        let filterHighlighted = false; // Estado del filtro "Solo destacadas"
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -1271,9 +1185,10 @@
             const storedData = localStorage.getItem('fintrack_suscripciones');
             if (storedData) {
                 suscripciones = JSON.parse(storedData);
-                // MIGRACIÓN DATOS
+                // MIGRACIÓN DATOS: Si 'notas' es un string, lo convertimos a array de objetos
                 suscripciones.forEach(sub => {
                     if (typeof sub.notas === 'string' && sub.notas.length > 0) {
+                        // Crear una nota inicial con el contenido antiguo
                         const oldNote = {
                             id: Date.now(),
                             texto: sub.notas,
@@ -1282,9 +1197,11 @@
                         };
                         sub.notas = [oldNote];
                     } else if (!Array.isArray(sub.notas)) {
+                        // Si no es array ni string válido, inicializar vacío
                         sub.notas = [];
                     }
                 });
+                // Guardar la estructura migrada inmediatamente
                 saveSuscripcionesToLocalStorage();
             }
         }
@@ -1312,6 +1229,7 @@
             if (!nombre) { showToast("Nombre requerido", "error"); return; }
             if (isNaN(precio) || precio <= 0) { showToast("Precio inválido", "error"); return; }
 
+            // Preservar notas existentes (ahora es un array)
             let currentNotes = [];
             if (id) {
                 const existing = suscripciones.find(s => s.id == id);
@@ -1321,12 +1239,14 @@
             const subData = { nombre, precio, periodicidad, categoria, fechaProximoCobro, notas: currentNotes };
 
             if (id) {
+                // Editar existente
                 const index = suscripciones.findIndex(s => s.id == id);
                 if (index !== -1) {
                     suscripciones[index] = { ...suscripciones[index], ...subData };
                     showToast("Suscripción actualizada", "info");
                 }
             } else {
+                // Crear nueva
                 suscripciones.push({ id: Date.now(), ...subData });
                 showToast("Suscripción añadida", "success");
             }
@@ -1364,11 +1284,13 @@
                     ? new Date(sub.fechaProximoCobro).toLocaleDateString('es-ES', {day: 'numeric', month: 'short'}) 
                     : 'Sin fecha';
 
+                // Verificar si tiene notas (array con longitud > 0)
                 const hasNotes = Array.isArray(sub.notas) && sub.notas.length > 0;
                 const notesIcon = hasNotes ? '<span class="notes-badge">📝</span>' : '';
 
                 const item = document.createElement('div');
                 item.className = 'sub-card';
+                // Añadimos evento onclick para abrir el modal
                 item.setAttribute('onclick', `openSubModal(${sub.id})`);
                 
                 item.innerHTML = `
@@ -1380,6 +1302,7 @@
                         <span class="sub-detail">Próximo: ${fechaCobroStr}</span>
                         <span class="sub-badge">${sub.categoria}</span>
                     </div>
+                    <!-- IMPORTANTE: Stop propagation para que editar/borrar no abra el modal -->
                     <div class="card-actions" style="margin-top:10px; padding-top:10px; border-top:1px solid #333;" onclick="event.stopPropagation()">
                         <button class="btn-action btn-edit" onclick="editSuscripcion(${sub.id})">Editar</button>
                         <button class="btn-action btn-delete" onclick="deleteSuscripcion(${sub.id})">Borrar</button>
@@ -1440,18 +1363,18 @@
             document.getElementById('total-mensual-suscripciones').textContent = totalMensual.toFixed(2) + ' €';
         }
 
-        // --- LÓGICA MODAL & FLASHCARDS (ACTUALIZADO) ---
+        // --- LÓGICA MODAL (FLASHCARD MEJORADA) ---
 
         function openSubModal(id) {
             const sub = suscripciones.find(s => s.id === id);
             if (!sub) return;
 
             currentSubIdForModal = id;
-            currentNoteIndex = 0; // Resetear índice al abrir
-            filterHighlighted = false; // Resetear filtro
 
             // Rellenar datos cabecera
             document.getElementById('modal-sub-name').textContent = sub.nombre;
+            
+            // Construir detalles
             const fecha = sub.fechaProximoCobro ? new Date(sub.fechaProximoCobro).toLocaleDateString('es-ES') : 'Sin fecha';
             const detalleHtml = `
                 <p><strong>Precio:</strong> ${sub.precio.toFixed(2)} € (${sub.periodicidad})</p>
@@ -1460,10 +1383,11 @@
             `;
             document.getElementById('modal-sub-details').innerHTML = detalleHtml;
 
-            // Limpiar input y actualizar UI flashcard
+            // Renderizar la lista de notas múltiples
+            renderSubNotes(id);
+
+            // Limpiar input de nueva nota
             document.getElementById('input-new-note').value = '';
-            updateFilterButtonUI();
-            renderFlashcardUI();
 
             // Mostrar modal
             document.getElementById('sub-modal').style.display = 'flex';
@@ -1474,101 +1398,39 @@
             currentSubIdForModal = null;
         }
 
-        // Renderiza la Flashcard actual en el carrusel
-        function renderFlashcardUI() {
-            const sub = suscripciones.find(s => s.id === currentSubIdForModal);
-            if (!sub) return;
+        // Renderiza la lista de notas dentro del modal
+        function renderSubNotes(subId) {
+            const sub = suscripciones.find(s => s.id === subId);
+            const notesContainer = document.getElementById('notes-list');
+            notesContainer.innerHTML = ''; // Limpiar
 
-            // 1. Filtrar notas según estado del toggle
-            let visibleNotes = sub.notas || [];
-            if (filterHighlighted) {
-                visibleNotes = visibleNotes.filter(n => n.destacada === true);
+            if (!sub || !sub.notas || sub.notas.length === 0) {
+                notesContainer.innerHTML = '<p style="color:#666; text-align:center; font-style:italic;">Sin notas aún.</p>';
+                return;
             }
 
-            // 2. Control de límites del índice
-            if (currentNoteIndex >= visibleNotes.length) {
-                currentNoteIndex = Math.max(0, visibleNotes.length - 1);
-            }
+            // Ordenar: más recientes primero
+            const sortedNotes = [...sub.notas].sort((a, b) => b.id - a.id);
 
-            // 3. Referencias DOM
-            const display = document.getElementById('flashcard-display');
-            const indicator = document.getElementById('flashcard-indicator');
-            const btnPrev = document.getElementById('btn-prev-note');
-            const btnNext = document.getElementById('btn-next-note');
-
-            // 4. Lógica de visualización
-            display.className = 'flashcard-display'; // Reset clases
-            
-            if (visibleNotes.length === 0) {
-                // Caso vacío
-                const msg = filterHighlighted ? "No hay notas destacadas." : "Sin notas aún.";
-                display.innerHTML = `<p class="empty-flashcard">${msg}</p>`;
-                indicator.textContent = "0 / 0";
-                btnPrev.disabled = true;
-                btnNext.disabled = true;
-            } else {
-                // Caso con notas -> Mostrar la nota actual (currentNoteIndex)
-                const note = visibleNotes[currentNoteIndex];
+            sortedNotes.forEach(note => {
+                const noteDiv = document.createElement('div');
+                noteDiv.className = `note-item ${note.destacada ? 'highlighted' : ''}`;
+                
                 const starIcon = note.destacada ? '★' : '☆';
                 const starClass = note.destacada ? 'active' : '';
-                
-                if (note.destacada) display.classList.add('is-highlighted');
 
-                display.innerHTML = `
-                    <div class="flashcard-meta">
+                noteDiv.innerHTML = `
+                    <div class="note-meta">
                         <span>${note.fechaCreacion}</span>
-                        <span>#${note.id.toString().slice(-4)}</span>
+                        <button class="btn-star ${starClass}" onclick="toggleNoteHighlight(${sub.id}, ${note.id})">${starIcon}</button>
                     </div>
-                    <div class="flashcard-text">${note.texto}</div>
-                    <button class="btn-star-large ${starClass}" onclick="toggleNoteHighlight(${note.id})">${starIcon}</button>
+                    <div class="note-text">${note.texto}</div>
                 `;
-
-                // Actualizar indicador y botones
-                indicator.textContent = `${currentNoteIndex + 1} / ${visibleNotes.length}`;
-                btnPrev.disabled = (currentNoteIndex === 0);
-                btnNext.disabled = (currentNoteIndex === visibleNotes.length - 1);
-            }
+                notesContainer.appendChild(noteDiv);
+            });
         }
 
-        // Navegación Carrusel: Anterior
-        function prevNote() {
-            if (currentNoteIndex > 0) {
-                currentNoteIndex--;
-                renderFlashcardUI();
-            }
-        }
-
-        // Navegación Carrusel: Siguiente
-        function nextNote() {
-            const sub = suscripciones.find(s => s.id === currentSubIdForModal);
-            if (!sub) return;
-            
-            let count = sub.notas.length;
-            if (filterHighlighted) {
-                count = sub.notas.filter(n => n.destacada).length;
-            }
-
-            if (currentNoteIndex < count - 1) {
-                currentNoteIndex++;
-                renderFlashcardUI();
-            }
-        }
-
-        // Toggle Filtro Destacadas
-        function toggleFilterHighlighted() {
-            filterHighlighted = !filterHighlighted;
-            currentNoteIndex = 0; // Resetear al cambiar filtro
-            updateFilterButtonUI();
-            renderFlashcardUI();
-        }
-
-        function updateFilterButtonUI() {
-            const btn = document.getElementById('btn-filter-star');
-            if (filterHighlighted) btn.classList.add('active');
-            else btn.classList.remove('active');
-        }
-
-        // Añadir Nota y saltar a ella
+        // Añade una nueva nota al array de la suscripción actual
         function addNoteToSub() {
             if (!currentSubIdForModal) return;
 
@@ -1576,7 +1438,7 @@
             const text = input.value.trim();
 
             if (!text) {
-                showToast("Escribe algo...", "error");
+                showToast("Escribe algo en la nota", "error");
                 return;
             }
 
@@ -1585,48 +1447,35 @@
                 const newNote = {
                     id: Date.now(),
                     texto: text,
-                    destacada: false, // Por defecto no destacada
+                    destacada: false,
                     fechaCreacion: new Date().toLocaleString('es-ES')
                 };
 
+                // Asegurar que el array existe
                 if(!suscripciones[subIndex].notas) suscripciones[subIndex].notas = [];
                 
-                // Añadir al final
                 suscripciones[subIndex].notas.push(newNote);
                 
                 saveSuscripcionesToLocalStorage();
+                renderSubNotes(currentSubIdForModal);
+                renderSuscripciones(); // Actualizar badge en lista principal
                 
-                // Si el filtro de destacadas está activo y añado una NO destacada, 
-                // tengo que quitar el filtro para que el usuario la vea.
-                if (filterHighlighted) {
-                    filterHighlighted = false;
-                    updateFilterButtonUI();
-                }
-
-                // Saltar a la nueva nota (la última)
-                currentNoteIndex = suscripciones[subIndex].notas.length - 1;
-                
-                renderFlashcardUI();
-                renderSuscripciones(); // Actualizar icono en lista principal
-                
-                input.value = ''; 
+                input.value = ''; // Limpiar input
                 showToast("Nota añadida", "success");
             }
         }
 
-        // Marcar/Desmarcar nota (actualiza la flashcard actual)
-        function toggleNoteHighlight(noteId) {
-            const subIndex = suscripciones.findIndex(s => s.id === currentSubIdForModal);
+        // Cambia el estado de destacado de una nota específica
+        function toggleNoteHighlight(subId, noteId) {
+            const subIndex = suscripciones.findIndex(s => s.id === subId);
             if (subIndex !== -1) {
                 const noteIndex = suscripciones[subIndex].notas.findIndex(n => n.id === noteId);
                 if (noteIndex !== -1) {
-                    // Cambiar estado
+                    // Toggle boolean
                     suscripciones[subIndex].notas[noteIndex].destacada = !suscripciones[subIndex].notas[noteIndex].destacada;
-                    saveSuscripcionesToLocalStorage();
                     
-                    // Re-renderizar la tarjeta actual para ver el cambio de estilo/icono
-                    // Si el filtro está activo y la desmarcamos, la lógica de renderFlashcardUI manejará el conteo
-                    renderFlashcardUI(); 
+                    saveSuscripcionesToLocalStorage();
+                    renderSubNotes(subId); // Re-renderizar lista para ver cambios
                 }
             }
         }
