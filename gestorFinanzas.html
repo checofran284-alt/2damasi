@@ -15,6 +15,8 @@
             --surface-hover: #2C2C2C;
             --primary-color: #00E676; /* Verde Finanzas */
             --danger-color: #CF6679;
+            --edit-color: #64B5F6; /* Azul para editar */
+            --highlight-color: #FFD700; /* Oro para destacados */
             --text-primary: #FFFFFF;
             --text-secondary: #B0B0B0;
             --nav-height: 70px;
@@ -200,6 +202,17 @@
         .primary-btn:active {
             transform: scale(0.98);
         }
+        
+        .secondary-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid #444;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
 
         .list-header {
             font-size: 1.1rem;
@@ -242,14 +255,14 @@
             font-style: italic;
         }
 
-        /* --- ESTILOS AHORRO (ACTUALIZADO) --- */
+        /* --- ESTILOS AHORRO --- */
         .objetivo-card {
             background-color: var(--surface-color);
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 15px;
             border: 1px solid #333;
-            position: relative; /* Para posicionar elementos si fuera necesario */
+            position: relative;
         }
 
         .objetivo-header {
@@ -279,6 +292,7 @@
             text-transform: uppercase;
             font-weight: 700;
             letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
 
         .status-badge.en_curso {
@@ -288,9 +302,10 @@
         }
 
         .status-badge.completado {
-            background-color: rgba(0, 230, 118, 0.15);
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
         }
 
         .progress-bar-bg {
@@ -309,7 +324,6 @@
             transition: width 0.5s ease-out;
         }
         
-        /* Color barra completada */
         .progress-bar-fill.completado {
             background-color: var(--primary-color); 
             box-shadow: 0 0 8px var(--primary-color);
@@ -326,6 +340,342 @@
         .objetivo-stats span {
             width: 100%;
             text-align: right;
+        }
+        
+        /* Acciones de la tarjeta (CRUD) */
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+            gap: 10px;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-action:hover { opacity: 0.8; }
+        
+        .btn-add {
+            background-color: var(--primary-color);
+            color: #000;
+            flex: 2; /* Más grande */
+        }
+        
+        .btn-edit {
+            background-color: var(--surface-hover);
+            color: var(--edit-color);
+            border: 1px solid #444;
+        }
+        
+        .btn-delete {
+            background-color: var(--surface-hover);
+            color: var(--danger-color);
+            border: 1px solid #444;
+        }
+
+        /* --- ESTILOS SUSCRIPCIONES --- */
+        .sub-card {
+            background-color: var(--surface-color);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer; /* Indicar clicable para modal */
+            transition: transform 0.1s, border-color 0.2s;
+        }
+
+        .sub-card:active {
+            transform: scale(0.98);
+        }
+
+        .sub-card:hover {
+            border-color: #555;
+        }
+
+        .sub-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .sub-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sub-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .sub-detail {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .sub-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background-color: #333;
+            color: #ccc;
+        }
+
+        .notes-badge {
+            font-size: 0.8rem;
+            color: var(--edit-color); /* Azulito para destacar */
+        }
+
+        /* --- MODAL (FLASHCARD) STYLES --- */
+        .modal-overlay {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            padding: 25px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px; /* Un poco más ancho para flashcards */
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #444;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: modalPop 0.3s ease-out;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header h3 {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .modal-details {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Estilos Flashcard & Carrusel */
+        .notes-section h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .new-note-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .new-note-container textarea {
+            min-height: 50px;
+            resize: vertical;
+            background: #222;
+            font-size: 0.9rem;
+        }
+
+        /* Estilos para el visor Flashcard */
+        .flashcard-area {
+            background: #181818;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px dashed #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            min-height: 180px;
+        }
+
+        .flashcard-controls-top {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .toggle-filter-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-filter-btn.active {
+            border-color: var(--highlight-color);
+            color: var(--highlight-color);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .flashcard-indicator {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .flashcard-display {
+            background: #252525;
+            width: 100%;
+            flex-grow: 1;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid transparent;
+        }
+
+        /* Estado Destacado Flashcard */
+        .flashcard-display.is-highlighted {
+            border-color: var(--highlight-color);
+            background: linear-gradient(145deg, #2a2a2a, #332f1a);
+        }
+
+        .flashcard-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .flashcard-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            color: #ddd;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .btn-star-large {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #444;
+            cursor: pointer;
+            align-self: flex-end;
+            transition: transform 0.2s;
+        }
+        
+        .btn-star-large:hover { transform: scale(1.1); }
+        .btn-star-large.active { color: var(--highlight-color); }
+
+        .flashcard-nav {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .nav-arrow {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .empty-flashcard {
+            color: #666;
+            font-style: italic;
+            margin-top: 50px;
+        }
+
+        /* --- SISTEMA DE TOASTS --- */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background-color: #252525;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideInDown 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            border-left: 5px solid transparent;
+            pointer-events: auto;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .toast.success { border-left-color: var(--primary-color); }
+        .toast.error { border-left-color: var(--danger-color); }
+        .toast.info { border-left-color: var(--edit-color); }
+
+        @keyframes slideInDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
         }
 
         /* --- NAVIGATION --- */
@@ -405,8 +755,6 @@
             <!-- Sección GASTOS -->
             <section id="section-gastos">
                 <h2>Resumen de Gastos</h2>
-                
-                <!-- Resumen Totales -->
                 <div class="summary-container">
                     <div class="summary-card">
                         <span>Total Hoy</span>
@@ -418,7 +766,6 @@
                     </div>
                 </div>
 
-                <!-- Formulario -->
                 <div class="form-container">
                     <div class="form-group">
                         <label>Importe (€)</label>
@@ -445,18 +792,13 @@
                     <button id="btn-guardar-gasto" class="primary-btn">Guardar Gasto</button>
                 </div>
 
-                <!-- Lista Reciente -->
                 <div class="list-header">Movimientos Recientes</div>
-                <div id="lista-gastos">
-                    <!-- Aquí se renderizarán los gastos JS -->
-                </div>
+                <div id="lista-gastos"></div>
             </section>
 
-            <!-- Sección AHORRO (ACTUALIZADA) -->
+            <!-- Sección AHORRO -->
             <section id="section-ahorro">
                 <h2>Objetivos de Ahorro</h2>
-
-                <!-- Resumen Ahorro -->
                 <div class="summary-container">
                     <div class="summary-card">
                         <span>Ahorrado</span>
@@ -468,8 +810,8 @@
                     </div>
                 </div>
 
-                <!-- Formulario Nuevo Objetivo (ACTUALIZADO) -->
                 <div class="form-container">
+                    <input type="hidden" id="input-objetivo-id">
                     <div class="form-group">
                         <label>Nombre del Objetivo</label>
                         <input type="text" id="input-objetivo-nombre" placeholder="Ej. Viaje a Japón">
@@ -482,7 +824,6 @@
                         <label>Ya Ahorrado (€)</label>
                         <input type="number" id="input-objetivo-ahorrado" placeholder="0.00" value="0" min="0" step="0.01">
                     </div>
-                    <!-- Nuevos campos de fecha -->
                     <div class="form-group">
                         <label>Fecha Inicio</label>
                         <input type="date" id="input-objetivo-inicio">
@@ -492,24 +833,67 @@
                         <input type="date" id="input-objetivo-limite">
                     </div>
                     <button id="btn-guardar-objetivo" class="primary-btn">Guardar Objetivo</button>
+                    <button id="btn-cancelar-edicion" class="secondary-btn" style="display: none;">Cancelar Edición</button>
                 </div>
 
-                <!-- Lista Objetivos -->
                 <div class="list-header">Mis Metas</div>
-                <div id="lista-objetivos">
-                    <!-- JS renders here -->
-                </div>
+                <div id="lista-objetivos"></div>
             </section>
 
             <!-- Sección SUSCRIPCIONES -->
             <section id="section-suscripciones">
                 <h2>Suscripciones</h2>
-                <div class="form-container">
-                    <p class="info-text">
-                        Controla tus gastos recurrentes (Netflix, Gimnasio, Internet) para evitar sorpresas a fin de mes.
-                    </p>
-                    <button id="btn-nueva-suscripcion" class="primary-btn">Añadir nueva Suscripción</button>
+                
+                <!-- Resumen Coste Mensual -->
+                <div class="summary-container">
+                    <div class="summary-card" style="width: 100%; flex: 1 1 100%;">
+                        <span>Gasto Total Mensual</span>
+                        <span class="amount" id="total-mensual-suscripciones">0.00 €</span>
+                    </div>
                 </div>
+
+                <!-- Formulario Suscripción -->
+                <div class="form-container">
+                    <input type="hidden" id="input-sub-id">
+                    
+                    <div class="form-group">
+                        <label>Nombre del Servicio</label>
+                        <input type="text" id="input-sub-nombre" placeholder="Ej. Netflix">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (€)</label>
+                        <input type="number" id="input-sub-precio" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Periodicidad</label>
+                        <select id="select-sub-periodo">
+                            <option value="mensual">Mensual</option>
+                            <option value="anual">Anual</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="select-sub-categoria">
+                            <option value="Streaming">Streaming</option>
+                            <option value="Música">Música</option>
+                            <option value="Software">Software</option>
+                            <option value="Juegos">Juegos</option>
+                            <option value="Gimnasio">Gimnasio</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Próximo Cobro</label>
+                        <input type="date" id="input-sub-fecha">
+                    </div>
+
+                    <button id="btn-guardar-sub" class="primary-btn">Guardar Suscripción</button>
+                    <button id="btn-cancelar-sub" class="secondary-btn" style="display: none;">Cancelar Edición</button>
+                </div>
+
+                <!-- Lista Suscripciones -->
+                <div class="list-header">Mis Servicios</div>
+                <div id="lista-suscripciones"></div>
             </section>
 
             <!-- Sección INVERSIONES -->
@@ -523,6 +907,59 @@
                 </div>
             </section>
         </main>
+
+        <!-- TOAST CONTAINER -->
+        <div id="toast-container"></div>
+
+        <!-- MODAL SUSCRIPCION (FLASHCARD CAROUSEL) -->
+        <div id="sub-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-sub-name">Nombre Servicio</h3>
+                </div>
+                <div class="modal-details" id="modal-sub-details">
+                    <!-- Detalles dinámicos -->
+                </div>
+                
+                <!-- Sección de Notas: Add & Flashcard -->
+                <div class="notes-section">
+                    <h4>Bitácora & Notas</h4>
+                    
+                    <!-- Input nueva nota -->
+                    <div class="new-note-container">
+                        <textarea id="input-new-note" placeholder="Escribe nueva nota..."></textarea>
+                        <button onclick="addNoteToSub()" class="primary-btn" style="padding: 8px; font-size: 0.85rem;">Añadir nota</button>
+                    </div>
+
+                    <!-- Flashcard Carousel Area -->
+                    <div class="flashcard-area">
+                        <!-- Top Controls: Filter & Indicator -->
+                        <div class="flashcard-controls-top">
+                            <button id="btn-filter-star" class="toggle-filter-btn" onclick="toggleFilterHighlighted()">
+                                ★ Solo destacadas
+                            </button>
+                            <span id="flashcard-indicator" class="flashcard-indicator">0 / 0</span>
+                        </div>
+
+                        <!-- Main Card Display -->
+                        <div id="flashcard-display" class="flashcard-display">
+                            <!-- Contenido dinámico JS -->
+                            <p class="empty-flashcard">Sin notas aún.</p>
+                        </div>
+
+                        <!-- Navigation Arrows -->
+                        <div class="flashcard-nav">
+                            <button id="btn-prev-note" class="nav-arrow" onclick="prevNote()">Anterior</button>
+                            <button id="btn-next-note" class="nav-arrow" onclick="nextNote()">Siguiente</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button onclick="closeSubModal()" class="secondary-btn" style="margin-top:0; width: 100%;">Cerrar</button>
+                </div>
+            </div>
+        </div>
 
         <!-- BOTTOM NAVIGATION -->
         <nav>
@@ -551,308 +988,665 @@
     <script>
         // --- ESTADO GLOBAL ---
         let gastos = [];
-        let objetivos = []; // Array global para almacenar los objetivos
+        let objetivos = []; 
+        let suscripciones = []; 
+        
+        // Estado Modal & Flashcards
+        let currentSubIdForModal = null;
+        let currentNoteIndex = 0; // Índice de la nota actual visible
+        let filterHighlighted = false; // Estado del filtro "Solo destacadas"
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Inicializar fecha input a hoy
+            // Fechas por defecto
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('input-fecha').value = today;
-            
-            // Inicializar fecha inicio de ahorro a hoy por defecto
             document.getElementById('input-objetivo-inicio').value = today;
+            document.getElementById('input-sub-fecha').value = today;
 
-            // --- INICIALIZACIÓN DE GASTOS ---
+            // --- GASTOS ---
             loadGastosFromLocalStorage();
             renderGastos();
             calcularTotalesGastos();
             
-            // --- INICIALIZACIÓN DE AHORRO (NUEVO) ---
+            // --- AHORRO ---
             loadObjetivosFromLocalStorage();
             renderObjetivos();
             calcularResumenObjetivos();
             
+            // --- SUSCRIPCIONES ---
+            loadSuscripcionesFromLocalStorage();
+            renderSuscripciones();
+            calcularTotalMensualSuscripciones();
+
             // Navegación inicial
             showSection('section-gastos');
 
             // --- EVENT LISTENERS ---
             document.getElementById('btn-guardar-gasto').addEventListener('click', addGasto);
             
-            // Listener para el botón de guardar objetivo de ahorro
             document.getElementById('btn-guardar-objetivo').addEventListener('click', addObjetivo);
+            document.getElementById('btn-cancelar-edicion').addEventListener('click', resetFormObjetivo);
 
-            // Placeholders para secciones futuras
-            document.getElementById('btn-nueva-suscripcion').addEventListener('click', addSuscripcion);
+            // Listeners Suscripciones
+            document.getElementById('btn-guardar-sub').addEventListener('click', addOrUpdateSuscripcion);
+            document.getElementById('btn-cancelar-sub').addEventListener('click', resetFormSuscripcion);
+
+            // Placeholders
             document.getElementById('btn-nueva-inversion').addEventListener('click', addInversion);
         });
 
-        // --- LÓGICA DE GASTOS ---
+        // ==========================================
+        //         SISTEMA DE NOTIFICACIONES
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            
+            toast.onclick = () => {
+                toast.style.display = 'none';
+                toast.remove();
+            };
 
-        function loadGastosFromLocalStorage() {
-            const storedData = localStorage.getItem('fintrack_gastos');
-            if (storedData) {
-                gastos = JSON.parse(storedData);
-            }
+            setTimeout(() => {
+                if(toast.parentElement) toast.remove();
+            }, 3000);
+
+            container.appendChild(toast);
         }
 
+        // ==========================================
+        //         LÓGICA DE GASTOS
+        // ==========================================
+        function loadGastosFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_gastos');
+            if (storedData) gastos = JSON.parse(storedData);
+        }
         function saveGastosToLocalStorage() {
             localStorage.setItem('fintrack_gastos', JSON.stringify(gastos));
         }
-
         function addGasto() {
             const importeInput = document.getElementById('input-importe');
             const categoriaSelect = document.getElementById('select-categoria');
             const fechaInput = document.getElementById('input-fecha');
             const notaInput = document.getElementById('input-nota');
-
             const importe = parseFloat(importeInput.value);
             const categoria = categoriaSelect.value;
             const fecha = fechaInput.value;
             const nota = notaInput.value;
-
-            // Validación
-            if (isNaN(importe) || importe <= 0) {
-                alert("Por favor, introduce un importe válido.");
-                return;
-            }
-            if (!fecha) {
-                alert("Por favor, selecciona una fecha.");
-                return;
-            }
-
-            const nuevoGasto = {
-                id: Date.now(),
-                importe: importe,
-                categoria: categoria,
-                fecha: fecha,
-                nota: nota
-            };
-
+            if (isNaN(importe) || importe <= 0) { alert("Importe inválido."); return; }
+            if (!fecha) { alert("Fecha requerida."); return; }
+            const nuevoGasto = { id: Date.now(), importe, categoria, fecha, nota };
             gastos.push(nuevoGasto);
             saveGastosToLocalStorage();
             renderGastos();
             calcularTotalesGastos();
-
-            importeInput.value = '';
-            notaInput.value = '';
-            categoriaSelect.value = 'Comida'; 
+            importeInput.value = ''; notaInput.value = ''; categoriaSelect.value = 'Comida'; 
         }
-
         function renderGastos() {
             const listaContainer = document.getElementById('lista-gastos');
             listaContainer.innerHTML = '';
-
             const gastosOrdenados = [...gastos].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
             if (gastosOrdenados.length === 0) {
                 listaContainer.innerHTML = '<div class="empty-state">No hay gastos registrados.</div>';
                 return;
             }
-
             gastosOrdenados.forEach(gasto => {
                 const item = document.createElement('div');
                 item.className = 'gasto-item';
-                
                 const fechaObj = new Date(gasto.fecha);
                 const fechaStr = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-
                 item.innerHTML = `
                     <div class="gasto-info">
                         <h4>${gasto.categoria}</h4>
                         <p>${fechaStr} ${gasto.nota ? ' - ' + gasto.nota : ''}</p>
                     </div>
-                    <div class="gasto-amount">
-                        - ${gasto.importe.toFixed(2)} €
-                    </div>
+                    <div class="gasto-amount">- ${gasto.importe.toFixed(2)} €</div>
                 `;
                 listaContainer.appendChild(item);
             });
         }
-
         function calcularTotalesGastos() {
             const hoy = new Date().toISOString().split('T')[0];
             const fechaActual = new Date();
             const mesActual = fechaActual.getMonth(); 
             const anioActual = fechaActual.getFullYear();
-
-            let totalHoy = 0;
-            let totalMes = 0;
-
+            let totalHoy = 0, totalMes = 0;
             gastos.forEach(gasto => {
                 const fechaGasto = new Date(gasto.fecha);
-                
-                if (gasto.fecha === hoy) {
-                    totalHoy += gasto.importe;
-                }
-
-                if (fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual) {
-                    totalMes += gasto.importe;
-                }
+                if (gasto.fecha === hoy) totalHoy += gasto.importe;
+                if (fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual) totalMes += gasto.importe;
             });
-
             document.getElementById('total-hoy').textContent = totalHoy.toFixed(2) + ' €';
             document.getElementById('total-mes').textContent = totalMes.toFixed(2) + ' €';
         }
 
-        // --- LÓGICA DE AHORRO (ACTUALIZADA) ---
-
+        // ==========================================
+        //     LÓGICA DE AHORRO
+        // ==========================================
         function loadObjetivosFromLocalStorage() {
             const storedData = localStorage.getItem('fintrack_objetivos');
-            if (storedData) {
-                objetivos = JSON.parse(storedData);
-            }
+            if (storedData) objetivos = JSON.parse(storedData);
         }
-
         function saveObjetivosToLocalStorage() {
             localStorage.setItem('fintrack_objetivos', JSON.stringify(objetivos));
         }
-
         function addObjetivo() {
-            // Referencias a inputs
+            const idInput = document.getElementById('input-objetivo-id');
             const nombreInput = document.getElementById('input-objetivo-nombre');
             const totalInput = document.getElementById('input-objetivo-total');
             const ahorradoInput = document.getElementById('input-objetivo-ahorrado');
-            // Nuevos inputs de fecha
             const inicioInput = document.getElementById('input-objetivo-inicio');
             const limiteInput = document.getElementById('input-objetivo-limite');
-
-            // Obtener valores
+            const id = idInput.value;
             const nombre = nombreInput.value.trim();
-            const total = parseFloat(totalInput.value);
-            const ahorrado = parseFloat(ahorradoInput.value) || 0;
+            const montoTotal = parseFloat(totalInput.value);
+            const montoAhorrado = parseFloat(ahorradoInput.value) || 0;
             const fechaInicio = inicioInput.value;
             const fechaLimite = limiteInput.value;
 
-            // Validación: Nombre y Total son obligatorios
-            if (!nombre) {
-                alert("Por favor, pon un nombre al objetivo.");
-                return;
-            }
-            if (isNaN(total) || total <= 0) {
-                alert("El objetivo total debe ser mayor a 0.");
-                return;
-            }
-
-            // Lógica de Estado: 'en_curso' o 'completado' si ya tiene el dinero
-            let estado = 'en_curso';
-            if (ahorrado >= total) {
-                estado = 'completado';
-            }
-
-            // Crear objeto con la nueva estructura
-            const nuevoObjetivo = {
-                id: Date.now(),
-                nombre: nombre,
-                total: total,
-                ahorrado: ahorrado,
-                fechaInicio: fechaInicio,
-                fechaLimite: fechaLimite,
-                estado: estado
-            };
-
-            // Añadir al array global
-            objetivos.push(nuevoObjetivo);
+            if (!nombre) { showToast("Nombre requerido", "error"); return; }
+            if (isNaN(montoTotal) || montoTotal <= 0) { showToast("Meta total > 0", "error"); return; }
             
-            // Persistir, pintar y recalcular
+            let estado = 'en_curso';
+            if (montoAhorrado >= montoTotal) estado = 'completado';
+
+            if (id) {
+                const index = objetivos.findIndex(o => o.id == id);
+                if (index !== -1) {
+                    objetivos[index] = { ...objetivos[index], nombre, montoTotal, montoAhorrado, fechaInicio, fechaLimite, estado };
+                    showToast("Objetivo actualizado", "info");
+                }
+            } else {
+                objetivos.push({ id: Date.now(), nombre, montoTotal, montoAhorrado, fechaInicio, fechaLimite, estado });
+                showToast("Objetivo guardado", "success");
+            }
             saveObjetivosToLocalStorage();
             renderObjetivos();
             calcularResumenObjetivos();
-
-            // Limpiar el formulario
-            nombreInput.value = '';
-            totalInput.value = '';
-            ahorradoInput.value = '0';
-            inicioInput.value = new Date().toISOString().split('T')[0]; // Reset a hoy
-            limiteInput.value = '';
+            resetFormObjetivo();
         }
-
         function renderObjetivos() {
             const listaContainer = document.getElementById('lista-objetivos');
             listaContainer.innerHTML = ''; 
-
-            if (objetivos.length === 0) {
-                listaContainer.innerHTML = '<div class="empty-state">No tienes metas activas.</div>';
-                return;
-            }
-
+            if (objetivos.length === 0) { listaContainer.innerHTML = '<div class="empty-state">No tienes metas activas.</div>'; return; }
             objetivos.forEach(obj => {
-                // Calcular porcentaje de progreso
-                const porcentaje = Math.min((obj.ahorrado / obj.total) * 100, 100);
-                
-                // Formatear fechas para mostrar
-                const inicioStr = obj.fechaInicio ? new Date(obj.fechaInicio).toLocaleDateString('es-ES') : '---';
-                const limiteStr = obj.fechaLimite ? new Date(obj.fechaLimite).toLocaleDateString('es-ES') : '---';
-                
-                // Determinar clase y texto del estado
-                // Usamos el campo 'estado' si existe, sino lo calculamos al vuelo para compatibilidad
-                let estadoActual = obj.estado || (obj.ahorrado >= obj.total ? 'completado' : 'en_curso');
-                
-                // Clases CSS para badge y barra
+                const porcentaje = Math.min((obj.montoAhorrado / obj.montoTotal) * 100, 100);
+                const inicioStr = obj.fechaInicio ? new Date(obj.fechaInicio).toLocaleDateString('es-ES') : '--';
+                const limiteStr = obj.fechaLimite ? new Date(obj.fechaLimite).toLocaleDateString('es-ES') : '--';
+                const total = obj.montoTotal || obj.total;
+                const ahorrado = obj.montoAhorrado || obj.ahorrado || 0;
+                let estadoActual = obj.estado || (ahorrado >= total ? 'completado' : 'en_curso');
                 const estadoClass = estadoActual === 'completado' ? 'completado' : 'en_curso';
-                const estadoLabel = estadoActual === 'completado' ? 'Completado' : 'En Curso';
+                const estadoLabel = estadoActual === 'completado' ? '✓ Completado' : 'En Curso';
 
                 const item = document.createElement('div');
                 item.className = 'objetivo-card';
-                
-                // Estructura actualizada con Fechas y Badge de Estado
                 item.innerHTML = `
                     <div class="objetivo-header">
                         <div>
                             <span class="objetivo-title">${obj.nombre}</span>
-                            <div class="objetivo-fechas">
-                                Inicio: ${inicioStr} &bull; Fin: ${limiteStr}
-                            </div>
+                            <div class="objetivo-fechas">Inicio: ${inicioStr} &bull; Fin: ${limiteStr}</div>
                         </div>
                         <span class="status-badge ${estadoClass}">${estadoLabel}</span>
                     </div>
-                    
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill ${estadoClass}" style="width: ${porcentaje}%"></div>
-                    </div>
-                    
-                    <div class="objetivo-stats">
-                        <span>${obj.ahorrado.toFixed(2)} € de ${obj.total.toFixed(2)} € (${porcentaje.toFixed(0)}%)</span>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill ${estadoClass}" style="width: ${porcentaje}%"></div></div>
+                    <div class="objetivo-stats"><span>${ahorrado.toFixed(2)} € de ${total.toFixed(2)} € (${porcentaje.toFixed(0)}%)</span></div>
+                    <div class="card-actions">
+                        <button class="btn-action btn-add" onclick="addAhorro(${obj.id})">+ Ahorrar</button>
+                        <button class="btn-action btn-edit" onclick="editObjetivo(${obj.id})">Editar</button>
+                        <button class="btn-action btn-delete" onclick="deleteObjetivo(${obj.id})">Borrar</button>
                     </div>
                 `;
                 listaContainer.appendChild(item);
             });
         }
-
+        function editObjetivo(id) {
+            const obj = objetivos.find(o => o.id === id);
+            if (!obj) return;
+            document.getElementById('input-objetivo-id').value = obj.id;
+            document.getElementById('input-objetivo-nombre').value = obj.nombre;
+            document.getElementById('input-objetivo-total').value = obj.montoTotal || obj.total;
+            document.getElementById('input-objetivo-ahorrado').value = obj.montoAhorrado || obj.ahorrado;
+            document.getElementById('input-objetivo-inicio').value = obj.fechaInicio;
+            document.getElementById('input-objetivo-limite').value = obj.fechaLimite;
+            document.getElementById('btn-guardar-objetivo').textContent = "Actualizar Objetivo";
+            document.getElementById('btn-cancelar-edicion').style.display = "block";
+            document.querySelector('#section-ahorro .form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        function deleteObjetivo(id) {
+            if(!confirm("¿Borrar meta?")) return;
+            objetivos = objetivos.filter(o => o.id !== id);
+            saveObjetivosToLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+            showToast("Objetivo eliminado", "error");
+            if (document.getElementById('input-objetivo-id').value == id) resetFormObjetivo();
+        }
+        function addAhorro(id) {
+            const obj = objetivos.find(o => o.id === id);
+            if (!obj) return;
+            const ingreso = prompt(`¿Cuánto añades a "${obj.nombre}"?`);
+            if (ingreso === null) return; 
+            const cantidad = parseFloat(ingreso);
+            if (isNaN(cantidad) || cantidad <= 0) { showToast("Cantidad inválida", "error"); return; }
+            let actual = obj.montoAhorrado || obj.ahorrado || 0;
+            let total = obj.montoTotal || obj.total;
+            obj.montoAhorrado = actual + cantidad;
+            obj.ahorrado = obj.montoAhorrado; 
+            showToast("Ahorro añadido", "success");
+            if (obj.montoAhorrado >= total) { obj.estado = 'completado'; showToast("¡Meta completada!", "success"); }
+            saveObjetivosToLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+        }
+        function resetFormObjetivo() {
+            document.getElementById('input-objetivo-id').value = '';
+            document.getElementById('input-objetivo-nombre').value = '';
+            document.getElementById('input-objetivo-total').value = '';
+            document.getElementById('input-objetivo-ahorrado').value = '0';
+            document.getElementById('input-objetivo-inicio').value = new Date().toISOString().split('T')[0];
+            document.getElementById('input-objetivo-limite').value = '';
+            document.getElementById('btn-guardar-objetivo').textContent = "Guardar Objetivo";
+            document.getElementById('btn-cancelar-edicion').style.display = "none";
+        }
         function calcularResumenObjetivos() {
-            let totalAcumulado = 0;
-            let totalObjetivos = 0;
-
+            let totalAcumulado = 0, totalObjetivos = 0;
             objetivos.forEach(obj => {
-                totalAcumulado += obj.ahorrado;
-                totalObjetivos += obj.total;
+                totalAcumulado += (obj.montoAhorrado || obj.ahorrado || 0);
+                totalObjetivos += (obj.montoTotal || obj.total || 0);
             });
-
             document.getElementById('ahorro-total-acumulado').textContent = totalAcumulado.toFixed(2) + ' €';
             document.getElementById('ahorro-total-objetivos').textContent = totalObjetivos.toFixed(2) + ' €';
         }
+
+        // ==========================================
+        //    LÓGICA DE SUSCRIPCIONES
+        // ==========================================
+
+        function loadSuscripcionesFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_suscripciones');
+            if (storedData) {
+                suscripciones = JSON.parse(storedData);
+                // MIGRACIÓN DATOS
+                suscripciones.forEach(sub => {
+                    if (typeof sub.notas === 'string' && sub.notas.length > 0) {
+                        const oldNote = {
+                            id: Date.now(),
+                            texto: sub.notas,
+                            destacada: false,
+                            fechaCreacion: new Date().toLocaleString('es-ES')
+                        };
+                        sub.notas = [oldNote];
+                    } else if (!Array.isArray(sub.notas)) {
+                        sub.notas = [];
+                    }
+                });
+                saveSuscripcionesToLocalStorage();
+            }
+        }
+
+        function saveSuscripcionesToLocalStorage() {
+            localStorage.setItem('fintrack_suscripciones', JSON.stringify(suscripciones));
+        }
+
+        // CRUD: Crear o Actualizar Suscripción
+        function addOrUpdateSuscripcion() {
+            const idInput = document.getElementById('input-sub-id');
+            const nombreInput = document.getElementById('input-sub-nombre');
+            const precioInput = document.getElementById('input-sub-precio');
+            const periodoSelect = document.getElementById('select-sub-periodo');
+            const catSelect = document.getElementById('select-sub-categoria');
+            const fechaInput = document.getElementById('input-sub-fecha');
+
+            const id = idInput.value;
+            const nombre = nombreInput.value.trim();
+            const precio = parseFloat(precioInput.value);
+            const periodicidad = periodoSelect.value;
+            const categoria = catSelect.value;
+            const fechaProximoCobro = fechaInput.value;
+
+            if (!nombre) { showToast("Nombre requerido", "error"); return; }
+            if (isNaN(precio) || precio <= 0) { showToast("Precio inválido", "error"); return; }
+
+            let currentNotes = [];
+            if (id) {
+                const existing = suscripciones.find(s => s.id == id);
+                if (existing) currentNotes = existing.notas || [];
+            }
+
+            const subData = { nombre, precio, periodicidad, categoria, fechaProximoCobro, notas: currentNotes };
+
+            if (id) {
+                const index = suscripciones.findIndex(s => s.id == id);
+                if (index !== -1) {
+                    suscripciones[index] = { ...suscripciones[index], ...subData };
+                    showToast("Suscripción actualizada", "info");
+                }
+            } else {
+                suscripciones.push({ id: Date.now(), ...subData });
+                showToast("Suscripción añadida", "success");
+            }
+
+            saveSuscripcionesToLocalStorage();
+            renderSuscripciones();
+            calcularTotalMensualSuscripciones();
+            resetFormSuscripcion();
+        }
+
+        function renderSuscripciones() {
+            const lista = document.getElementById('lista-suscripciones');
+            lista.innerHTML = '';
+            
+            if (suscripciones.length === 0) {
+                lista.innerHTML = '<div class="empty-state">No tienes suscripciones activas.</div>';
+                return;
+            }
+
+            const subsSorted = [...suscripciones].sort((a, b) => {
+                 if(!a.fechaProximoCobro) return 1;
+                 if(!b.fechaProximoCobro) return -1;
+                 return new Date(a.fechaProximoCobro) - new Date(b.fechaProximoCobro);
+            });
+
+            subsSorted.forEach(sub => {
+                let precioStr = `${sub.precio.toFixed(2)} € / mes`;
+                
+                if (sub.periodicidad === 'anual') {
+                    const mensualEq = sub.precio / 12;
+                    precioStr = `${sub.precio.toFixed(2)} € / año (~${mensualEq.toFixed(2)} €/mes)`;
+                }
+
+                const fechaCobroStr = sub.fechaProximoCobro 
+                    ? new Date(sub.fechaProximoCobro).toLocaleDateString('es-ES', {day: 'numeric', month: 'short'}) 
+                    : 'Sin fecha';
+
+                const hasNotes = Array.isArray(sub.notas) && sub.notas.length > 0;
+                const notesIcon = hasNotes ? '<span class="notes-badge">📝</span>' : '';
+
+                const item = document.createElement('div');
+                item.className = 'sub-card';
+                item.setAttribute('onclick', `openSubModal(${sub.id})`);
+                
+                item.innerHTML = `
+                    <div class="sub-row">
+                        <span class="sub-name">${sub.nombre} ${notesIcon}</span>
+                        <span class="sub-price">${precioStr}</span>
+                    </div>
+                    <div class="sub-row">
+                        <span class="sub-detail">Próximo: ${fechaCobroStr}</span>
+                        <span class="sub-badge">${sub.categoria}</span>
+                    </div>
+                    <div class="card-actions" style="margin-top:10px; padding-top:10px; border-top:1px solid #333;" onclick="event.stopPropagation()">
+                        <button class="btn-action btn-edit" onclick="editSuscripcion(${sub.id})">Editar</button>
+                        <button class="btn-action btn-delete" onclick="deleteSuscripcion(${sub.id})">Borrar</button>
+                    </div>
+                `;
+                lista.appendChild(item);
+            });
+        }
+
+        function editSuscripcion(id) {
+            const sub = suscripciones.find(s => s.id === id);
+            if (!sub) return;
+
+            document.getElementById('input-sub-id').value = sub.id;
+            document.getElementById('input-sub-nombre').value = sub.nombre;
+            document.getElementById('input-sub-precio').value = sub.precio;
+            document.getElementById('select-sub-periodo').value = sub.periodicidad;
+            document.getElementById('select-sub-categoria').value = sub.categoria;
+            document.getElementById('input-sub-fecha').value = sub.fechaProximoCobro;
+
+            document.getElementById('btn-guardar-sub').textContent = "Actualizar Suscripción";
+            document.getElementById('btn-cancelar-sub').style.display = "block";
+            
+            document.querySelector('#section-suscripciones .form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteSuscripcion(id) {
+            if(!confirm("¿Borrar suscripción?")) return;
+            suscripciones = suscripciones.filter(s => s.id !== id);
+            saveSuscripcionesToLocalStorage();
+            renderSuscripciones();
+            calcularTotalMensualSuscripciones();
+            showToast("Suscripción eliminada", "error");
+            if (document.getElementById('input-sub-id').value == id) resetFormSuscripcion();
+        }
+
+        function resetFormSuscripcion() {
+            document.getElementById('input-sub-id').value = '';
+            document.getElementById('input-sub-nombre').value = '';
+            document.getElementById('input-sub-precio').value = '';
+            document.getElementById('select-sub-periodo').value = 'mensual';
+            document.getElementById('select-sub-categoria').value = 'Streaming';
+            document.getElementById('input-sub-fecha').value = new Date().toISOString().split('T')[0];
+
+            document.getElementById('btn-guardar-sub').textContent = "Guardar Suscripción";
+            document.getElementById('btn-cancelar-sub').style.display = "none";
+        }
+
+        function calcularTotalMensualSuscripciones() {
+            let totalMensual = 0;
+            suscripciones.forEach(sub => {
+                if (sub.periodicidad === 'mensual') {
+                    totalMensual += sub.precio;
+                } else if (sub.periodicidad === 'anual') {
+                    totalMensual += (sub.precio / 12);
+                }
+            });
+            document.getElementById('total-mensual-suscripciones').textContent = totalMensual.toFixed(2) + ' €';
+        }
+
+        // --- LÓGICA MODAL & FLASHCARDS (ACTUALIZADO) ---
+
+        function openSubModal(id) {
+            const sub = suscripciones.find(s => s.id === id);
+            if (!sub) return;
+
+            currentSubIdForModal = id;
+            currentNoteIndex = 0; // Resetear índice al abrir
+            filterHighlighted = false; // Resetear filtro
+
+            // Rellenar datos cabecera
+            document.getElementById('modal-sub-name').textContent = sub.nombre;
+            const fecha = sub.fechaProximoCobro ? new Date(sub.fechaProximoCobro).toLocaleDateString('es-ES') : 'Sin fecha';
+            const detalleHtml = `
+                <p><strong>Precio:</strong> ${sub.precio.toFixed(2)} € (${sub.periodicidad})</p>
+                <p><strong>Categoría:</strong> ${sub.categoria}</p>
+                <p><strong>Próximo cobro:</strong> ${fecha}</p>
+            `;
+            document.getElementById('modal-sub-details').innerHTML = detalleHtml;
+
+            // Limpiar input y actualizar UI flashcard
+            document.getElementById('input-new-note').value = '';
+            updateFilterButtonUI();
+            renderFlashcardUI();
+
+            // Mostrar modal
+            document.getElementById('sub-modal').style.display = 'flex';
+        }
+
+        function closeSubModal() {
+            document.getElementById('sub-modal').style.display = 'none';
+            currentSubIdForModal = null;
+        }
+
+        // Renderiza la Flashcard actual en el carrusel
+        function renderFlashcardUI() {
+            const sub = suscripciones.find(s => s.id === currentSubIdForModal);
+            if (!sub) return;
+
+            // 1. Filtrar notas según estado del toggle
+            let visibleNotes = sub.notas || [];
+            if (filterHighlighted) {
+                visibleNotes = visibleNotes.filter(n => n.destacada === true);
+            }
+
+            // 2. Control de límites del índice
+            if (currentNoteIndex >= visibleNotes.length) {
+                currentNoteIndex = Math.max(0, visibleNotes.length - 1);
+            }
+
+            // 3. Referencias DOM
+            const display = document.getElementById('flashcard-display');
+            const indicator = document.getElementById('flashcard-indicator');
+            const btnPrev = document.getElementById('btn-prev-note');
+            const btnNext = document.getElementById('btn-next-note');
+
+            // 4. Lógica de visualización
+            display.className = 'flashcard-display'; // Reset clases
+            
+            if (visibleNotes.length === 0) {
+                // Caso vacío
+                const msg = filterHighlighted ? "No hay notas destacadas." : "Sin notas aún.";
+                display.innerHTML = `<p class="empty-flashcard">${msg}</p>`;
+                indicator.textContent = "0 / 0";
+                btnPrev.disabled = true;
+                btnNext.disabled = true;
+            } else {
+                // Caso con notas -> Mostrar la nota actual (currentNoteIndex)
+                const note = visibleNotes[currentNoteIndex];
+                const starIcon = note.destacada ? '★' : '☆';
+                const starClass = note.destacada ? 'active' : '';
+                
+                if (note.destacada) display.classList.add('is-highlighted');
+
+                display.innerHTML = `
+                    <div class="flashcard-meta">
+                        <span>${note.fechaCreacion}</span>
+                        <span>#${note.id.toString().slice(-4)}</span>
+                    </div>
+                    <div class="flashcard-text">${note.texto}</div>
+                    <button class="btn-star-large ${starClass}" onclick="toggleNoteHighlight(${note.id})">${starIcon}</button>
+                `;
+
+                // Actualizar indicador y botones
+                indicator.textContent = `${currentNoteIndex + 1} / ${visibleNotes.length}`;
+                btnPrev.disabled = (currentNoteIndex === 0);
+                btnNext.disabled = (currentNoteIndex === visibleNotes.length - 1);
+            }
+        }
+
+        // Navegación Carrusel: Anterior
+        function prevNote() {
+            if (currentNoteIndex > 0) {
+                currentNoteIndex--;
+                renderFlashcardUI();
+            }
+        }
+
+        // Navegación Carrusel: Siguiente
+        function nextNote() {
+            const sub = suscripciones.find(s => s.id === currentSubIdForModal);
+            if (!sub) return;
+            
+            let count = sub.notas.length;
+            if (filterHighlighted) {
+                count = sub.notas.filter(n => n.destacada).length;
+            }
+
+            if (currentNoteIndex < count - 1) {
+                currentNoteIndex++;
+                renderFlashcardUI();
+            }
+        }
+
+        // Toggle Filtro Destacadas
+        function toggleFilterHighlighted() {
+            filterHighlighted = !filterHighlighted;
+            currentNoteIndex = 0; // Resetear al cambiar filtro
+            updateFilterButtonUI();
+            renderFlashcardUI();
+        }
+
+        function updateFilterButtonUI() {
+            const btn = document.getElementById('btn-filter-star');
+            if (filterHighlighted) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+
+        // Añadir Nota y saltar a ella
+        function addNoteToSub() {
+            if (!currentSubIdForModal) return;
+
+            const input = document.getElementById('input-new-note');
+            const text = input.value.trim();
+
+            if (!text) {
+                showToast("Escribe algo...", "error");
+                return;
+            }
+
+            const subIndex = suscripciones.findIndex(s => s.id === currentSubIdForModal);
+            if (subIndex !== -1) {
+                const newNote = {
+                    id: Date.now(),
+                    texto: text,
+                    destacada: false, // Por defecto no destacada
+                    fechaCreacion: new Date().toLocaleString('es-ES')
+                };
+
+                if(!suscripciones[subIndex].notas) suscripciones[subIndex].notas = [];
+                
+                // Añadir al final
+                suscripciones[subIndex].notas.push(newNote);
+                
+                saveSuscripcionesToLocalStorage();
+                
+                // Si el filtro de destacadas está activo y añado una NO destacada, 
+                // tengo que quitar el filtro para que el usuario la vea.
+                if (filterHighlighted) {
+                    filterHighlighted = false;
+                    updateFilterButtonUI();
+                }
+
+                // Saltar a la nueva nota (la última)
+                currentNoteIndex = suscripciones[subIndex].notas.length - 1;
+                
+                renderFlashcardUI();
+                renderSuscripciones(); // Actualizar icono en lista principal
+                
+                input.value = ''; 
+                showToast("Nota añadida", "success");
+            }
+        }
+
+        // Marcar/Desmarcar nota (actualiza la flashcard actual)
+        function toggleNoteHighlight(noteId) {
+            const subIndex = suscripciones.findIndex(s => s.id === currentSubIdForModal);
+            if (subIndex !== -1) {
+                const noteIndex = suscripciones[subIndex].notas.findIndex(n => n.id === noteId);
+                if (noteIndex !== -1) {
+                    // Cambiar estado
+                    suscripciones[subIndex].notas[noteIndex].destacada = !suscripciones[subIndex].notas[noteIndex].destacada;
+                    saveSuscripcionesToLocalStorage();
+                    
+                    // Re-renderizar la tarjeta actual para ver el cambio de estilo/icono
+                    // Si el filtro está activo y la desmarcamos, la lógica de renderFlashcardUI manejará el conteo
+                    renderFlashcardUI(); 
+                }
+            }
+        }
+
 
         // --- LÓGICA DE NAVEGACIÓN ---
         function showSection(sectionId) {
             const sections = document.querySelectorAll('section');
             sections.forEach(section => section.classList.remove('active'));
-
             const activeSection = document.getElementById(sectionId);
             if (activeSection) activeSection.classList.add('active');
-
             updateNavState(sectionId);
         }
-
         function updateNavState(activeSectionId) {
             const btnId = activeSectionId.replace('section-', 'btn-');
             const buttons = document.querySelectorAll('.nav-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-
             const activeBtn = document.getElementById(btnId);
             if (activeBtn) activeBtn.classList.add('active');
         }
-
-        // --- PLACEHOLDERS ---
-        function addSuscripcion() { console.log("TODO: implementar addSuscripcion"); }
         function addInversion() { console.log("TODO: implementar addInversion"); }
 
     </script>
