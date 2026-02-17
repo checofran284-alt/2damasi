@@ -1,0 +1,3610 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINTRACK</title>
+    <!-- Importamos una fuente moderna (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- (Supabase desactivado para Modo Test) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
+
+    <style>
+        /* --- VARIABLES CSS (Tema Oscuro por defecto) --- */
+        :root {
+            /* Colores Base */
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --surface-hover: #2C2C2C;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --input-bg: #2C2C2C;
+
+            /* Color Primario */
+            --primary-color: #00E676;
+
+            /* Colores Fijos */
+            --danger-color: #CF6679;
+            --edit-color: #64B5F6;
+            --crypto-color: #9C27B0;
+            --highlight-color: #FFD700;
+            --stock-color: #2979FF;
+
+            /* Layout */
+            --nav-height: 70px;
+            --max-width-desktop: 100%;
+        }
+
+        /* --- RESET & BASE --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* RESPONSIVE: Asegurar altura completa */
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: var(--surface-hover) var(--bg-color);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL FLUIDO --- */
+        #app-container {
+            width: 100%;
+            max-width: var(--max-width-desktop);
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: calc(var(--nav-height) + 40px);
+            overflow-x: hidden;
+            box-shadow: none;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            border-bottom: 1px solid var(--surface-hover);
+            width: 100%;
+            max-width: var(--max-width-desktop);
+            transition: background-color 0.3s;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--surface-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: background-color 0.2s;
+            font-size: 1.2rem;
+        }
+
+        .user-icon:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--primary-color);
+        }
+
+        .user-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        /* --- MAIN SECTIONS --- */
+        main {
+            padding: 20px 40px;
+            width: 100%;
+            flex: 1;
+        }
+
+        section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        /* --- TARJETAS RESUMEN (DASHBOARD) --- */
+        .summary-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .summary-container {
+                flex-direction: row;
+            }
+
+            .summary-card {
+                flex: 1;
+            }
+        }
+
+        .summary-card {
+            background: linear-gradient(145deg, var(--surface-color), transparent);
+            background-color: var(--surface-color);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--surface-hover);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+        }
+
+        .summary-card span:first-child {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-card .amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        /* --- FORMULARIOS --- */
+        .form-container {
+            background-color: var(--surface-color);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--surface-hover);
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .form-container {
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        .info-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .primary-btn:hover {
+            opacity: 0.9;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .secondary-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid #444;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .secondary-btn:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .list-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--surface-hover);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            color: var(--text-primary);
+        }
+
+        /* --- GRID SYSTEM PARA LISTAS --- */
+        #lista-gastos,
+        #lista-objetivos,
+        #lista-suscripciones,
+        #lista-inversiones {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+
+            #lista-gastos,
+            #lista-objetivos,
+            #lista-suscripciones,
+            #lista-inversiones {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        .gasto-item,
+        .objetivo-card,
+        .sub-card {
+            background-color: var(--surface-color);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--surface-hover);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+
+        @media (min-width: 1024px) {
+
+            .gasto-item:hover,
+            .objetivo-card:hover,
+            .sub-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                border-color: var(--text-secondary);
+            }
+        }
+
+        .gasto-item {
+            flex-direction: row;
+            align-items: center;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .gasto-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .gasto-info p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .gasto-amount {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px;
+            font-style: italic;
+            grid-column: 1 / -1;
+            background: var(--surface-color);
+            border-radius: 12px;
+            border: 1px dashed #444;
+        }
+
+        /* --- OBJETIVOS --- */
+        .objetivo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .objetivo-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .objetivo-fechas {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.en_curso {
+            background-color: var(--surface-hover);
+            color: var(--text-secondary);
+            border: 1px solid #444;
+        }
+
+        .status-badge.completado {
+            background-color: var(--primary-color);
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar-bg {
+            background-color: var(--input-bg);
+            border-radius: 6px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--primary-color);
+            height: 100%;
+            transition: width 0.5s ease-out;
+        }
+
+        .progress-bar-fill.completado {
+            background-color: var(--primary-color);
+        }
+
+        .objetivo-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--surface-hover);
+            gap: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        .btn-add {
+            background-color: var(--primary-color);
+            color: #000;
+            flex: 1.5;
+        }
+
+        .btn-edit {
+            background-color: var(--surface-hover);
+            color: var(--edit-color);
+            border: 1px solid #444;
+        }
+
+        .btn-delete {
+            background-color: var(--surface-hover);
+            color: var(--danger-color);
+            border: 1px solid #444;
+        }
+
+        .btn-api {
+            background-color: var(--surface-hover);
+            color: var(--crypto-color);
+            border: 1px solid var(--crypto-color);
+        }
+
+        .btn-bolsa {
+            background-color: rgba(41, 121, 255, 0.15);
+            color: var(--stock-color);
+            border: 1px solid var(--stock-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-bolsa:hover {
+            background-color: rgba(41, 121, 255, 0.3);
+        }
+
+        /* --- SUSCRIPCIONES / INVERSIONES CARDS --- */
+        .sub-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .sub-name {
+            font-weight: 700;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        .sub-price {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .sub-detail {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .sub-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background-color: var(--input-bg);
+            color: var(--text-secondary);
+        }
+
+        .notes-badge {
+            font-size: 1rem;
+            cursor: help;
+        }
+
+        .text-green {
+            color: var(--primary-color) !important;
+        }
+
+        .text-red {
+            color: var(--danger-color) !important;
+        }
+
+        .text-neutral {
+            color: var(--text-secondary) !important;
+        }
+
+        /* --- VISTA BOLSA / TABLAS RESPONSIVE --- */
+        .view-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--surface-hover);
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .view-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .view-tab-btn.active {
+            background-color: var(--surface-hover);
+            color: var(--primary-color);
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background-color: var(--surface-color);
+            margin-bottom: 30px;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 600px;
+        }
+
+        .stock-table th {
+            text-align: left;
+            padding: 15px;
+            background-color: var(--surface-hover);
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid #444;
+            position: sticky;
+            top: 0;
+        }
+
+        .stock-table td {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            color: var(--text-primary);
+        }
+
+        .stock-row:hover {
+            background-color: var(--input-bg);
+            cursor: pointer;
+        }
+
+        .stock-row.selected {
+            background-color: rgba(41, 121, 255, 0.1);
+            border-left: 3px solid var(--stock-color);
+        }
+
+        .stock-ticker {
+            font-weight: 700;
+            color: var(--stock-color);
+        }
+
+        #stock-details-panel {
+            background: var(--surface-color);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: none;
+            margin-top: 25px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .stock-detail-title {
+            font-size: 1.2rem;
+            color: var(--stock-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-container {
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+            height: 350px;
+            position: relative;
+        }
+
+        canvas#stockChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .history-table-container {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+
+        /* --- MODALES RESPONSIVE --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: modalPop 0.3s ease-out;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            height: 100%;
+            max-height: 100vh;
+            border-radius: 0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 600px;
+                height: auto;
+                max-height: 90vh;
+                border-radius: 16px;
+                border: 1px solid #444;
+            }
+
+            .modal-overlay {
+                padding: 20px;
+            }
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .modal-details {
+            font-size: 1rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        .flashcard-area {
+            background: var(--input-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px dashed #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 220px;
+        }
+
+        .flashcard-display {
+            background: var(--surface-color);
+            width: 100%;
+            flex-grow: 1;
+            border-radius: 8px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .flashcard-display.is-highlighted {
+            border-color: var(--highlight-color);
+            background: linear-gradient(145deg, var(--surface-color), #332f1a);
+        }
+
+        .flashcard-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .flashcard-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .btn-star-large {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #444;
+            cursor: pointer;
+            align-self: flex-end;
+            transition: transform 0.2s;
+        }
+
+        .btn-star-large:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-star-large.active {
+            color: var(--highlight-color);
+        }
+
+        .flashcard-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .flashcard-controls-top {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .toggle-filter-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-filter-btn.active {
+            border-color: var(--highlight-color);
+            color: var(--highlight-color);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .flashcard-indicator {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .nav-arrow {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .new-note-container textarea {
+            background: var(--input-bg);
+            font-size: 1rem;
+            border: 1px solid #444;
+            color: var(--text-primary);
+            padding: 10px;
+        }
+
+        /* --- TOASTS --- */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideInDown 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            border-left: 5px solid transparent;
+            pointer-events: auto;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border: 1px solid var(--surface-hover);
+        }
+
+        .toast.success {
+            border-left-color: var(--primary-color);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .toast.info {
+            border-left-color: var(--edit-color);
+        }
+
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: var(--max-width-desktop);
+            height: var(--nav-height);
+            background-color: var(--surface-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--surface-hover);
+            z-index: 100;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (min-width: 768px) {
+            nav {
+                justify-content: center;
+                gap: 50px;
+            }
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: auto;
+            height: 100%;
+            transition: color 0.2s ease;
+            padding: 0 10px;
+        }
+
+        .nav-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: currentColor;
+            transition: transform 0.2s;
+        }
+
+        .nav-btn span {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .nav-btn.active {
+            color: var(--primary-color);
+        }
+
+        .nav-btn.active svg {
+            transform: translateY(-3px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 360px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .summary-card .amount {
+                font-size: 1.2rem;
+            }
+
+            .nav-btn span {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* --- NUEVO: ESTILOS PARA MODAL DE AJUSTES --- */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .settings-section-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            grid-column: 1 / -1;
+            border-bottom: 1px solid var(--surface-hover);
+            padding-bottom: 5px;
+        }
+
+        .setting-btn {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .setting-btn:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .setting-btn.active {
+            border-color: var(--primary-color);
+            background-color: rgba(0, 230, 118, 0.1);
+            /* Tinte verde suave */
+            color: var(--primary-color);
+        }
+
+        /* Colores específicos para botones de color */
+        .color-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .color-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* --- NUEVO CSS: ESTILOS PARA ARCHIVOS ADJUNTOS --- */
+        .file-attach-area {
+            margin-top: 15px;
+            border-top: 1px dashed #444;
+            padding-top: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-attach-btn {
+            background-color: var(--surface-hover);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            border: 1px solid #444;
+            transition: all 0.2s;
+        }
+
+        .file-attach-btn:hover {
+            background-color: #333;
+            color: var(--text-primary);
+        }
+
+        .attachments-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .att-preview-item {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #555;
+            background: #222;
+        }
+
+        .att-preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .att-icon-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        .att-remove-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(200, 0, 0, 0.8);
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .paperclip-badge {
+            font-size: 0.8rem;
+            color: var(--edit-color);
+            margin-left: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: rgba(100, 181, 246, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .paperclip-badge:hover {
+            background: rgba(100, 181, 246, 0.2);
+        }
+
+        /* Visor Simple */
+        #attachment-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 5000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #viewer-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            gap: 20px;
+        }
+
+        #viewer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .viewer-item {
+            max-width: 90%;
+            max-height: 80vh;
+            border: 1px solid #444;
+        }
+
+        .viewer-link {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* --- ⭐ AÑADIDO: ESTILOS AUTH MODAL & BUTTONS (V4 - TEST MODE) --- */
+        #auth-status-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .auth-user-display {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .logout-btn {
+            color: var(--danger-color);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .auth-link {
+            color: var(--primary-color);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Estilo Código OTP mejorado */
+        #verify-email-code {
+            letter-spacing: 12px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid #444;
+        }
+
+        #verify-email-code:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+        }
+
+        /* --- CALCULADORA IRPF --- */
+        .irpf-result-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(0, 230, 118, 0.05);
+            border-radius: 12px;
+            border: 1px dashed var(--primary-color);
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .irpf-result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--surface-hover);
+        }
+
+        .irpf-result-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .irpf-result-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .irpf-result-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .irpf-highlight {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+
+        .irpf-danger {
+            color: var(--danger-color);
+        }
+
+        .irpf-disclaimer {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo">FIN<span>TRACK</span></div>
+            <!-- Botón de Ajustes (Engranaje) -->
+            <div class="header-actions">
+                <!-- ⭐ AÑADIDO: Botón Auth (Contenedor Dinámico) -->
+                <div id="auth-btn-wrapper">
+                    <!-- Se inyecta por JS (Login o Status) -->
+                </div>
+
+                <div class="user-icon" onclick="openSettingsModal()" title="Personalización">
+                    ⚙️
+                </div>
+                <!-- Botón de Backup / Configuración general -->
+                <div class="user-icon" onclick="showSection('section-config')" title="Backup y Datos">
+                    📂
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <!-- Sección GASTOS -->
+            <section id="section-gastos">
+                <h2 data-i18n="title_expenses">Resumen de Gastos</h2>
+                <div class="summary-container">
+                    <div class="summary-card">
+                        <span data-i18n="label_total_today">Total Hoy</span>
+                        <span class="amount" id="total-hoy">0.00 €</span>
+                    </div>
+                    <div class="summary-card">
+                        <span data-i18n="label_total_month">Total Mes</span>
+                        <span class="amount" id="total-mes">0.00 €</span>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <div class="form-group">
+                        <label data-i18n="label_amount">Importe (€)</label>
+                        <input type="number" id="input-importe" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="label_category">Categoría</label>
+                        <select id="select-categoria">
+                            <option value="Comida">Comida</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Ocio">Ocio</option>
+                            <option value="Suscripciones">Suscripciones</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="label_date">Fecha</label>
+                        <input type="date" id="input-fecha">
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="label_note">Nota (Opcional)</label>
+                        <textarea id="input-nota" rows="2" placeholder="Detalles del gasto..."></textarea>
+                    </div>
+
+                    <!-- NUEVO: Adjuntar Archivos en Gasto -->
+                    <div class="file-attach-area">
+                        <label for="input-file-gastos" class="file-attach-btn">📎 Adjuntar Archivo (Img, PDF,
+                            Audio)</label>
+                        <input type="file" id="input-file-gastos" class="file-input" multiple
+                            accept="image/*,.pdf,audio/*" onchange="handleFileSelect(event, 'preview-gastos')">
+                        <div id="preview-gastos" class="attachments-container"></div>
+                    </div>
+                    <br>
+
+                    <button id="btn-guardar-gasto" class="primary-btn" data-i18n="btn_save_expense">Guardar
+                        Gasto</button>
+                </div>
+
+                <div class="list-header" data-i18n="header_recent_moves">Movimientos Recientes</div>
+                <div id="lista-gastos"></div>
+            </section>
+
+            <!-- Sección AHORRO -->
+            <section id="section-ahorro">
+                <h2 data-i18n="title_savings">Objetivos de Ahorro</h2>
+                <div class="summary-container">
+                    <div class="summary-card">
+                        <span data-i18n="label_saved">Ahorrado</span>
+                        <span class="amount" id="ahorro-total-acumulado">0.00 €</span>
+                    </div>
+                    <div class="summary-card">
+                        <span data-i18n="label_goal_total">Meta Total</span>
+                        <span class="amount" id="ahorro-total-objetivos">0.00 €</span>
+                    </div>
+                </div>
+                <!-- ... (Formularios de ahorro omitidos por brevedad, asumiendo estructura similar) ... -->
+                <div class="form-container">
+                    <input type="hidden" id="input-objetivo-id">
+                    <div class="form-group">
+                        <label>Nombre del Objetivo</label>
+                        <input type="text" id="input-objetivo-nombre" placeholder="Ej. Viaje a Japón">
+                    </div>
+                    <div class="form-group">
+                        <label>Meta Total (€)</label>
+                        <input type="number" id="input-objetivo-total" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Ya Ahorrado (€)</label>
+                        <input type="number" id="input-objetivo-ahorrado" placeholder="0.00" value="0" min="0"
+                            step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" id="input-objetivo-inicio">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Límite</label>
+                        <input type="date" id="input-objetivo-limite">
+                    </div>
+
+                    <!-- NUEVO: Adjuntar Archivos en Ahorro -->
+                    <div class="file-attach-area">
+                        <label for="input-file-ahorro" class="file-attach-btn">📎 Adjuntar Foto Meta / Info</label>
+                        <input type="file" id="input-file-ahorro" class="file-input" multiple accept="image/*,.pdf"
+                            onchange="handleFileSelect(event, 'preview-ahorro')">
+                        <div id="preview-ahorro" class="attachments-container"></div>
+                    </div>
+                    <br>
+
+                    <button id="btn-guardar-objetivo" class="primary-btn">Guardar Objetivo</button>
+                    <button id="btn-cancelar-edicion" class="secondary-btn" style="display: none;">Cancelar
+                        Edición</button>
+                </div>
+                <div class="list-header" data-i18n="header_my_goals">Mis Metas</div>
+                <div id="lista-objetivos"></div>
+            </section>
+
+            <!-- Sección SUSCRIPCIONES -->
+            <section id="section-suscripciones">
+                <h2 data-i18n="title_subscriptions">Suscripciones</h2>
+
+                <div class="summary-container">
+                    <div class="summary-card" style="width: 100%; flex: 1 1 100%;">
+                        <span data-i18n="label_monthly_cost">Gasto Total Mensual</span>
+                        <span class="amount" id="total-mensual-suscripciones">0.00 €</span>
+                    </div>
+                </div>
+                <!-- ... (Formulario suscripciones) ... -->
+                <div class="form-container">
+                    <input type="hidden" id="input-sub-id">
+                    <div class="form-group">
+                        <label>Nombre del Servicio</label>
+                        <input type="text" id="input-sub-nombre" placeholder="Ej. Netflix">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio (€)</label>
+                        <input type="number" id="input-sub-precio" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Periodicidad</label>
+                        <select id="select-sub-periodo">
+                            <option value="mensual">Mensual</option>
+                            <option value="anual">Anual</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="select-sub-categoria">
+                            <option value="Streaming">Streaming</option>
+                            <option value="Música">Música</option>
+                            <option value="Software">Software</option>
+                            <option value="Juegos">Juegos</option>
+                            <option value="Gimnasio">Gimnasio</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Próximo Cobro</label>
+                        <input type="date" id="input-sub-fecha">
+                    </div>
+
+                    <!-- NUEVO: Adjuntar Archivos en Suscripción -->
+                    <div class="file-attach-area">
+                        <label for="input-file-sub" class="file-attach-btn">📎 Adjuntar Recibo / Contrato</label>
+                        <input type="file" id="input-file-sub" class="file-input" multiple accept="image/*,.pdf"
+                            onchange="handleFileSelect(event, 'preview-sub')">
+                        <div id="preview-sub" class="attachments-container"></div>
+                    </div>
+                    <br>
+
+                    <button id="btn-guardar-sub" class="primary-btn">Guardar Suscripción</button>
+                    <button id="btn-cancelar-sub" class="secondary-btn" style="display: none;">Cancelar Edición</button>
+                </div>
+                <div class="list-header" data-i18n="header_my_services">Mis Servicios</div>
+                <div id="lista-suscripciones"></div>
+            </section>
+
+            <!-- Sección INVERSIONES -->
+            <section id="section-inversiones">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2 style="margin:0;" data-i18n="title_investments">Inversiones</h2>
+                    <button class="primary-btn" style="width: auto; padding: 8px 16px; font-size: 0.9rem;"
+                        onclick="toggleInvForm(true)" data-i18n="btn_new_investment">+ Nueva Inversión</button>
+                </div>
+
+                <div class="summary-container" id="inversiones-resumen">
+                    <div class="summary-card">
+                        <span data-i18n="label_total_value">Valor Total</span>
+                        <span class="amount" id="inv-total-valor">0.00 €</span>
+                    </div>
+                    <div class="summary-card">
+                        <span data-i18n="label_total_profit">Total Ganancia</span>
+                        <span class="amount" id="inv-total-ganancia">0.00 €</span>
+                    </div>
+                </div>
+
+                <div id="inv-form-container" style="display: none;">
+                    <div class="form-container">
+                        <input type="hidden" id="input-inv-id">
+                        <div class="form-group">
+                            <label>Nombre del Activo</label>
+                            <input type="text" id="input-inv-nombre" placeholder="Ej. Bitcoin, Apple">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <select id="select-inv-tipo">
+                                <option value="Acción/ETF">Acción/ETF</option>
+                                <option value="Cripto">Cripto</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ticker / ID CoinGecko</label>
+                            <input type="text" id="input-inv-ticker" placeholder="Ej. bitcoin, ethereum">
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad Poseída</label>
+                            <input type="number" id="input-inv-cantidad" placeholder="0.00" min="0" step="any">
+                        </div>
+                        <div class="form-group">
+                            <label>Precio Compra (Unidad)</label>
+                            <input type="number" id="input-inv-precio-compra" placeholder="0.00" min="0" step="any">
+                        </div>
+                        <div class="form-group">
+                            <label>Precio Actual (Unidad)</label>
+                            <input type="number" id="input-inv-precio-actual" placeholder="0.00" min="0" step="any">
+                        </div>
+
+                        <!-- NUEVO: Adjuntar Archivos en Inversión -->
+                        <div class="file-attach-area">
+                            <label for="input-file-inv" class="file-attach-btn">📎 Adjuntar Comprobante</label>
+                            <input type="file" id="input-file-inv" class="file-input" multiple accept="image/*,.pdf"
+                                onchange="handleFileSelect(event, 'preview-inv')">
+                            <div id="preview-inv" class="attachments-container"></div>
+                        </div>
+                        <br>
+
+                        <button id="btn-guardar-inv" class="primary-btn">Guardar Inversión</button>
+                        <button id="btn-cancelar-inv" class="secondary-btn">Cerrar</button>
+                    </div>
+                </div>
+
+                <div class="view-tabs">
+                    <button class="view-tab-btn active" id="tab-bolsa"
+                        onclick="showInversionesView('bolsa')">Bolsa</button>
+                    <button class="view-tab-btn" id="tab-cripto" onclick="showInversionesView('cripto')">Cripto</button>
+                    <button class="view-tab-btn" id="tab-otros" onclick="showInversionesView('otros')">Otros</button>
+                </div>
+
+                <!-- SUB-VISTAS (Estructura igual a la anterior) -->
+                <div id="inv-bolsa-view">
+                    <!-- Resumen Bolsa -->
+                    <div class="summary-container">
+                        <div class="summary-card">
+                            <span>Inv. Bolsa</span>
+                            <span class="amount" id="bolsa-total-invertido">0.00 €</span>
+                        </div>
+                        <div class="summary-card">
+                            <span>Valor Bolsa</span>
+                            <span class="amount" id="bolsa-total-valor">0.00 €</span>
+                        </div>
+                    </div>
+                    <div class="list-header">Mi Cartera de Acciones</div>
+                    <div class="table-container">
+                        <table class="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticker</th>
+                                    <th>Nombre</th>
+                                    <th>Cant.</th>
+                                    <th>P.Compra</th>
+                                    <th>P.Actual</th>
+                                    <th>Ganancia</th>
+                                    <th>%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-bolsa-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="stock-details-panel" style="display: none;">
+                        <div class="stock-detail-title">
+                            <span id="detail-ticker">TICKER</span>
+                            <small style="color: #888;">Datos Históricos</small>
+                            <button class="btn-api" style="margin-left: auto;" onclick="refreshStockData()">↻</button>
+                        </div>
+                        <div class="chart-container"><canvas id="stockChart"></canvas></div>
+                        <div class="list-header" style="font-size: 1rem;">Últimos 30 días</div>
+                        <div class="history-table-container">
+                            <table class="stock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cierre</th>
+                                        <th>Var %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-historico-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="inv-cripto-view" style="display:none;">
+                    <div class="list-header">Criptomonedas</div>
+                    <div class="summary-container">
+                        <div class="summary-card"><span>Inv. Cripto</span><span class="amount"
+                                id="cripto-total-invertido">0.00 €</span></div>
+                        <div class="summary-card"><span>Valor Cripto</span><span class="amount"
+                                id="cripto-total-valor">0.00 €</span></div>
+                    </div>
+                    <div class="table-container">
+                        <table class="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Cant.</th>
+                                    <th>P.Compra</th>
+                                    <th>P.Actual</th>
+                                    <th>Ganancia</th>
+                                    <th>%</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-cripto-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="inv-otros-view" style="display:none;">
+                    <div class="list-header">Otros Activos</div>
+                    <div class="summary-container">
+                        <div class="summary-card"><span>Inv. Otros</span><span class="amount"
+                                id="otros-total-invertido">0.00 €</span></div>
+                        <div class="summary-card"><span>Valor Otros</span><span class="amount"
+                                id="otros-total-valor">0.00 €</span></div>
+                    </div>
+                    <div class="table-container">
+                        <table class="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Cant.</th>
+                                    <th>P.Compra</th>
+                                    <th>P.Actual</th>
+                                    <th>Ganancia</th>
+                                    <th>%</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-otros-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección AJUSTES (DATA & BACKUP) -->
+            <section id="section-config">
+                <h2 data-i18n="title_settings_data">Ajustes de Datos</h2>
+                <p class="info-text">Gestiona tus datos y copias de seguridad.</p>
+                <div class="form-container">
+                    <h3>Copia de Seguridad</h3>
+                    <p style="color:var(--text-secondary); margin-bottom: 20px; font-size: 0.9rem;">
+                        Exporta tus datos a un archivo JSON para guardarlos o transferirlos a otro dispositivo.
+                    </p>
+                    <button id="btn-export-json" class="primary-btn" style="margin-bottom: 15px;"
+                        onclick="exportFintrackToJson()" data-i18n="btn_export_json">📥 Exportar datos (JSON)</button>
+                    <button id="btn-import-json" class="secondary-btn"
+                        style="border-color: var(--primary-color); color: var(--primary-color);"
+                        data-i18n="btn_import_json">📤 Importar datos (JSON)</button>
+                    <input type="file" id="backup-file-input" accept="application/json" style="display: none;">
+                </div>
+            </section>
+
+            <!-- Sección CALCULADORA IRPF -->
+            <section id="section-calculadora">
+                <h2 data-i18n="title_irpf">Calculadora IRPF 2026</h2>
+                <p class="info-text" data-i18n="subtitle_irpf">Estimación de sueldo neto según tramos estatales</p>
+
+                <div class="form-container">
+                    <div class="form-group">
+                        <label data-i18n="label_gross_salary">Salario Bruto Anual (€)</label>
+                        <input type="number" id="irpf-bruto" placeholder="Ej. 35000">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_payments">Pagas</label>
+                        <select id="irpf-pagas">
+                            <option value="12">12 Pagas</option>
+                            <option value="14">14 Pagas</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="label_age">Edad</label>
+                        <input type="number" id="irpf-edad" placeholder="Ej. 30" value="30">
+                    </div>
+
+                    <button class="primary-btn" onclick="calcularSueldoIRPF()" data-i18n="btn_calculate_net">Calcular
+                        Neto</button>
+
+                    <div id="irpf-resultado" class="irpf-result-box">
+                        <div class="irpf-result-row">
+                            <span class="irpf-result-label" data-i18n="label_irpf_total">IRPF Total (Anual):</span>
+                            <span class="irpf-result-value irpf-danger" id="res-irpf">0 €</span>
+                        </div>
+                        <div class="irpf-result-row">
+                            <span class="irpf-result-label" data-i18n="label_ss">Seguridad Social (6.35%):</span>
+                            <span class="irpf-result-value irpf-danger" id="res-ss">0 €</span>
+                        </div>
+                        <div class="irpf-result-row">
+                            <span class="irpf-result-label" data-i18n="label_net_annual">Sueldo Neto Anual:</span>
+                            <span class="irpf-result-value" id="res-anual">0 €</span>
+                        </div>
+                        <div class="irpf-result-row"
+                            style="margin-top: 15px; border-top: 1px solid var(--primary-color); padding-top: 15px;">
+                            <span class="irpf-result-label" style="align-self: center;"
+                                data-i18n="label_net_monthly">NETO MENSUAL:</span>
+                            <span class="irpf-result-value irpf-highlight" id="res-mensual">0 €</span>
+                        </div>
+                        <div
+                            style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--primary-color);">
+                            <span data-i18n="label_effective_rate">Tipo medio efectivo:</span> <span
+                                id="res-tipo">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="irpf-disclaimer" data-i18n="disclaimer_irpf">
+                        * Cálculo estimado basado en Tramos Estatales 2026 + Seguridad Social estándar. No incluye
+                        deducciones autonómicas específicas ni situación familiar compleja.
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- TOAST CONTAINER -->
+        <div id="toast-container"></div>
+
+        <!-- VISOR DE ARCHIVOS ADJUNTOS -->
+        <div id="attachment-viewer">
+            <button id="viewer-close" onclick="closeAttachmentViewer()">×</button>
+            <div id="viewer-content"></div>
+        </div>
+
+        <!-- MODAL SUSCRIPCION -->
+        <div id="sub-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-sub-name">Nombre</h3>
+                </div>
+                <div class="modal-details" id="modal-sub-details"></div>
+                <!-- NUEVO: Contenedor para ver adjuntos en modal detalle -->
+                <div id="modal-sub-attachments" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                </div>
+
+                <div class="notes-section">
+                    <h4>Notas</h4>
+                    <div class="new-note-container"><textarea id="input-new-note"></textarea><button
+                            onclick="addNoteToSub()" class="primary-btn">Añadir</button></div>
+                    <div class="flashcard-area">
+                        <div class="flashcard-controls-top"><button id="btn-filter-star" class="toggle-filter-btn"
+                                onclick="toggleFilterHighlighted()">★ Destacadas</button><span
+                                id="flashcard-indicator">0/0</span></div>
+                        <div id="flashcard-display" class="flashcard-display">
+                            <p>Sin notas</p>
+                        </div>
+                        <div class="flashcard-nav"><button id="btn-prev-note" class="nav-arrow"
+                                onclick="prevNote()">Anterior</button><button id="btn-next-note" class="nav-arrow"
+                                onclick="nextNote()">Siguiente</button></div>
+                    </div>
+                </div>
+                <div class="modal-actions"><button onclick="closeSubModal()" class="secondary-btn">Cerrar</button></div>
+            </div>
+        </div>
+
+        <!-- NUEVO: MODAL DE AJUSTES UI (PERSONALIZACIÓN) -->
+        <div id="settings-modal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3 data-i18n="modal_settings_title">Personalización</h3>
+                </div>
+
+                <div style="overflow-y:auto; padding-right:5px;">
+
+                    <!-- Tema -->
+                    <div class="settings-section-title" data-i18n="st_theme">Tema</div>
+                    <div class="settings-grid">
+                        <div class="setting-btn" onclick="updateTheme('dark')" id="theme-btn-dark">🌑 Oscuro</div>
+                        <div class="setting-btn" onclick="updateTheme('light')" id="theme-btn-light">☀️ Claro</div>
+                        <div class="setting-btn" onclick="updateTheme('sepia')" id="theme-btn-sepia">📜 Sepia</div>
+                    </div>
+
+                    <!-- Colores -->
+                    <div class="settings-section-title" data-i18n="st_color">Color Principal</div>
+                    <div class="settings-grid">
+                        <div class="setting-btn color-option" onclick="updateColor('green')" id="color-btn-green">
+                            <span class="color-circle" style="background:#00E676;"></span> Verde
+                        </div>
+                        <div class="setting-btn color-option" onclick="updateColor('blue')" id="color-btn-blue">
+                            <span class="color-circle" style="background:#2979FF;"></span> Azul
+                        </div>
+                        <div class="setting-btn color-option" onclick="updateColor('purple')" id="color-btn-purple">
+                            <span class="color-circle" style="background:#D500F9;"></span> Morado
+                        </div>
+                        <div class="setting-btn color-option" onclick="updateColor('orange')" id="color-btn-orange">
+                            <span class="color-circle" style="background:#FF9100;"></span> Naranja
+                        </div>
+                    </div>
+
+                    <!-- Fuente -->
+                    <div class="settings-section-title" data-i18n="st_font_size">Tamaño Fuente</div>
+                    <div class="settings-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <div class="setting-btn" onclick="updateFontSize('small')" id="font-btn-small">Aa</div>
+                        <div class="setting-btn" onclick="updateFontSize('normal')" id="font-btn-normal">Aa</div>
+                        <div class="setting-btn" onclick="updateFontSize('large')" id="font-btn-large">Aa</div>
+                    </div>
+
+                    <!-- Idioma -->
+                    <div class="settings-section-title" data-i18n="st_language">Idioma</div>
+                    <div class="settings-grid">
+                        <div class="setting-btn" onclick="updateLanguage('es')" id="lang-btn-es">🇪🇸 Español</div>
+                        <div class="setting-btn" onclick="updateLanguage('en')" id="lang-btn-en">🇺🇸 English</div>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div style="border-top:1px solid #444; padding-top:15px; margin-top:10px;">
+                        <button onclick="resetToDefaults()" class="secondary-btn"
+                            style="color:var(--danger-color); border-color:var(--danger-color); width:100%;"
+                            data-i18n="btn_reset_defaults">Restaurar Predeterminados</button>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button onclick="closeSettingsModal()" class="secondary-btn" style="margin-top:0; width: 100%;"
+                        data-i18n="btn_close">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ⭐ REVISADO: SISTEMA DE MODALES DE AUTENTICACIÓN (EMAIL OTP V4) -->
+
+        <!-- MODAL 1: LOGIN (EMAIL/PASS) -->
+        <div id="modal-login" class="modal-overlay">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3>Iniciar Sesión (TEST)</h3>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="usuario@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="******">
+                </div>
+                <button onclick="loginEmail()" class="primary-btn">Entrar</button>
+                <div class="auth-link" onclick="openRegisterModal()">¿Nuevo usuario? <b>Registrarse</b></div>
+                <button onclick="closeAllAuthModals()" class="secondary-btn" style="margin-top:20px;">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- MODAL 2: REGISTRO (EMAIL/PASS -> SEND OTP) -->
+        <div id="modal-register" class="modal-overlay">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3>Registro Seguro (TEST)</h3>
+                </div>
+                <p style="color:var(--text-secondary); margin-bottom:15px; font-size:0.9rem;">Te enviaremos un código a
+                    tu email para confirmar tu cuenta.</p>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" placeholder="nuevo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="reg-pass" placeholder="******">
+                </div>
+                <button onclick="registerWithEmailOTP()" class="primary-btn">Registrarme con Código</button>
+                <div class="auth-link" onclick="openLoginModal()">¿Ya tienes cuenta? <b>Iniciar Sesión</b></div>
+                <button onclick="closeAllAuthModals()" class="secondary-btn" style="margin-top:20px;">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- MODAL 3: VERIFICACIÓN EMAIL OTP (MEJORADO) -->
+        <div id="modal-verify" class="modal-overlay">
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3>Verificar Email (TEST)</h3>
+                </div>
+                <p style="color:var(--text-secondary); margin-bottom:15px;">Introduce el código de 6 dígitos:
+                    <b>123456</b>
+                </p>
+                <div class="form-group" style="display: flex; justify-content: center;">
+                    <input type="text" id="verify-email-code" placeholder="------" maxlength="6"
+                        autocomplete="one-time-code">
+                </div>
+                <button onclick="verifyEmailOTP()" class="primary-btn" style="margin-top:10px;">Verificar y
+                    Entrar</button>
+                <button onclick="openRegisterModal()" class="secondary-btn" style="margin-top:20px;">Volver</button>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav>
+            <button class="nav-btn" onclick="showSection('section-gastos')" id="btn-gastos">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+                <span data-i18n="nav_expenses">Gastos</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('section-ahorro')" id="btn-ahorro">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+                </svg>
+                <span data-i18n="nav_savings">Ahorro</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('section-suscripciones')" id="btn-suscripciones">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h-2v2zm0-4h2V8h-2v5z" />
+                </svg>
+                <span data-i18n="nav_subscriptions">Suscr.</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('section-inversiones')" id="btn-inversiones">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
+                </svg>
+                <span data-i18n="nav_investments">Inver.</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('section-calculadora')" id="btn-calculadora">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 2h5v5h-5V5zM7 5h5v5H7V5zm0 14v-5h5v5H7zm7 0v-5h5v5h-5z" />
+                </svg>
+                <span data-i18n="nav_calculator">Calculadora</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // --- ESTADO GLOBAL ---
+        let gastos = [];
+        let objetivos = [];
+        let suscripciones = [];
+        let inversiones = [];
+        // ⭐ NUEVO: Variable temporal para adjuntos mientras se edita un form
+        let tempAttachments = [];
+
+        // Estado Vistas y UI
+        let currentSubIdForModal = null;
+        let currentNoteIndex = 0;
+        let filterHighlighted = false;
+        let selectedStockId = null;
+        let currentInvView = 'bolsa';
+
+        // --- SISTEMA DE PERSONALIZACIÓN (AJUSTES) ---
+
+        // 1. Configuración por defecto
+        const defaultSettings = {
+            theme: 'dark',           // dark, light, sepia
+            primaryColor: 'green',   // green, blue, purple, orange
+            fontSize: 'normal',      // small, normal, large
+            language: 'es'           // es, en
+        };
+
+        let userSettings = { ...defaultSettings };
+
+        // 2. Diccionario de Traducciones
+        const translations = {
+            es: {
+                nav_expenses: "Gastos",
+                nav_savings: "Ahorro",
+                nav_subscriptions: "Suscr.",
+                nav_investments: "Inver.",
+                title_expenses: "Resumen de Gastos",
+                title_savings: "Objetivos de Ahorro",
+                title_subscriptions: "Suscripciones",
+                title_investments: "Inversiones",
+                title_settings_data: "Ajustes de Datos",
+                label_total_today: "Total Hoy",
+                label_total_month: "Total Mes",
+                label_amount: "Importe (€)",
+                label_category: "Categoría",
+                label_date: "Fecha",
+                label_note: "Nota (Opcional)",
+                btn_save_expense: "Guardar Gasto",
+                header_recent_moves: "Movimientos Recientes",
+                label_saved: "Ahorrado",
+                label_goal_total: "Meta Total",
+                header_my_goals: "Mis Metas",
+                label_monthly_cost: "Gasto Total Mensual",
+                header_my_services: "Mis Servicios",
+                btn_new_investment: "+ Nueva Inversión",
+                label_total_value: "Valor Total",
+                label_total_profit: "Total Ganancia",
+                btn_export_json: "📥 Exportar datos (JSON)",
+                btn_import_json: "📤 Importar datos (JSON)",
+                modal_settings_title: "Personalización",
+                st_theme: "Tema",
+                st_color: "Color Principal",
+                st_font_size: "Tamaño Fuente",
+                st_language: "Idioma",
+                btn_reset_defaults: "Restaurar Predeterminados",
+                btn_close: "Cerrar",
+                nav_calculator: "Calc.",
+                title_irpf: "Calculadora IRPF 2026",
+                subtitle_irpf: "Estimación de sueldo neto según tramos estatales",
+                label_gross_salary: "Salario Bruto Anual (€)",
+                label_payments: "Pagas",
+                label_age: "Edad",
+                btn_calculate_net: "Calcular Neto",
+                label_irpf_total: "IRPF Total (Anual):",
+                label_ss: "Seguridad Social (6.35%):",
+                label_net_annual: "Sueldo Neto Anual:",
+                label_net_monthly: "NETO MENSUAL:",
+                label_effective_rate: "Tipo medio efectivo:",
+                disclaimer_irpf: "* Cálculo estimado basado en Tramos Estatales 2026 + Seguridad Social estándar. No incluye deducciones autonómicas específicas ni situación familiar compleja."
+            },
+            en: {
+                nav_expenses: "Expenses",
+                nav_savings: "Savings",
+                nav_subscriptions: "Subs.",
+                nav_investments: "Invest.",
+                title_expenses: "Expenses Summary",
+                title_savings: "Savings Goals",
+                title_subscriptions: "Subscriptions",
+                title_investments: "Investments",
+                title_settings_data: "Data Settings",
+                label_total_today: "Total Today",
+                label_total_month: "Total Month",
+                label_amount: "Amount (€)",
+                label_category: "Category",
+                label_date: "Date",
+                label_note: "Note (Optional)",
+                btn_save_expense: "Save Expense",
+                header_recent_moves: "Recent Transactions",
+                label_saved: "Saved",
+                label_goal_total: "Total Goal",
+                header_my_goals: "My Goals",
+                label_monthly_cost: "Monthly Total Cost",
+                header_my_services: "My Services",
+                btn_new_investment: "+ New Investment",
+                label_total_value: "Total Value",
+                label_total_profit: "Total Profit",
+                btn_export_json: "📥 Export Data (JSON)",
+                btn_import_json: "📤 Import Data (JSON)",
+                modal_settings_title: "Customization",
+                st_theme: "Theme",
+                st_color: "Primary Color",
+                st_font_size: "Font Size",
+                st_language: "Language",
+                btn_reset_defaults: "Reset to Defaults",
+                btn_close: "Close",
+                nav_calculator: "Calc.",
+                title_irpf: "IRPF 2026 Calculator",
+                subtitle_irpf: "Net salary estimation based on state brackets",
+                label_gross_salary: "Annual Gross Salary (€)",
+                label_payments: "Payments",
+                label_age: "Age",
+                btn_calculate_net: "Calculate Net",
+                label_irpf_total: "Total IRPF (Annual):",
+                label_ss: "Social Security (6.35%):",
+                label_net_annual: "Annual Net Salary:",
+                label_net_monthly: "NET MONTHLY:",
+                label_effective_rate: "Effective average rate:",
+                disclaimer_irpf: "* Estimated calculation based on 2026 State Brackets + Standard Social Security. Does not include specific regional deductions or complex family situations."
+            }
+        };
+
+        // Paletas de Temas (Variables CSS que se inyectan)
+        const themePalettes = {
+            dark: {
+                '--bg-color': '#121212',
+                '--surface-color': '#1E1E1E',
+                '--surface-hover': '#2C2C2C',
+                '--text-primary': '#FFFFFF',
+                '--text-secondary': '#B0B0B0',
+                '--input-bg': '#2C2C2C'
+            },
+            light: {
+                '--bg-color': '#F3F4F6',
+                '--surface-color': '#FFFFFF',
+                '--surface-hover': '#E5E7EB',
+                '--text-primary': '#1F2937',
+                '--text-secondary': '#6B7280',
+                '--input-bg': '#F9FAFB'
+            },
+            sepia: {
+                '--bg-color': '#F1E7D0',
+                '--surface-color': '#E3D5B8',
+                '--surface-hover': '#D1C2A5',
+                '--text-primary': '#433422',
+                '--text-secondary': '#7D6A55',
+                '--input-bg': '#EFE2C9'
+            }
+        };
+
+        const colorPalettes = {
+            green: '#00E676',
+            blue: '#2979FF',
+            purple: '#D500F9',
+            orange: '#FF9100'
+        };
+
+        const fontSizes = {
+            small: '0.9em',
+            normal: '1em',
+            large: '1.2em'
+        };
+
+        // --- INICIALIZACIÓN ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar Ajustes UI primero para evitar "flicker"
+            loadUserSettings();
+
+            // Cargar Fechas default inputs
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('input-fecha').value = today;
+            document.getElementById('input-objetivo-inicio').value = today;
+            document.getElementById('input-sub-fecha').value = today;
+
+            // Cargar Datos
+            loadGastosFromLocalStorage();
+            loadObjetivosFromLocalStorage();
+            loadSuscripcionesFromLocalStorage();
+            loadInversionesFromLocalStorage();
+
+            // Renderizar todo
+            renderGastos();
+            calcularTotalesGastos();
+            renderObjetivos();
+            calcularResumenObjetivos();
+            renderSuscripciones();
+            calcularTotalMensualSuscripciones();
+            renderInversiones();
+
+            // Calculadora UI Reset
+            document.getElementById('irpf-resultado').style.display = 'none';
+
+            showSection('section-gastos');
+
+            // Listeners Generales
+            document.getElementById('btn-guardar-gasto').addEventListener('click', addGasto);
+            document.getElementById('btn-guardar-objetivo').addEventListener('click', addObjetivo);
+            document.getElementById('btn-cancelar-edicion').addEventListener('click', resetFormObjetivo);
+            document.getElementById('btn-guardar-sub').addEventListener('click', addOrUpdateSuscripcion);
+            document.getElementById('btn-cancelar-sub').addEventListener('click', resetFormSuscripcion);
+            document.getElementById('btn-guardar-inv').addEventListener('click', addOrUpdateInversion);
+            document.getElementById('btn-cancelar-inv').addEventListener('click', resetFormInversion);
+
+            // Backup
+            document.getElementById('btn-import-json').addEventListener('click', () => document.getElementById('backup-file-input').click());
+            document.getElementById('backup-file-input').addEventListener('change', (e) => {
+                if (e.target.files[0]) importFintrackFromJson(e.target.files[0]);
+                e.target.value = '';
+            });
+
+            // ⭐ INICIAR AUTH
+            initAuth();
+        });
+
+        // --- FUNCIONES DE PERSONALIZACIÓN ---
+
+        function loadUserSettings() {
+            const saved = localStorage.getItem('fintrack-settings');
+            if (saved) {
+                userSettings = JSON.parse(saved);
+            }
+            // Aplicar todo
+            updateTheme(userSettings.theme, false);
+            updateColor(userSettings.primaryColor, false);
+            updateFontSize(userSettings.fontSize, false);
+            updateLanguage(userSettings.language, false);
+        }
+
+        function saveUserSettings() {
+            localStorage.setItem('fintrack-settings', JSON.stringify(userSettings));
+        }
+
+        function updateTheme(themeName, save = true) {
+            if (!themePalettes[themeName]) return;
+            const root = document.documentElement;
+            const palette = themePalettes[themeName];
+
+            // Inyectar variables CSS en vivo
+            for (const [key, value] of Object.entries(palette)) {
+                root.style.setProperty(key, value);
+            }
+
+            userSettings.theme = themeName;
+            updateSettingsUI('theme', themeName);
+            if (save) saveUserSettings();
+        }
+
+        function updateColor(colorName, save = true) {
+            if (!colorPalettes[colorName]) return;
+            document.documentElement.style.setProperty('--primary-color', colorPalettes[colorName]);
+            userSettings.primaryColor = colorName;
+            updateSettingsUI('color', colorName);
+            if (save) saveUserSettings();
+        }
+
+        function updateFontSize(sizeName, save = true) {
+            if (!fontSizes[sizeName]) return;
+            document.documentElement.style.fontSize = fontSizes[sizeName];
+            userSettings.fontSize = sizeName;
+            updateSettingsUI('font', sizeName);
+            if (save) saveUserSettings();
+        }
+
+        function updateLanguage(lang, save = true) {
+            if (!translations[lang]) return;
+            userSettings.language = lang;
+
+            // Aplicar traducciones a elementos con data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        // Para inputs podría ser placeholder, pero aquí solo hay labels y botones con texto
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+
+            updateSettingsUI('lang', lang);
+            if (save) saveUserSettings();
+        }
+
+        function resetToDefaults() {
+            // Eliminado confirm para evitar bloqueos
+            userSettings = { ...defaultSettings };
+            updateTheme(userSettings.theme);
+            updateColor(userSettings.primaryColor);
+            updateFontSize(userSettings.fontSize);
+            updateLanguage(userSettings.language);
+            saveUserSettings();
+            showToast("Ajustes restaurados", "success");
+        }
+
+        // Función de ayuda: t(key) para usar en JS dinámico
+        function t(key) {
+            const lang = userSettings.language || 'es';
+            return translations[lang][key] || key;
+        }
+
+        // Gestión UI del Modal de Ajustes
+        function openSettingsModal() {
+            document.getElementById('settings-modal').style.display = 'flex';
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').style.display = 'none';
+        }
+
+        function updateSettingsUI(type, value) {
+            // Actualiza la clase 'active' de los botones del modal
+            const prefixMap = { 'theme': 'theme-btn-', 'color': 'color-btn-', 'font': 'font-btn-', 'lang': 'lang-btn-' };
+            const prefix = prefixMap[type];
+
+            // Quitar active de todos los botones de ese tipo
+            document.querySelectorAll(`[id^="${prefix}"]`).forEach(btn => btn.classList.remove('active'));
+
+            // Poner active al seleccionado
+            const activeBtn = document.getElementById(`${prefix}${value}`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        // ==========================================
+        //         SISTEMA DE BACKUP (JSON)
+        // ==========================================
+
+        function exportFintrackToJson() {
+            const backup = {
+                version: 1,
+                createdAt: new Date().toISOString(),
+                gastos, objetivos, suscripciones, inversiones,
+                settings: userSettings // Incluimos settings en el backup
+            };
+
+            const dataStr = JSON.stringify(backup, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fintrack-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Backup descargado", "success");
+        }
+
+        function importFintrackFromJson(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.gastos && !data.objetivos && !data.inversiones) throw new Error("Archivo inválido.");
+
+                    // Eliminado confirm para evitar bloqueos, se asume intención al seleccionar archivo
+                    gastos = data.gastos || [];
+                    objetivos = data.objetivos || [];
+                    suscripciones = data.suscripciones || [];
+                    inversiones = data.inversiones || [];
+
+                    // Si hay settings en el backup, restaurarlos (opcional, aquí lo hacemos)
+                    if (data.settings) {
+                        userSettings = data.settings;
+                        saveUserSettings();
+                        loadUserSettings(); // Re-aplica visualmente
+                    }
+
+                    localStorage.setItem('fintrack_gastos', JSON.stringify(gastos));
+                    localStorage.setItem('fintrack_objetivos', JSON.stringify(objetivos));
+                    localStorage.setItem('fintrack_suscripciones', JSON.stringify(suscripciones));
+                    localStorage.setItem('fintrack_inversiones', JSON.stringify(inversiones));
+
+                    renderGastos(); calcularTotalesGastos();
+                    renderObjetivos(); calcularResumenObjetivos();
+                    renderSuscripciones(); calcularTotalMensualSuscripciones();
+                    renderInversiones();
+
+                    showToast("Datos importados", "success");
+                    showSection('section-gastos');
+                } catch (err) {
+                    console.error(err);
+                    showToast("Error importar: " + err.message, "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ==========================================
+        //         CALCULADORA IRPF 2026
+        // ==========================================
+
+        function calcularSueldoIRPF() {
+            const bruto = parseFloat(document.getElementById('irpf-bruto').value);
+            const pagas = parseInt(document.getElementById('irpf-pagas').value);
+
+            if (!bruto || bruto < 0) {
+                showToast("Por favor, introduce un salario válido.", "error");
+                return;
+            }
+
+            // 1. Seguridad Social (aprox 6.35% a cargo del trabajador)
+            // Base máxima cotización 2025 proyectada ~56.600€
+            const baseCotizacion = Math.min(bruto, 56640);
+            const ss = baseCotizacion * 0.0635;
+
+            // 2. Base Imponible IRPF (Bruto - SS - Reducción por rendimientos trabajo 2000€ genérico)
+            // Simplificación: Restamos SS y 2000€ de gastos deducibles generales
+            let baseImponible = bruto - ss - 2000;
+            if (baseImponible < 0) baseImponible = 0;
+
+            // 3. Cálculo IRPF por Tramos 2026
+            let irpf = 0;
+            const tramos = [
+                { limite: 12450, tipo: 0.19 },
+                { limite: 20200, tipo: 0.24 },
+                { limite: 35200, tipo: 0.30 },
+                { limite: 60000, tipo: 0.37 },
+                { limite: 300000, tipo: 0.45 },
+                { limite: Infinity, tipo: 0.47 }
+            ];
+
+            let resto = baseImponible;
+            let tramoAnterior = 0;
+
+            for (let tramo of tramos) {
+                if (baseImponible > tramoAnterior) {
+                    const baseTramo = Math.min(baseImponible, tramo.limite) - tramoAnterior;
+                    irpf += baseTramo * tramo.tipo;
+                    tramoAnterior = tramo.limite;
+                } else {
+                    break;
+                }
+            }
+
+            // Ajustes mínimos personales (Simplificado: soltero sin hijos < 65 años = 5550€ exento al tipo min 19%)
+            const cuotaMinimo = 5550 * 0.19;
+            irpf -= cuotaMinimo;
+
+            if (irpf < 0) irpf = 0;
+
+            // Resultados
+            const netoAnual = bruto - ss - irpf;
+            const netoMensual = netoAnual / pagas;
+            const tipoMedio = (irpf / bruto) * 100;
+
+            // Renderizar
+            document.getElementById('res-irpf').textContent = irpf.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+            document.getElementById('res-ss').textContent = '-' + ss.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+            document.getElementById('res-anual').textContent = netoAnual.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+            document.getElementById('res-mensual').textContent = netoMensual.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+            document.getElementById('res-tipo').textContent = tipoMedio.toFixed(2) + '%';
+
+            document.getElementById('irpf-resultado').style.display = 'block';
+        }
+
+        // ==========================================
+        //         SISTEMA DE NOTIFICACIONES
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            toast.onclick = () => { toast.style.display = 'none'; toast.remove(); };
+            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 3000);
+            container.appendChild(toast);
+        }
+
+        // ==========================================
+        //         LÓGICA DE GASTOS
+        // ==========================================
+        function loadGastosFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_gastos');
+            if (storedData) gastos = JSON.parse(storedData);
+        }
+        function saveGastosToLocalStorage() { localStorage.setItem('fintrack_gastos', JSON.stringify(gastos)); }
+
+        function addGasto() {
+            const importeInput = document.getElementById('input-importe');
+            const categoriaSelect = document.getElementById('select-categoria');
+            const fechaInput = document.getElementById('input-fecha');
+            const notaInput = document.getElementById('input-nota');
+            const importe = parseFloat(importeInput.value);
+            const categoria = categoriaSelect.value;
+            const fecha = fechaInput.value;
+            const nota = notaInput.value;
+            if (isNaN(importe) || importe <= 0) { alert("Importe inválido."); return; }
+            if (!fecha) { alert("Fecha requerida."); return; }
+
+            // ⭐ AÑADIDO: Incluye tempAttachments en el objeto
+            const nuevoGasto = { id: Date.now(), importe, categoria, fecha, nota, attachments: [...tempAttachments] };
+
+            gastos.push(nuevoGasto);
+            saveGastosToLocalStorage();
+            renderGastos();
+            calcularTotalesGastos();
+
+            // Limpieza
+            importeInput.value = ''; notaInput.value = ''; categoriaSelect.value = 'Comida';
+            tempAttachments = []; // ⭐ Limpiar buffer
+            renderAttachmentsPreview('preview-gastos'); // Limpiar UI
+        }
+
+        function renderGastos() {
+            const listaContainer = document.getElementById('lista-gastos');
+            listaContainer.innerHTML = '';
+            const gastosOrdenados = [...gastos].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            if (gastosOrdenados.length === 0) {
+                listaContainer.innerHTML = '<div class="empty-state">No hay gastos registrados.</div>';
+                return;
+            }
+            gastosOrdenados.forEach(gasto => {
+                const item = document.createElement('div');
+                item.className = 'gasto-item';
+                const fechaObj = new Date(gasto.fecha);
+                const fechaStr = fechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+
+                // ⭐ AÑADIDO: Renderizado de icono de adjunto si existe
+                const clipIcon = (gasto.attachments && gasto.attachments.length > 0)
+                    ? `<span class="paperclip-badge" onclick="viewAttachments(${gasto.id}, 'gasto', event)">📎 ${gasto.attachments.length}</span>`
+                    : '';
+
+                item.innerHTML = `
+                    <div class="gasto-info">
+                        <h4>${gasto.categoria} ${clipIcon}</h4>
+                        <p>${fechaStr} ${gasto.nota ? ' - ' + gasto.nota : ''}</p>
+                    </div>
+                    <div class="gasto-amount">- ${gasto.importe.toFixed(2)} €</div>
+                `;
+                listaContainer.appendChild(item);
+            });
+        }
+        function calcularTotalesGastos() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const fechaActual = new Date();
+            const mesActual = fechaActual.getMonth();
+            const anioActual = fechaActual.getFullYear();
+            let totalHoy = 0, totalMes = 0;
+            gastos.forEach(gasto => {
+                const fechaGasto = new Date(gasto.fecha);
+                if (gasto.fecha === hoy) totalHoy += gasto.importe;
+                if (fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual) totalMes += gasto.importe;
+            });
+            document.getElementById('total-hoy').textContent = totalHoy.toFixed(2) + ' €';
+            document.getElementById('total-mes').textContent = totalMes.toFixed(2) + ' €';
+        }
+
+        // ==========================================
+        //     LÓGICA DE AHORRO
+        // ==========================================
+        function loadObjetivosFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_objetivos');
+            if (storedData) objetivos = JSON.parse(storedData);
+        }
+        function saveObjetivosToLocalStorage() { localStorage.setItem('fintrack_objetivos', JSON.stringify(objetivos)); }
+
+        function addObjetivo() {
+            const idInput = document.getElementById('input-objetivo-id');
+            const nombreInput = document.getElementById('input-objetivo-nombre');
+            const totalInput = document.getElementById('input-objetivo-total');
+            const ahorradoInput = document.getElementById('input-objetivo-ahorrado');
+            const inicioInput = document.getElementById('input-objetivo-inicio');
+            const limiteInput = document.getElementById('input-objetivo-limite');
+            const id = idInput.value;
+            const nombre = nombreInput.value.trim();
+            const montoTotal = parseFloat(totalInput.value);
+            const montoAhorrado = parseFloat(ahorradoInput.value) || 0;
+            const fechaInicio = inicioInput.value;
+            const fechaLimite = limiteInput.value;
+
+            if (!nombre) { showToast("Nombre requerido", "error"); return; }
+            if (isNaN(montoTotal) || montoTotal <= 0) { showToast("Meta total > 0", "error"); return; }
+
+            let estado = 'en_curso';
+            if (montoAhorrado >= montoTotal) estado = 'completado';
+
+            // ⭐ AÑADIDO: Propiedad attachments
+            if (id) {
+                const index = objetivos.findIndex(o => o.id == id);
+                if (index !== -1) {
+                    objetivos[index] = {
+                        ...objetivos[index],
+                        nombre, montoTotal, montoAhorrado, fechaInicio, fechaLimite, estado,
+                        attachments: [...tempAttachments] // Actualizar con buffer actual
+                    };
+                    showToast("Objetivo actualizado", "info");
+                }
+            } else {
+                objetivos.push({
+                    id: Date.now(), nombre, montoTotal, montoAhorrado, fechaInicio, fechaLimite, estado,
+                    attachments: [...tempAttachments]
+                });
+                showToast("Objetivo guardado", "success");
+            }
+            saveObjetivosToLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+            resetFormObjetivo();
+        }
+        function renderObjetivos() {
+            const listaContainer = document.getElementById('lista-objetivos');
+            listaContainer.innerHTML = '';
+            if (objetivos.length === 0) { listaContainer.innerHTML = '<div class="empty-state">No tienes metas activas.</div>'; return; }
+            objetivos.forEach(obj => {
+                const porcentaje = Math.min((obj.montoAhorrado / obj.montoTotal) * 100, 100);
+                const inicioStr = obj.fechaInicio ? new Date(obj.fechaInicio).toLocaleDateString('es-ES') : '--';
+                const limiteStr = obj.fechaLimite ? new Date(obj.fechaLimite).toLocaleDateString('es-ES') : '--';
+                const total = obj.montoTotal || obj.total;
+                const ahorrado = obj.montoAhorrado || obj.ahorrado || 0;
+                let estadoActual = obj.estado || (ahorrado >= total ? 'completado' : 'en_curso');
+                const estadoClass = estadoActual === 'completado' ? 'completado' : 'en_curso';
+                const estadoLabel = estadoActual === 'completado' ? '✓ Completado' : 'En Curso';
+
+                // ⭐ AÑADIDO: Clip Icon
+                const clipIcon = (obj.attachments && obj.attachments.length > 0)
+                    ? `<span class="paperclip-badge" onclick="viewAttachments(${obj.id}, 'ahorro', event)">📎 ${obj.attachments.length}</span>`
+                    : '';
+
+                const item = document.createElement('div');
+                item.className = 'objetivo-card';
+                item.innerHTML = `
+                    <div class="objetivo-header">
+                        <div><span class="objetivo-title">${obj.nombre} ${clipIcon}</span><div class="objetivo-fechas">Inicio: ${inicioStr} &bull; Fin: ${limiteStr}</div></div>
+                        <span class="status-badge ${estadoClass}">${estadoLabel}</span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill ${estadoClass}" style="width: ${porcentaje}%"></div></div>
+                    <div class="objetivo-stats"><span>${ahorrado.toFixed(2)} € de ${total.toFixed(2)} € (${porcentaje.toFixed(0)}%)</span></div>
+                    <div class="card-actions">
+                        <button class="btn-action btn-add" onclick="addAhorro(${obj.id})">+ Ahorrar</button>
+                        <button class="btn-action btn-edit" onclick="editObjetivo(${obj.id})">Editar</button>
+                        <button class="btn-action btn-delete" onclick="deleteObjetivo(${obj.id})">Borrar</button>
+                    </div>
+                `;
+                listaContainer.appendChild(item);
+            });
+        }
+        function editObjetivo(id) {
+            const obj = objetivos.find(o => o.id === id);
+            if (!obj) return;
+            document.getElementById('input-objetivo-id').value = obj.id;
+            document.getElementById('input-objetivo-nombre').value = obj.nombre;
+            document.getElementById('input-objetivo-total').value = obj.montoTotal || obj.total;
+            document.getElementById('input-objetivo-ahorrado').value = obj.montoAhorrado || obj.ahorrado;
+            document.getElementById('input-objetivo-inicio').value = obj.fechaInicio;
+            document.getElementById('input-objetivo-limite').value = obj.fechaLimite;
+            document.getElementById('btn-guardar-objetivo').textContent = "Actualizar Objetivo";
+            document.getElementById('btn-cancelar-edicion').style.display = "block";
+
+            // ⭐ AÑADIDO: Cargar adjuntos existentes en temp
+            tempAttachments = obj.attachments || [];
+            renderAttachmentsPreview('preview-ahorro');
+
+            document.querySelector('#section-ahorro .form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        function deleteObjetivo(id) {
+            if (!confirm("¿Borrar meta?")) return;
+            objetivos = objetivos.filter(o => o.id !== id);
+            saveObjetivosToLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+            showToast("Objetivo eliminado", "error");
+            if (document.getElementById('input-objetivo-id').value == id) resetFormObjetivo();
+        }
+        function addAhorro(id) {
+            const obj = objetivos.find(o => o.id === id);
+            if (!obj) return;
+            const ingreso = prompt(`¿Cuánto añades a "${obj.nombre}"?`);
+            if (ingreso === null) return;
+            const cantidad = parseFloat(ingreso);
+            if (isNaN(cantidad) || cantidad <= 0) { showToast("Cantidad inválida", "error"); return; }
+            let actual = obj.montoAhorrado || obj.ahorrado || 0;
+            let total = obj.montoTotal || obj.total;
+            obj.montoAhorrado = actual + cantidad;
+            obj.ahorrado = obj.montoAhorrado;
+            showToast("Ahorro añadido", "success");
+            if (obj.montoAhorrado >= total) { obj.estado = 'completado'; showToast("¡Meta completada!", "success"); }
+            saveObjetivosToLocalStorage();
+            renderObjetivos();
+            calcularResumenObjetivos();
+        }
+        function resetFormObjetivo() {
+            document.getElementById('input-objetivo-id').value = '';
+            document.getElementById('input-objetivo-nombre').value = '';
+            document.getElementById('input-objetivo-total').value = '';
+            document.getElementById('input-objetivo-ahorrado').value = '0';
+            document.getElementById('input-objetivo-inicio').value = new Date().toISOString().split('T')[0];
+            document.getElementById('input-objetivo-limite').value = '';
+            document.getElementById('btn-guardar-objetivo').textContent = "Guardar Objetivo";
+            document.getElementById('btn-cancelar-edicion').style.display = "none";
+
+            // ⭐ AÑADIDO: Resetear adjuntos
+            tempAttachments = [];
+            renderAttachmentsPreview('preview-ahorro');
+        }
+        function calcularResumenObjetivos() {
+            let totalAcumulado = 0, totalObjetivos = 0;
+            objetivos.forEach(obj => {
+                totalAcumulado += (obj.montoAhorrado || obj.ahorrado || 0);
+                totalObjetivos += (obj.montoTotal || obj.total || 0);
+            });
+            document.getElementById('ahorro-total-acumulado').textContent = totalAcumulado.toFixed(2) + ' €';
+            document.getElementById('ahorro-total-objetivos').textContent = totalObjetivos.toFixed(2) + ' €';
+        }
+
+        // ==========================================
+        //    LÓGICA DE SUSCRIPCIONES
+        // ==========================================
+        function loadSuscripcionesFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_suscripciones');
+            if (storedData) {
+                suscripciones = JSON.parse(storedData);
+                suscripciones.forEach(sub => {
+                    if (typeof sub.notas === 'string' && sub.notas.length > 0) {
+                        const oldNote = { id: Date.now(), texto: sub.notas, destacada: false, fechaCreacion: new Date().toLocaleString('es-ES') };
+                        sub.notas = [oldNote];
+                    } else if (!Array.isArray(sub.notas)) { sub.notas = []; }
+                });
+                saveSuscripcionesToLocalStorage();
+            }
+        }
+        function saveSuscripcionesToLocalStorage() { localStorage.setItem('fintrack_suscripciones', JSON.stringify(suscripciones)); }
+
+        function addOrUpdateSuscripcion() {
+            const idInput = document.getElementById('input-sub-id');
+            const nombreInput = document.getElementById('input-sub-nombre');
+            const precioInput = document.getElementById('input-sub-precio');
+            const periodoSelect = document.getElementById('select-sub-periodo');
+            const catSelect = document.getElementById('select-sub-categoria');
+            const fechaInput = document.getElementById('input-sub-fecha');
+            const id = idInput.value;
+            const nombre = nombreInput.value.trim();
+            const precio = parseFloat(precioInput.value);
+            const periodicidad = periodoSelect.value;
+            const categoria = catSelect.value;
+            const fechaProximoCobro = fechaInput.value;
+            if (!nombre) { showToast("Nombre requerido", "error"); return; }
+            if (isNaN(precio) || precio <= 0) { showToast("Precio inválido", "error"); return; }
+            let currentNotes = [];
+            if (id) {
+                const existing = suscripciones.find(s => s.id == id);
+                if (existing) currentNotes = existing.notas || [];
+            }
+
+            // ⭐ AÑADIDO: attachments
+            const subData = {
+                nombre, precio, periodicidad, categoria, fechaProximoCobro,
+                notas: currentNotes,
+                attachments: [...tempAttachments]
+            };
+
+            if (id) {
+                const index = suscripciones.findIndex(s => s.id == id);
+                if (index !== -1) { suscripciones[index] = { ...suscripciones[index], ...subData }; showToast("Suscripción actualizada", "info"); }
+            } else {
+                suscripciones.push({ id: Date.now(), ...subData }); showToast("Suscripción añadida", "success");
+            }
+            saveSuscripcionesToLocalStorage();
+            renderSuscripciones();
+            calcularTotalMensualSuscripciones();
+            resetFormSuscripcion();
+        }
+        function renderSuscripciones() {
+            const lista = document.getElementById('lista-suscripciones');
+            lista.innerHTML = '';
+            if (suscripciones.length === 0) { lista.innerHTML = '<div class="empty-state">No tienes suscripciones activas.</div>'; return; }
+            const subsSorted = [...suscripciones].sort((a, b) => {
+                if (!a.fechaProximoCobro) return 1;
+                if (!b.fechaProximoCobro) return -1;
+                return new Date(a.fechaProximoCobro) - new Date(b.fechaProximoCobro);
+            });
+            subsSorted.forEach(sub => {
+                let precioStr = `${sub.precio.toFixed(2)} € / mes`;
+                if (sub.periodicidad === 'anual') {
+                    const mensualEq = sub.precio / 12;
+                    precioStr = `${sub.precio.toFixed(2)} € / año (~${mensualEq.toFixed(2)} €/mes)`;
+                }
+                const fechaCobroStr = sub.fechaProximoCobro ? new Date(sub.fechaProximoCobro).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : 'Sin fecha';
+                const hasNotes = Array.isArray(sub.notas) && sub.notas.length > 0;
+                const notesIcon = hasNotes ? '<span class="notes-badge">📝</span>' : '';
+
+                // ⭐ AÑADIDO: Icono
+                const clipIcon = (sub.attachments && sub.attachments.length > 0) ? '📎' : '';
+
+                const item = document.createElement('div');
+                item.className = 'sub-card';
+                item.setAttribute('onclick', `openSubModal(${sub.id})`);
+                item.innerHTML = `
+                    <div class="sub-row"><span class="sub-name">${sub.nombre} ${notesIcon} ${clipIcon}</span><span class="sub-price">${precioStr}</span></div>
+                    <div class="sub-row"><span class="sub-detail">Próximo: ${fechaCobroStr}</span><span class="sub-badge">${sub.categoria}</span></div>
+                    <div class="card-actions" style="margin-top:10px; padding-top:10px; border-top:1px solid #333;" onclick="event.stopPropagation()">
+                        <button class="btn-action btn-edit" onclick="editSuscripcion(${sub.id})">Editar</button>
+                        <button class="btn-action btn-delete" onclick="deleteSuscripcion(${sub.id})">Borrar</button>
+                    </div>
+                `;
+                lista.appendChild(item);
+            });
+        }
+        function editSuscripcion(id) {
+            const sub = suscripciones.find(s => s.id === id);
+            if (!sub) return;
+            document.getElementById('input-sub-id').value = sub.id;
+            document.getElementById('input-sub-nombre').value = sub.nombre;
+            document.getElementById('input-sub-precio').value = sub.precio;
+            document.getElementById('select-sub-periodo').value = sub.periodicidad;
+            document.getElementById('select-sub-categoria').value = sub.categoria;
+            document.getElementById('input-sub-fecha').value = sub.fechaProximoCobro;
+            document.getElementById('btn-guardar-sub').textContent = "Actualizar Suscripción";
+            document.getElementById('btn-cancelar-sub').style.display = "block";
+
+            // ⭐ AÑADIDO: Cargar adjuntos
+            tempAttachments = sub.attachments || [];
+            renderAttachmentsPreview('preview-sub');
+
+            document.querySelector('#section-suscripciones .form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        function deleteSuscripcion(id) {
+            if (!confirm("¿Borrar suscripción?")) return;
+            suscripciones = suscripciones.filter(s => s.id !== id);
+            saveSuscripcionesToLocalStorage();
+            renderSuscripciones();
+            calcularTotalMensualSuscripciones();
+            showToast("Suscripción eliminada", "error");
+            if (document.getElementById('input-sub-id').value == id) resetFormSuscripcion();
+        }
+        function resetFormSuscripcion() {
+            document.getElementById('input-sub-id').value = '';
+            document.getElementById('input-sub-nombre').value = '';
+            document.getElementById('input-sub-precio').value = '';
+            document.getElementById('select-sub-periodo').value = 'mensual';
+            document.getElementById('select-sub-categoria').value = 'Streaming';
+            document.getElementById('input-sub-fecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('btn-guardar-sub').textContent = "Guardar Suscripción";
+            document.getElementById('btn-cancelar-sub').style.display = "none";
+
+            // ⭐ AÑADIDO: Reset adjuntos
+            tempAttachments = [];
+            renderAttachmentsPreview('preview-sub');
+        }
+        function calcularTotalMensualSuscripciones() {
+            let totalMensual = 0;
+            suscripciones.forEach(sub => {
+                if (sub.periodicidad === 'mensual') { totalMensual += sub.precio; }
+                else if (sub.periodicidad === 'anual') { totalMensual += (sub.precio / 12); }
+            });
+            document.getElementById('total-mensual-suscripciones').textContent = totalMensual.toFixed(2) + ' €';
+        }
+
+        // --- LÓGICA MODAL & FLASHCARDS ---
+        function openSubModal(id) {
+            const sub = suscripciones.find(s => s.id === id); if (!sub) return;
+            currentSubIdForModal = id; currentNoteIndex = 0; filterHighlighted = false;
+            document.getElementById('modal-sub-name').textContent = sub.nombre;
+            const fecha = sub.fechaProximoCobro ? new Date(sub.fechaProximoCobro).toLocaleDateString('es-ES') : 'Sin fecha';
+            const detalleHtml = `<p><strong>Precio:</strong> ${sub.precio.toFixed(2)} € (${sub.periodicidad})</p><p><strong>Categoría:</strong> ${sub.categoria}</p><p><strong>Próximo cobro:</strong> ${fecha}</p>`;
+            document.getElementById('modal-sub-details').innerHTML = detalleHtml;
+            document.getElementById('input-new-note').value = '';
+
+            // ⭐ AÑADIDO: Mostrar adjuntos dentro del modal
+            const attContainer = document.getElementById('modal-sub-attachments');
+            attContainer.innerHTML = '';
+            if (sub.attachments && sub.attachments.length > 0) {
+                sub.attachments.forEach(att => {
+                    const el = createPreviewElement(att, false); // false = sin boton borrar
+                    el.onclick = () => showFileViewer(att);
+                    el.style.cursor = "pointer";
+                    attContainer.appendChild(el);
+                });
+            } else {
+                attContainer.innerHTML = '<small style="color:#666">Sin adjuntos.</small>';
+            }
+
+            updateFilterButtonUI(); renderFlashcardUI();
+            document.getElementById('sub-modal').style.display = 'flex';
+        }
+        function closeSubModal() { document.getElementById('sub-modal').style.display = 'none'; currentSubIdForModal = null; }
+        function renderFlashcardUI() {
+            const sub = suscripciones.find(s => s.id === currentSubIdForModal); if (!sub) return;
+            let visibleNotes = sub.notas || [];
+            if (filterHighlighted) visibleNotes = visibleNotes.filter(n => n.destacada === true);
+            if (currentNoteIndex >= visibleNotes.length) currentNoteIndex = Math.max(0, visibleNotes.length - 1);
+            const display = document.getElementById('flashcard-display');
+            const indicator = document.getElementById('flashcard-indicator');
+            const btnPrev = document.getElementById('btn-prev-note');
+            const btnNext = document.getElementById('btn-next-note');
+            display.className = 'flashcard-display';
+            if (visibleNotes.length === 0) {
+                const msg = filterHighlighted ? "No hay notas destacadas." : "Sin notas aún.";
+                display.innerHTML = `<p class="empty-flashcard">${msg}</p>`; indicator.textContent = "0 / 0";
+                btnPrev.disabled = true; btnNext.disabled = true;
+            } else {
+                const note = visibleNotes[currentNoteIndex];
+                const starIcon = note.destacada ? '★' : '☆';
+                const starClass = note.destacada ? 'active' : '';
+                if (note.destacada) display.classList.add('is-highlighted');
+                display.innerHTML = `<div class="flashcard-meta"><span>${note.fechaCreacion}</span><span>#${note.id.toString().slice(-4)}</span></div><div class="flashcard-text">${note.texto}</div><button class="btn-star-large ${starClass}" onclick="toggleNoteHighlight(${note.id})">${starIcon}</button>`;
+                indicator.textContent = `${currentNoteIndex + 1} / ${visibleNotes.length}`;
+                btnPrev.disabled = (currentNoteIndex === 0);
+                btnNext.disabled = (currentNoteIndex === visibleNotes.length - 1);
+            }
+        }
+        function prevNote() { if (currentNoteIndex > 0) { currentNoteIndex--; renderFlashcardUI(); } }
+        function nextNote() {
+            const sub = suscripciones.find(s => s.id === currentSubIdForModal); if (!sub) return;
+            let count = sub.notas.length;
+            if (filterHighlighted) count = sub.notas.filter(n => n.destacada).length;
+            if (currentNoteIndex < count - 1) { currentNoteIndex++; renderFlashcardUI(); }
+        }
+        function toggleFilterHighlighted() { filterHighlighted = !filterHighlighted; currentNoteIndex = 0; updateFilterButtonUI(); renderFlashcardUI(); }
+        function updateFilterButtonUI() {
+            const btn = document.getElementById('btn-filter-star');
+            if (filterHighlighted) btn.classList.add('active'); else btn.classList.remove('active');
+        }
+        function addNoteToSub() {
+            if (!currentSubIdForModal) return;
+            const input = document.getElementById('input-new-note'); const text = input.value.trim();
+            if (!text) { showToast("Escribe algo...", "error"); return; }
+            const subIndex = suscripciones.findIndex(s => s.id === currentSubIdForModal);
+            if (subIndex !== -1) {
+                const newNote = { id: Date.now(), texto: text, destacada: false, fechaCreacion: new Date().toLocaleString('es-ES') };
+                if (!suscripciones[subIndex].notas) suscripciones[subIndex].notas = [];
+                suscripciones[subIndex].notas.push(newNote);
+                saveSuscripcionesToLocalStorage();
+                if (filterHighlighted) { filterHighlighted = false; updateFilterButtonUI(); }
+                currentNoteIndex = suscripciones[subIndex].notas.length - 1;
+                renderFlashcardUI(); renderSuscripciones();
+                input.value = ''; showToast("Nota añadida", "success");
+            }
+        }
+        function toggleNoteHighlight(noteId) {
+            const subIndex = suscripciones.findIndex(s => s.id === currentSubIdForModal);
+            if (subIndex !== -1) {
+                const noteIndex = suscripciones[subIndex].notas.findIndex(n => n.id === noteId);
+                if (noteIndex !== -1) {
+                    suscripciones[subIndex].notas[noteIndex].destacada = !suscripciones[subIndex].notas[noteIndex].destacada;
+                    saveSuscripcionesToLocalStorage();
+                    renderFlashcardUI();
+                }
+            }
+        }
+
+        // ==========================================
+        //    LÓGICA DE INVERSIONES
+        // ==========================================
+        function loadInversionesFromLocalStorage() {
+            const storedData = localStorage.getItem('fintrack_inversiones');
+            if (storedData) inversiones = JSON.parse(storedData);
+        }
+        function saveInversionesToLocalStorage() { localStorage.setItem('fintrack_inversiones', JSON.stringify(inversiones)); }
+        function calcularValoresInversion(inv) {
+            const invertido = inv.cantidad * inv.precioCompra;
+            const valor = inv.cantidad * inv.precioActual;
+            const ganancia = valor - invertido;
+            const porcentaje = invertido === 0 ? 0 : (ganancia / invertido) * 100;
+            return { invertido, valor, ganancia, porcentaje };
+        }
+        function calcularResumenInversiones() {
+            let totalInvertido = 0; let totalValor = 0;
+            inversiones.forEach(inv => {
+                const vals = calcularValoresInversion(inv);
+                totalInvertido += vals.invertido; totalValor += vals.valor;
+            });
+            const gananciaGlobal = totalValor - totalInvertido;
+            const porcentajeGlobal = totalInvertido === 0 ? 0 : (gananciaGlobal / totalInvertido) * 100;
+            document.getElementById('inv-total-valor').textContent = totalValor.toFixed(2) + ' €';
+            const spanGanancia = document.getElementById('inv-total-ganancia');
+            const signo = gananciaGlobal > 0 ? '+' : '';
+            spanGanancia.textContent = `${signo}${gananciaGlobal.toFixed(2)} € (${porcentajeGlobal.toFixed(2)}%)`;
+            spanGanancia.className = 'amount';
+            if (gananciaGlobal > 0) spanGanancia.classList.add('text-green');
+            else if (gananciaGlobal < 0) spanGanancia.classList.add('text-red');
+            else spanGanancia.classList.add('text-neutral');
+        }
+        function addOrUpdateInversion() {
+            const idInput = document.getElementById('input-inv-id');
+            const nombreInput = document.getElementById('input-inv-nombre');
+            const tipoSelect = document.getElementById('select-inv-tipo');
+            const tickerInput = document.getElementById('input-inv-ticker');
+            const cantidadInput = document.getElementById('input-inv-cantidad');
+            const precioCompraInput = document.getElementById('input-inv-precio-compra');
+            const precioActualInput = document.getElementById('input-inv-precio-actual');
+            const id = idInput.value;
+            const nombre = nombreInput.value.trim();
+            const tipo = tipoSelect.value;
+            const ticker = tickerInput.value.trim().toUpperCase();
+            const cantidad = parseFloat(cantidadInput.value);
+            const precioCompra = parseFloat(precioCompraInput.value);
+            const precioActual = parseFloat(precioActualInput.value);
+            if (!nombre) { showToast("Nombre requerido", "error"); return; }
+            if (!ticker) { showToast("Ticker requerido", "error"); return; }
+            if (isNaN(cantidad) || cantidad < 0) { showToast("Cantidad inválida", "error"); return; }
+            if (isNaN(precioCompra) || precioCompra < 0) { showToast("Precio compra inválido", "error"); return; }
+            if (isNaN(precioActual) || precioActual < 0) { showToast("Precio actual inválido", "error"); return; }
+
+            // ⭐ AÑADIDO: attachments
+            const invData = {
+                nombre, tipo, ticker, cantidad, precioCompra, precioActual,
+                attachments: [...tempAttachments]
+            };
+
+            if (id) {
+                const index = inversiones.findIndex(i => i.id == id);
+                if (index !== -1) { inversiones[index] = { ...inversiones[index], ...invData }; showToast("Inversión actualizada", "info"); }
+            } else {
+                inversiones.push({ id: Date.now(), ...invData }); showToast("Inversión añadida", "success");
+            }
+            saveInversionesToLocalStorage();
+            renderInversiones(); toggleInvForm(false); resetFormInversion();
+        }
+        function renderInversiones() { calcularResumenInversiones(); showInversionesView(currentInvView); }
+        function showInversionesView(viewName) {
+            currentInvView = viewName;
+            document.querySelectorAll('.view-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${viewName}`).classList.add('active');
+            document.getElementById('inv-bolsa-view').style.display = 'none';
+            document.getElementById('inv-cripto-view').style.display = 'none';
+            document.getElementById('inv-otros-view').style.display = 'none';
+            if (viewName === 'bolsa') { document.getElementById('inv-bolsa-view').style.display = 'block'; renderVistaBolsa(); }
+            else if (viewName === 'cripto') { document.getElementById('inv-cripto-view').style.display = 'block'; renderVistaCripto(); }
+            else if (viewName === 'otros') { document.getElementById('inv-otros-view').style.display = 'block'; renderVistaOtros(); }
+        }
+        function renderVistaBolsa() {
+            const bolsaItems = inversiones.filter(inv => inv.tipo === 'Acción/ETF');
+            let totalInvertido = 0; let totalValor = 0;
+            const tbody = document.getElementById('tabla-bolsa-body'); tbody.innerHTML = '';
+            if (bolsaItems.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#666;">No hay acciones registradas.</td></tr>'; }
+            else {
+                bolsaItems.forEach(inv => {
+                    const { invertido, valor, ganancia, porcentaje } = calcularValoresInversion(inv);
+                    totalInvertido += invertido; totalValor += valor;
+                    let colorClass = 'text-neutral'; if (ganancia > 0) colorClass = 'text-green'; if (ganancia < 0) colorClass = 'text-red';
+
+                    // ⭐ AÑADIDO: Icono
+                    const clipText = (inv.attachments && inv.attachments.length > 0) ? ' 📎' : '';
+
+                    const row = document.createElement('tr');
+                    const isSelected = (selectedStockId == inv.id);
+                    row.className = `stock-row ${isSelected ? 'selected' : ''}`;
+                    row.onclick = () => selectStockRow(inv.id);
+                    row.innerHTML = `<td class="stock-ticker">${inv.ticker}</td><td>${inv.nombre}${clipText}</td><td>${inv.cantidad}</td><td>${inv.precioCompra.toFixed(2)}</td><td>${inv.precioActual.toFixed(2)}</td><td class="${colorClass}">${ganancia.toFixed(2)}</td><td class="${colorClass}">${porcentaje.toFixed(2)}%</td>`;
+                    tbody.appendChild(row);
+                });
+            }
+            document.getElementById('bolsa-total-invertido').textContent = totalInvertido.toFixed(2) + ' €';
+            document.getElementById('bolsa-total-valor').textContent = totalValor.toFixed(2) + ' €';
+        }
+        function renderVistaCripto() {
+            const criptoItems = inversiones.filter(inv => inv.tipo === 'Cripto');
+            let totalInvertido = 0; let totalValor = 0;
+            const tbody = document.getElementById('tabla-cripto-body'); tbody.innerHTML = '';
+            if (criptoItems.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#666;">No hay criptomonedas.</td></tr>'; }
+            else {
+                criptoItems.forEach(inv => {
+                    const { invertido, valor, ganancia, porcentaje } = calcularValoresInversion(inv);
+                    totalInvertido += invertido; totalValor += valor;
+                    let colorClass = 'text-neutral'; if (ganancia > 0) colorClass = 'text-green'; if (ganancia < 0) colorClass = 'text-red';
+
+                    // ⭐ AÑADIDO: Icono
+                    const clipText = (inv.attachments && inv.attachments.length > 0) ? '📎' : '';
+
+                    const row = document.createElement('tr'); row.className = 'stock-row';
+                    row.innerHTML = `<td class="stock-ticker" style="color:var(--crypto-color)">${inv.ticker}</td><td>${inv.nombre} ${clipText}</td><td>${inv.cantidad}</td><td>${inv.precioCompra.toFixed(2)}</td><td>${inv.precioActual.toFixed(2)}</td><td class="${colorClass}">${ganancia.toFixed(2)}</td><td class="${colorClass}">${porcentaje.toFixed(2)}%</td><td><button class="btn-api" onclick="actualizarPrecioCripto(${inv.id})">↻</button><button class="toggle-filter-btn" onclick="editInversion(${inv.id})">✎</button><button class="toggle-filter-btn" onclick="deleteInversion(${inv.id})">🗑</button></td>`;
+                    tbody.appendChild(row);
+                });
+            }
+            document.getElementById('cripto-total-invertido').textContent = totalInvertido.toFixed(2) + ' €';
+            document.getElementById('cripto-total-valor').textContent = totalValor.toFixed(2) + ' €';
+        }
+        function renderVistaOtros() {
+            const otrosItems = inversiones.filter(inv => inv.tipo === 'Otro');
+            let totalInvertido = 0; let totalValor = 0;
+            const tbody = document.getElementById('tabla-otros-body'); tbody.innerHTML = '';
+            if (otrosItems.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:#666;">No hay otros activos.</td></tr>'; }
+            else {
+                otrosItems.forEach(inv => {
+                    const { invertido, valor, ganancia, porcentaje } = calcularValoresInversion(inv);
+                    totalInvertido += invertido; totalValor += valor;
+                    let colorClass = 'text-neutral'; if (ganancia > 0) colorClass = 'text-green'; if (ganancia < 0) colorClass = 'text-red';
+
+                    // ⭐ AÑADIDO: Icono
+                    const clipText = (inv.attachments && inv.attachments.length > 0) ? '📎' : '';
+
+                    const row = document.createElement('tr'); row.className = 'stock-row';
+                    row.innerHTML = `<td>${inv.nombre} ${clipText}</td><td>${inv.ticker || '-'}</td><td>${inv.cantidad}</td><td>${inv.precioCompra.toFixed(2)}</td><td>${inv.precioActual.toFixed(2)}</td><td class="${colorClass}">${ganancia.toFixed(2)}</td><td class="${colorClass}">${porcentaje.toFixed(2)}%</td>`;
+                    row.onclick = () => editInversion(inv.id);
+                    tbody.appendChild(row);
+                });
+            }
+            document.getElementById('otros-total-invertido').textContent = totalInvertido.toFixed(2) + ' €';
+            document.getElementById('otros-total-valor').textContent = totalValor.toFixed(2) + ' €';
+        }
+        async function actualizarPrecioCripto(id) {
+            const inv = inversiones.find(i => i.id === id); if (!inv || !inv.ticker) return;
+            const cryptoId = inv.ticker.trim().toLowerCase();
+            showToast(`Actualizando ${inv.nombre}...`, 'info');
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoId}&vs_currencies=eur`);
+                if (!response.ok) throw new Error("Error API");
+                const data = await response.json();
+                if (data[cryptoId] && data[cryptoId].eur) {
+                    inv.precioActual = data[cryptoId].eur;
+                    saveInversionesToLocalStorage(); renderInversiones();
+                    showToast(`Precio actualizado: ${inv.precioActual} €`, 'success');
+                } else { showToast(`ID '${cryptoId}' no encontrado`, 'error'); }
+            } catch (error) { console.error(error); showToast("Error de conexión con CoinGecko", 'error'); }
+        }
+        function toggleInvForm(show) {
+            const formContainer = document.getElementById('inv-form-container');
+            if (show) { formContainer.style.display = 'block'; formContainer.scrollIntoView({ behavior: 'smooth' }); }
+            else { formContainer.style.display = 'none'; }
+        }
+        function editInversion(id) {
+            const inv = inversiones.find(i => i.id === id); if (!inv) return;
+            toggleInvForm(true);
+            document.getElementById('input-inv-id').value = inv.id;
+            document.getElementById('input-inv-nombre').value = inv.nombre;
+            document.getElementById('select-inv-tipo').value = inv.tipo;
+            document.getElementById('input-inv-ticker').value = inv.ticker;
+            document.getElementById('input-inv-cantidad').value = inv.cantidad;
+            document.getElementById('input-inv-precio-compra').value = inv.precioCompra;
+            document.getElementById('input-inv-precio-actual').value = inv.precioActual;
+            document.getElementById('btn-guardar-inv').textContent = "Actualizar Inversión";
+            document.getElementById('btn-cancelar-inv').style.display = "block";
+
+            // ⭐ AÑADIDO: Cargar adjuntos
+            tempAttachments = inv.attachments || [];
+            renderAttachmentsPreview('preview-inv');
+        }
+        function deleteInversion(id) {
+            if (!confirm("¿Borrar inversión?")) return;
+            inversiones = inversiones.filter(i => i.id !== id);
+            saveInversionesToLocalStorage(); renderInversiones(); showToast("Inversión eliminada", "error");
+            if (document.getElementById('input-inv-id').value == id) { resetFormInversion(); toggleInvForm(false); }
+        }
+        function resetFormInversion() {
+            document.getElementById('input-inv-id').value = '';
+            document.getElementById('input-inv-nombre').value = '';
+            document.getElementById('select-inv-tipo').value = 'Acción/ETF';
+            document.getElementById('input-inv-ticker').value = '';
+            document.getElementById('input-inv-cantidad').value = '';
+            document.getElementById('input-inv-precio-compra').value = '';
+            document.getElementById('input-inv-precio-actual').value = '';
+            document.getElementById('btn-guardar-inv').textContent = "Guardar Inversión";
+            toggleInvForm(false);
+
+            // ⭐ AÑADIDO: Reset adjuntos
+            tempAttachments = [];
+            renderAttachmentsPreview('preview-inv');
+        }
+        function selectStockRow(id) { selectedStockId = id; renderVistaBolsa(); loadStockDetails(id); }
+        function loadStockDetails(id) {
+            const stock = inversiones.find(i => i.id === id);
+            if (stock) {
+                const panel = document.getElementById('stock-details-panel');
+                if (panel) { panel.style.display = 'block'; panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+
+                // ⭐ AÑADIDO: Mostrar adjuntos en el panel de detalle si quisiera (opcional)
+                // Se podría añadir aquí lógica para mostrar el paperclip en el título si hay adjuntos
+
+                fetchHistoricoBolsa(stock.ticker);
+            }
+        }
+        function refreshStockData() {
+            if (selectedStockId) { const stock = inversiones.find(i => i.id === selectedStockId); if (stock) fetchHistoricoBolsa(stock.ticker); }
+            else { showToast("Selecciona una acción primero", "info"); }
+        }
+        async function fetchHistoricoBolsa(ticker) {
+            const title = document.getElementById('detail-ticker');
+            const tbody = document.getElementById('tabla-historico-body');
+            if (title) title.textContent = ticker;
+            if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">Cargando datos de mercado...</td></tr>';
+            setTimeout(() => {
+                const stock = inversiones.find(i => i.ticker === ticker);
+                const precioBase = stock ? stock.precioActual : 100;
+                const mockData = generateMockHistory(precioBase);
+                renderHistoricoTable(mockData); drawStockChart(mockData);
+            }, 600);
+        }
+        function generateMockHistory(basePrice) {
+            let data = []; let currentPrice = basePrice; const today = new Date();
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today); date.setDate(today.getDate() - i);
+                const change = (Math.random() - 0.5) * 0.05; currentPrice = currentPrice * (1 - change);
+                data.push({ fecha: date.toISOString().split('T')[0], cierre: currentPrice });
+            }
+            return data.reverse();
+        }
+        function renderHistoricoTable(data) {
+            const tbody = document.getElementById('tabla-historico-body'); if (!tbody) return;
+            tbody.innerHTML = '';
+            const viewData = [...data].reverse();
+            viewData.forEach((day, index) => {
+                let varPct = 0; let varText = "—"; let colorClass = "text-neutral";
+                if (index < viewData.length - 1) {
+                    const prevClose = viewData[index + 1].cierre;
+                    if (prevClose !== 0) {
+                        varPct = ((day.cierre - prevClose) / prevClose) * 100;
+                        varText = varPct.toFixed(2) + "%";
+                        if (varPct > 0) { varText = "+" + varText; colorClass = "text-green"; }
+                        if (varPct < 0) colorClass = "text-red";
+                    }
+                }
+                const row = `<tr><td>${day.fecha}</td><td>${day.cierre.toFixed(2)} €</td><td class="${colorClass}">${varText}</td></tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+        function drawStockChart(data) {
+            const canvas = document.getElementById('stockChart'); if (!canvas) return;
+            const ctx = canvas.getContext('2d'); if (!ctx) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            const width = rect.width; const height = rect.height; const padding = 30;
+            ctx.clearRect(0, 0, width, height);
+            const prices = data.map(d => d.cierre); if (prices.length === 0) return;
+            const minPrice = Math.min(...prices) * 0.98; const maxPrice = Math.max(...prices) * 1.02; const range = maxPrice - minPrice;
+            ctx.beginPath(); ctx.strokeStyle = '#2979FF'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
+            data.forEach((point, i) => {
+                const x = padding + (i / (data.length - 1)) * (width - 2 * padding);
+                const y = height - padding - ((point.cierre - minPrice) / range) * (height - 2 * padding);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, "rgba(41, 121, 255, 0.2)");
+            gradient.addColorStop(1, "rgba(41, 121, 255, 0)");
+            ctx.lineTo(width - padding, height - padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+        }
+
+        // --- LÓGICA DE NAVEGACIÓN ---
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => section.classList.remove('active'));
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) activeSection.classList.add('active');
+            updateNavState(sectionId);
+        }
+        function updateNavState(activeSectionId) {
+            const btnId = activeSectionId.replace('section-', 'btn-');
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(btnId);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+        function addInversion() { toggleInvForm(true); }
+
+        // ==========================================
+        //  ⭐ NUEVO SISTEMA DE ARCHIVOS ADJUNTOS ⭐
+        // ==========================================
+
+        // 1. Manejador de selección de archivos
+        async function handleFileSelect(event, previewContainerId) {
+            const files = event.target.files;
+            if (!files.length) return;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                // Validación tamaño (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast(`Archivo muy grande: ${file.name} (Max 5MB)`, 'error');
+                    continue;
+                }
+
+                try {
+                    const base64 = await readFileAsBase64(file);
+                    tempAttachments.push({
+                        id: Date.now() + i, // unique timestamp
+                        name: file.name,
+                        type: file.type,
+                        size: formatBytes(file.size),
+                        data: base64
+                    });
+                } catch (err) {
+                    console.error("Error leyendo archivo", err);
+                    showToast("Error al leer archivo", "error");
+                }
+            }
+            // Limpiar input y renderizar
+            event.target.value = '';
+            renderAttachmentsPreview(previewContainerId);
+        }
+
+        // 2. Helper para leer archivo como Data URL (Base64)
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 3. Renderizar miniaturas en formulario (modo edición)
+        function renderAttachmentsPreview(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+
+            tempAttachments.forEach((att, index) => {
+                const el = createPreviewElement(att, true, index, containerId);
+                container.appendChild(el);
+            });
+        }
+
+        // 4. Crear elemento visual (miniatura)
+        function createPreviewElement(att, allowDelete, index = null, containerId = null) {
+            const div = document.createElement('div');
+            div.className = 'att-preview-item';
+
+            let contentHtml = '';
+            if (att.type.startsWith('image/')) {
+                contentHtml = `<img src="${att.data}" class="att-preview-img">`;
+            } else if (att.type === 'application/pdf') {
+                contentHtml = `<div class="att-icon-placeholder" style="color:#F40F02">📄</div>`;
+            } else if (att.type.startsWith('audio/')) {
+                contentHtml = `<div class="att-icon-placeholder" style="color:#1E88E5">🔊</div>`;
+            } else {
+                contentHtml = `<div class="att-icon-placeholder">📎</div>`;
+            }
+
+            // Botón eliminar (solo si estamos editando)
+            const deleteBtn = allowDelete
+                ? `<button class="att-remove-btn" onclick="removeTempAttachment(${index}, '${containerId}')">×</button>`
+                : '';
+
+            div.innerHTML = contentHtml + deleteBtn;
+            return div;
+        }
+
+        // 5. Eliminar adjunto temporal
+        function removeTempAttachment(index, containerId) {
+            tempAttachments.splice(index, 1);
+            renderAttachmentsPreview(containerId);
+        }
+
+        // 6. Ver Archivos (Visor global)
+        function viewAttachments(itemId, type, event) {
+            if (event) event.stopPropagation(); // Evitar triggers de fila
+
+            let item;
+            if (type === 'gasto') item = gastos.find(g => g.id === itemId);
+            else if (type === 'ahorro') item = objetivos.find(o => o.id === itemId);
+
+            // Para suscripciones e inversiones, usamos la lógica de modal/edición existente o esta genérica
+
+            if (!item || !item.attachments || item.attachments.length === 0) return;
+
+            // Si hay 1 solo, mostrarlo directamente
+            if (item.attachments.length === 1) {
+                showFileViewer(item.attachments[0]);
+            } else {
+                // Si hay varios, crear un "mini menú" temporal o mostrar el primero y dejar navegar (simplificado: mostrar lista en visor)
+                // Para este ejemplo simple: Abrir el visor con una lista de links
+                openMultiFileViewer(item.attachments);
+            }
+        }
+
+        function showFileViewer(att) {
+            const viewer = document.getElementById('attachment-viewer');
+            const content = document.getElementById('viewer-content');
+            content.innerHTML = ''; // Limpiar
+
+            if (att.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = att.data;
+                img.className = 'viewer-item';
+                content.appendChild(img);
+            } else if (att.type === 'application/pdf') {
+                const iframe = document.createElement('iframe');
+                iframe.src = att.data;
+                iframe.className = 'viewer-item';
+                iframe.style.width = "90%";
+                iframe.style.height = "80vh";
+                content.appendChild(iframe);
+            } else if (att.type.startsWith('audio/')) {
+                const audio = document.createElement('audio');
+                audio.src = att.data;
+                audio.controls = true;
+                audio.style.width = "80%";
+                content.appendChild(audio);
+            } else {
+                const link = document.createElement('a');
+                link.href = att.data;
+                link.download = att.name;
+                link.textContent = `Descargar archivo: ${att.name}`;
+                link.className = 'primary-btn';
+                link.style.width = "auto";
+                content.appendChild(link);
+            }
+
+            // Nombre del archivo
+            const nameLabel = document.createElement('div');
+            nameLabel.textContent = att.name;
+            nameLabel.style.color = 'white';
+            nameLabel.style.marginTop = '10px';
+            content.appendChild(nameLabel);
+
+            viewer.style.display = 'flex';
+        }
+
+        function openMultiFileViewer(attachments) {
+            const viewer = document.getElementById('attachment-viewer');
+            const content = document.getElementById('viewer-content');
+            content.innerHTML = '<h3 style="color:white; margin-bottom:20px;">Archivos Adjuntos</h3>';
+
+            attachments.forEach(att => {
+                const row = document.createElement('div');
+                row.style.marginBottom = "15px";
+                row.style.textAlign = "center";
+
+                let icon = '📎';
+                if (att.type.startsWith('image')) icon = '🖼️';
+                if (att.type === 'application/pdf') icon = '📄';
+
+                const btn = document.createElement('button');
+                btn.textContent = `${icon} ${att.name}`;
+                btn.className = 'secondary-btn';
+                btn.style.color = 'white';
+                btn.style.borderColor = '#666';
+                btn.onclick = () => showFileViewer(att);
+
+                row.appendChild(btn);
+                content.appendChild(row);
+            });
+            viewer.style.display = 'flex';
+        }
+
+        function closeAttachmentViewer() {
+            document.getElementById('attachment-viewer').style.display = 'none';
+        }
+
+        function formatBytes(bytes, decimals = 1) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // ==========================================
+        //  ⭐ MOCK AUTH TEST MODE ⭐
+        // ==========================================
+
+        const MOCK_CODE = '123456';
+
+        // --- INICIALIZACIÓN Y CHECK ---
+        function initAuth() {
+            // Verificar si hay sesión en localStorage
+            const session = localStorage.getItem('fintrack_session');
+            if (session) {
+                try {
+                    const user = JSON.parse(session);
+                    updateAuthUI(user);
+                } catch (e) {
+                    console.error("Error al parsear sesión mock", e);
+                    localStorage.removeItem('fintrack_session');
+                    updateAuthUI(null);
+                }
+            } else {
+                updateAuthUI(null);
+            }
+        }
+
+        // --- UI HEADER ---
+        function updateAuthUI(user) {
+            const container = document.getElementById('auth-btn-wrapper');
+            if (user) {
+                const displayName = user.email || "Usuario Test";
+                container.innerHTML = `
+                    <div id="auth-status-container">
+                        <span class="auth-user-display">Hola ${displayName}</span>
+                        <button class="logout-btn" onclick="logoutUser()">[Salir]</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="user-icon" onclick="openLoginModal()" title="Iniciar Sesión">
+                        👤
+                    </div>
+                `;
+            }
+        }
+
+        // --- GESTIÓN DE MODALES ---
+        function closeAllAuthModals() {
+            document.getElementById('modal-login').style.display = 'none';
+            document.getElementById('modal-register').style.display = 'none';
+            document.getElementById('modal-verify').style.display = 'none';
+        }
+
+        function openLoginModal() {
+            closeAllAuthModals();
+            document.getElementById('modal-login').style.display = 'flex';
+        }
+
+        function openRegisterModal() {
+            closeAllAuthModals();
+            document.getElementById('modal-register').style.display = 'flex';
+        }
+
+        function openVerifyModal() {
+            closeAllAuthModals();
+            document.getElementById('modal-verify').style.display = 'flex';
+            const codeInput = document.getElementById('verify-email-code');
+            if (codeInput) {
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        }
+
+        // --- MOCK LOGIN ---
+        function loginEmail() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-pass').value.trim();
+
+            if (!email || !password) {
+                showToast("Faltan credenciales", "error");
+                return;
+            }
+
+            // Simulación básica: si tiene email y contraseña, entra.
+            // Para ser más realista, podríamos requerir registro previo,
+            // pero para un mock rápido, permitimos login directo para facilitar el test.
+            // O mejor, sugerimos registro si no existe en "base de datos mock" (localStorage?)
+            // Vamos a hacerlo simple: Login exitoso si los campos no están vacíos.
+
+            showToast("Iniciando sesión (Mock)...", "info");
+
+            setTimeout(() => {
+                const user = { email: email, id: 'mock-user-' + Date.now() };
+                localStorage.setItem('fintrack_session', JSON.stringify(user));
+                updateAuthUI(user);
+                closeAllAuthModals();
+                showToast("¡Hola de nuevo! (Modo Test)", "success");
+            }, 800);
+        }
+
+        // --- MOCK REGISTER ---
+        function registerWithEmailOTP() {
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+
+            if (!email || !password) {
+                showToast("Email y contraseña obligatorios", "error");
+                return;
+            }
+
+            showToast("Enviando código de verificación...", "info");
+
+            // Simular retardo de red y envío de email
+            setTimeout(() => {
+                alert(`[SIMULACIÓN DE EMAIL]\n\nPara: ${email}\nAsunto: Tu código de verificación\n\nTu código es: ${MOCK_CODE}`);
+
+                // Guardar email temporalmente
+                localStorage.setItem('temp_reg_email', email);
+
+                showToast("Código enviado. Revisa tu 'email'.", "success");
+                openVerifyModal();
+            }, 1000);
+        }
+
+        // --- MOCK VERIFY ---
+        function verifyEmailOTP() {
+            const codeInput = document.getElementById('verify-email-code');
+            const code = codeInput ? codeInput.value.trim() : '';
+            const email = localStorage.getItem('temp_reg_email') || 'usuario@test.com';
+
+            if (code !== MOCK_CODE) {
+                showToast(`Código incorrecto. Usa ${MOCK_CODE}`, "error");
+                return;
+            }
+
+            showToast("Verificando...", "info");
+
+            setTimeout(() => {
+                const user = { email: email, id: 'mock-user-' + Date.now() };
+                localStorage.setItem('fintrack_session', JSON.stringify(user));
+                updateAuthUI(user);
+                closeAllAuthModals();
+                localStorage.removeItem('temp_reg_email');
+                showToast("¡Cuenta verificada! (Modo Test)", "success");
+            }, 800);
+        }
+
+        // --- LOGOUT ---
+        function logoutUser() {
+            localStorage.removeItem('fintrack_session');
+            updateAuthUI(null);
+            showToast("Sesión cerrada", "info");
+        }
+
+    </script>
+</body>
+
+</html>
