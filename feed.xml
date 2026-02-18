@@ -3,7 +3,7 @@
     <title>ASI</title>
     <link href="https://checofran284-alt.github.io/2damasi/feed.xml" rel="self" />
     <link href="https://checofran284-alt.github.io/2damasi" />
-    <updated>2026-02-18T14:22:42+01:00</updated>
+    <updated>2026-02-18T14:25:36+01:00</updated>
     <author>
         <name>Francisco Ferres Briceño</name>
     </author>
@@ -84,7 +84,7 @@
 <h5 class="align-left">2. CONFIGURACIÓN DEL AGENTE CON IA EN LOCAL</h5>
 <p class="align-left">La primero que deberemos hacer de cara al proyecto será preparar y adaptar el entorno de trabajo local. Al estar trabajando en los equipos del aula, fue necesario aislar las dependencias para evitar posibles conflictos con instalaciones anteriores ya existentes en los ordenadores.</p>
 <p class="align-center">A continuación mostraremos los pasos a seguir...⬇️</p>
-<figure class="post__image post__image--wide"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/28/Captura-de-pantalla-2026-02-18-132137-2.png" alt="" width="602" height="222" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/28/responsive/Captura-de-pantalla-2026-02-18-132137-2-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/28/responsive/Captura-de-pantalla-2026-02-18-132137-2-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/28/responsive/Captura-de-pantalla-2026-02-18-132137-2-md.png 768w"></figure>
+<figure class="post__image post__image--full"><img loading="lazy"  src="https://checofran284-alt.github.io/2damasi/media/posts/28/Captura-de-pantalla-2026-02-18-132137-2.png" alt="" width="602" height="222" sizes="(max-width: 48em) 100vw, 768px" srcset="https://checofran284-alt.github.io/2damasi/media/posts/28/responsive/Captura-de-pantalla-2026-02-18-132137-2-xs.png 300w ,https://checofran284-alt.github.io/2damasi/media/posts/28/responsive/Captura-de-pantalla-2026-02-18-132137-2-sm.png 480w ,https://checofran284-alt.github.io/2damasi/media/posts/28/responsive/Captura-de-pantalla-2026-02-18-132137-2-md.png 768w"></figure>
 <p class="align-center">PASO 1 -  A CONTINUACIÓN EXPLICARE EL PROCESO LLEVADO A CABO:</p>
 <blockquote>
 <p><!--StartFragment -->Durante las primeras fases de la práctica nos encontramos con varios inconvenientes al intentar trabajar con la librería <strong>transformers</strong> de Hugging Face en el entorno global de Windows. Al ejecutar los comandos de instalación, la consola comenzó a mostrar errores relacionados con incompatibilidades entre versiones de PyTorch y dependencias que no estaban correctamente configuradas, lo que impedía avanzar con normalidad.</p>
